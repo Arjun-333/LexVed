@@ -1,0 +1,12 @@
+sentence-transformers
+google-genai
+qdrant-client
+python-dotenv
+PyMuPDF
+transformers
+nltk
+rouge-score
+bert-score
+psutil
+tiktoken
+backoff

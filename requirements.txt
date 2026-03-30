@@ -10,3 +10,5 @@ bert-score
 psutil
 tiktoken
 backoff
+flask
+flask-cors

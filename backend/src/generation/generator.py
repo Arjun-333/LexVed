@@ -5,11 +5,13 @@ from google import genai
 # Read API key explicitly to allow it to be configured globally or explicitly
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-def generate_answer(question, context, max_tokens=500):
+def generate_answer(question, context, model="Gemini 1.5 Pro", max_tokens=500):
     """
     Uses Gemini 1.5 Pro to generate an answer given a document context.
+    If another model is requested via the UI but you only have Gemini keys locally,
+    we'll simulate it for now by telling Gemini to act like it.
     """
-    prompt = f"Answer the question using only the context below.\n\nContext:\n{context}\n\nQ: {question}\nA:"
+    prompt = f"You are {model}. Answer the question using only the context below.\n\nContext:\n{context}\n\nQ: {question}\nA:"
     
     t2 = time.time()
     

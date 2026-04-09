@@ -1,64 +1,121 @@
 # LexVed Document Ingestion and Retrieval System
 
-## Overview
-LexVed is a robust vector-search-based pipeline designed for analyzing, redacting, and retrieving information from legal documents (PDFs). It processes legal documents by chunking the text intelligently based on citation patterns, redacting Personally Identifiable Information (PII) and Named Entities, embedding the text semantically, and storing the embeddings in Qdrant for fast similarity search. It also integrates with Google's Gemini 1.5 Pro Large Language Model to provide context-aware answers to user queries based on the retrieved documents.
+### 5. Hybrid Search (Keyword + Vector)
+**How:** Combines Qdrant's vector similarity with a `match_text` filter for exact legal keywords.
+**Why:** Legal research often depends on specific statute numbers (e.g., "302"). Hybrid search ensures these terms are boosted while maintaining the semantic depth of the vector search.
 
-## Architecture & Workflow
-The system operates in two main phases: Ingestion and Retrieval/Generation.
+### 6. Page-Aware Sorting
+**How:** Results with similar semantic scores are sub-sorted by their page number.
+**Why:** Improves the narrative coherence of the retrieved context, presenting legal arguments in the order they appear in the original document.
 
-### 1. Data Ingestion Pipeline
-- **Extraction:** Reads PDF files from the `data/` directory using PyMuPDF.
-- **Chunking:** Splits the extracted text into manageable chunks. It uses advanced regular expressions to ensure that legal citations and sentence boundaries are preserved within the chunks.
-- **Redaction:** Applies Named Entity Recognition (NER) using `dslim/bert-base-NER` to detect and redact names. It also uses regex patterns to redact sensitive information like phone numbers, Aadhaar, PAN, emails, and bank accounts.
-- **Embedding:** Converts the redacted text chunks into 768-dimensional dense vector embeddings using the `sentence-transformers/multi-qa-mpnet-base-cos-v1` model.
-- **Storage:** Upserts the generated vectors and their corresponding metadata (source file, page number, text) into a properly structured Qdrant Vector Database.
+## Project Vision
+LexVed is a professional-grade legal RAG (Retrieval-Augmented Generation) system. Unlike standard flat-search pipelines, LexVed is designed with **Hierarchical Sub-indexing**, ensuring that legal documents are partitioned into distinct domains (Criminal, Civil). This ensures that lawyers and legal researchers get the most precise citations without noise from unrelated legal fields.
 
-### 2. Retrieval & Generation Pipeline
-- **Query Embedding:** Converts the user's natural language query into a vector embedding using the identical local `SentenceTransformer` model.
-- **Vector Search:** Queries the Qdrant database to find the top-K most semantically similar chunks based on cosine similarity.
-- **Answer Generation:** Feeds the user query alongside the retrieved text chunks (context) into Google's `gemini-1.5-pro` model to generate an accurate, context-bound answer.
+---
 
-## File Structure & Responsibilities
+## How and Why: Engineering Design Decisions
 
-### Root Directory
-- `test_qdrant.py`: A simple test script to verify connection to the Qdrant database and initialize the vector collection.
-- `test_embedding_qdrant.py`: The main test pipeline script. It iterates over the `data/` directory, extracts chunks, redacts PII, generates embeddings, and uploads them to Qdrant.
-- `test_ingestion.py`: A quick test script for validating chunk extraction and redaction logic without running the embedding or database upload processes.
-- `requirements.txt`: Contains all the Python dependencies required to run the project.
+### 1. Hierarchical Sub-indexing (Precision Engine)
+**The Problem:** In legal research, terms like "theft" can appear in both Criminal cases and Civil insurance disputes. A flat vector search might confuse the two.
+**The Solution:** LexVed partitions data at the database level using Qdrant payloads. 
+- **Mapping:** Documents in `backend/data/PDF/CRIMINAL/` are tagged as `Criminal`.
+- **Isolation:** On query, the system identifies the user's intent (e.g., "crime") and restricts the search scope *exclusively* to the Criminal sub-index.
+- **Why:** This eliminates cross-domain noise and ensures the AI context is 100% relevant.
 
-### `src/` Directory
-The `src/` directory contains the core modules of the project, organized symmetrically by functionality.
+### 2. Payload Indexing (Speed & Scalability)
+**The Implementation:** We created explicit Keyword and Integer indices in Qdrant for `category`, `subcategory`, and `page`.
+**Why:** Standard vector search is $O(N)$. By indexing these fields, Qdrant performs **Pre-filtering**, narrowing down the search space *before* the expensive cosine similarity math. 
 
-#### `src/ingestion/`
-- `pdf_processor.py`: Contains the logic for extracting text from PDFs (`fitz`), chunking it based on citation regex, and redacting sensitive data using NER (`transformers.pipeline`) and regex.
-- `embedder.py`: Houses the `get_embeddings` function which utilizes the `SentenceTransformer` model to convert text chunks into numerical vectors.
-- `uploader.py`: Contains `upload_to_qdrant`, which properly wraps vectors into Qdrant `PointStruct` objects with unique UUIDs and performs batched uploads to the vector database.
+### 3. Automated PII Redaction (Privacy Compliance)
+**The Implementation:** A dual-layer system using:
+- **ML Layer:** `dslim/bert-base-NER` detects and redacts personal names.
+- **Regex Layer:** High-precision patterns scrub Aadhaar, PAN, Phone numbers, and Emails.
+**Why:** Privacy is paramount in legal tech. This ensures sensitive lawyer-client information never reaches the cloud LLM.
 
-#### `src/retrieval/`
-- `retriever.py`: Contains the `retrieve` function which takes a user query, embeds it, and performs a similarity search against the Qdrant collection to return the most relevant document chunks.
+### 4. Page-Level Citation Logic (Verifiability)
+**The Implementation:** Metadata markers `[Source: filename, Page: X]` are injected into every context chunk.
+**Why:** A legal assistant is only as good as its citations. By forcing the LLM to cite specific pages, LexVed provides **verifiable evidence** rather than just general answers.
 
-#### `src/generation/`
-- `generator.py`: Contains the `generate_answer` function. It formulates a prompt containing the retrieved context and the user query, and sends it to the Gemini API to receive a coherent answer.
+---
 
-#### `src/utils/`
-- `qdrant_client.py`: Configures the connection to the Qdrant server (`localhost:6333` by default) and defines the `init_collection` function to set up the collection with the correct vector dimensions and distance metric.
+## System Architecture
 
-## Prerequisites & Setup
+### Ingestion Flow
+1. **Extraction:** PDF text is extracted using `PyMuPDF (fitz)`.
+2. **Analysis:** The system detects the domain based on the folder (`CRIMINAL` vs `CIVIL`).
+3. **Chunking:** Text is split using regex that preserves citation patterns (e.g., "Sec. 302 IPC").
+4. **Sanitization:** NER and Regex redaction scrub sensitive data.
+5. **Embedding:** `multi-qa-mpnet-base-cos-v1` converts text into 768-dimensional vectors.
+6. **Upsert:** Vectors + Metadata are stored in Qdrant with explicit payload indexing.
 
-1. **Python Environment:** Create and activate a Python virtual environment (e.g., Python 3.9+).
-2. **Install Dependencies:** Run `pip install -r requirements.txt`.
-3. **Qdrant Database:** The system requires Qdrant to be running. You must start a Qdrant server instance, typically via Docker:
-   ```bash
-   docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
-   ```
-4. **API Keys:** You need a Gemini API Key for the answer generation phase. Export it as an environment variable in your terminal:
-   - Windows (Command Prompt): `set GEMINI_API_KEY=your_key_here`
-   - Windows (PowerShell): `$env:GEMINI_API_KEY="your_key_here"`
-   - Linux/Mac: `export GEMINI_API_KEY="your_key_here"`
+### Retrieval and Chat Flow
+1. **Intent Detection:** The system analyzes the query to detect if it's a Criminal or Civil question.
+2. **Filtered retrieval:** Searches Qdrant using the detected `category` filter.
+3. **Context Assembly:** Chunks are formatted with source/page markers.
+4. **Generation:** Gemini 1.5 Pro generates the final answer with strict citation rules.
+
+---
+
+## Prerequisites and Setup
+
+### 1. Qdrant (Vector Database)
+The system requires a running Qdrant instance on port 6333.
+```bash
+docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
+```
+
+### 2. Virtual Environment
+Always use a virtual environment to avoid global dependency conflicts.
+```bash
+# Setup
+python3 -m venv backend/venv
+source backend/venv/bin/activate
+
+# Dependencies
+pip install -r requirements.txt
+```
+
+### 3. Configuration
+Set your Gemini API key:
+```bash
+export GEMINI_API_KEY="your_api_key_here"
+```
+
+---
 
 ## Usage Guide
-1. Place the target PDF documents inside the `data/` or `data/PDF/` directory.
-2. Ensure your Qdrant server is running via Docker on port 6333.
-3. Run `python test_qdrant.py` to confirm database connectivity and initialize the vector collection.
-4. Run `python test_embedding_qdrant.py` to process the PDFs, generate embeddings, and populate the Qdrant database.
-5. Utilize the functions in `src/retrieval/retriever.py` and `src/generation/generator.py` within your application or evaluation scripts to query the system.
+
+### Step 1: Ingest Documents
+Place your PDFs in:
+- `backend/data/PDF/CRIMINAL/`
+- `backend/data/PDF/CIVIL/`
+
+Run the ingestion pipeline:
+```bash
+python backend/test_embedding_qdrant.py
+```
+
+### Step 2: Verify the Sub-index
+Run the verification script to ensure filtering is working correctly:
+```bash
+python backend/test_subindexing.py
+```
+
+### Step 3: Start the Server
+```bash
+python backend/app.py
+```
+
+---
+
+## Repository Structure
+- `backend/app.py`: Main Flask API with intent-aware retrieval.
+- `backend/src/ingestion/`: Handles PDF processing, NER, and uploading.
+- `backend/src/retrieval/`: Filtered similarity search logic.
+- `backend/src/utils/`: Qdrant client and collection configuration.
+- `backend/test_subindexing.py`: Unit test for hierarchical filtering.
+
+---
+
+## License
+Internal Use Only (LexVed Project).

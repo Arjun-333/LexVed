@@ -107,7 +107,45 @@ def redact_sensitive_info(text):
     return text
 
 # ============================================
-# 5. Final Processing Pipeline
+# 5. Categorization Logic
+# ============================================
+def categorize_text(text):
+    """
+    Categorizes text into categories (Criminal, Civil, Corporate) 
+    and subcategories (Robbery, Fraud, etc.)
+    """
+    text_lower = text.lower()
+    
+    categories = {
+        "Criminal": ["police", "arrest", "theft", "murder", "robbery", "fraud", "criminal", "ipc", "crpc"],
+        "Civil": ["property", "divorce", "marriage", "contract", "landlord", "tenant", "civil"],
+        "Corporate": ["company", "merger", "acquisition", "shares", "board", "director", "corporate"]
+    }
+    
+    subcategories = {
+        "Robbery": ["robbery", "theft", "snatching", "loot"],
+        "Fraud": ["fraud", "cheating", "scam", "forgery"],
+        "Property": ["land", "house", "building", "possession", "title"],
+        "Marriage": ["marriage", "matrimonial", "husband", "wife", "alimony"]
+    }
+    
+    detected_cat = "Uncategorized"
+    detected_sub = "General"
+    
+    for cat, keywords in categories.items():
+        if any(kw in text_lower for kw in keywords):
+            detected_cat = cat
+            break
+            
+    for sub, keywords in subcategories.items():
+        if any(kw in text_lower for kw in keywords):
+            detected_sub = sub
+            break
+            
+    return detected_cat, detected_sub
+
+# ============================================
+# 6. Final Processing Pipeline
 # ============================================
 def process_text(text):
     text = run_ner_and_redact(text)

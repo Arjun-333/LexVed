@@ -8,10 +8,16 @@ gemini_api_key = os.getenv("GEMINI_API_KEY")
 def generate_answer(question, context, model="Gemini 1.5 Pro", max_tokens=500):
     """
     Uses Gemini 1.5 Pro to generate an answer given a document context.
-    If another model is requested via the UI but you only have Gemini keys locally,
-    we'll simulate it for now by telling Gemini to act like it.
+    Enforces strict citation of source filename and page numbers.
     """
-    prompt = f"You are {model}. Answer the question using only the context below.\n\nContext:\n{context}\n\nQ: {question}\nA:"
+    prompt = (
+        f"You are {model}, a professional legal assistant. "
+        f"Answer the question using ONLY the context provided below. "
+        f"For every fact or legal point you state, you MUST cite the source and page number(s) "
+        f"found in the context markers (e.g., [Source: file.pdf, Page: 4]).\n\n"
+        f"Context:\n{context}\n\n"
+        f"Q: {question}\nA:"
+    )
     
     t2 = time.time()
     

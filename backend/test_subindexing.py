@@ -10,11 +10,11 @@ from src.retrieval.retriever import retrieve
 import numpy as np
 
 def test_subindexing():
-    print("🚀 Starting Sub-indexing Verification...")
+    print("Starting Sub-indexing Verification...")
     
     # 1. Reset collection
     init_collection()
-    print("✅ Collection initialized.")
+    print("Collection initialized.")
     
     # 2. Prepare dummy data
     chunks = [
@@ -28,7 +28,7 @@ def test_subindexing():
     embeddings = np.random.rand(4, 768)
     
     # 3. Upload with categories
-    print("📦 Uploading categorized data...")
+    print("Uploading categorized data...")
     upload_to_qdrant([chunks[0]], [embeddings[0]], category="Criminal", subcategory="Robbery")
     upload_to_qdrant([chunks[1]], [embeddings[1]], category="Criminal", subcategory="Fraud")
     upload_to_qdrant([chunks[2]], [embeddings[2]], category="Civil", subcategory="Property")
@@ -56,7 +56,7 @@ def test_subindexing():
     print(f"  Target: All | Hits: {len(res)}")
     assert len(res) == 4
     
-    print("\n✨ Sub-indexing verified successfully!")
+    print("\nSub-indexing verified successfully!")
 
 if __name__ == "__main__":
     try:

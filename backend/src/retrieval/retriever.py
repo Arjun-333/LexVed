@@ -25,16 +25,30 @@ def retrieve(query_text, category=None, subcategory=None, top_k=5):
     ]
 
     t1 = time.time()
-    search_result = client.search(
+    # Using modern query_points with correct Boolean logic:
+    # We only include should_filters if there is a category/must filter,
+    # OR we make it optional in a way that doesn't exclude points.
+    
+    # In Qdrant, a top-level Filter with only 'should' acts as 'must match at least one'.
+    # To avoid this, we only apply the should_filters if we also have must_filters,
+    # or we handle the broad search differently.
+    
+    search_filter = None
+    if must_filters or should_filters:
+        search_filter = Filter(must=must_filters, should=should_filters)
+        # If it's a broad search (no category), and we have a keyword booster,
+        # we don't want it to be restrictive. 
+        # Fix: If no must_filters, we shouldn't use should_filters at the top level filter if we want full recall.
+        if not must_filters and should_filters:
+            search_filter = None # Fallback to pure vector search for now to prioritize recall in 'All' searches
+
+    search_result = client.query_points(
         collection_name=COLLECTION_NAME,
-        query_vector=q_emb.tolist(),
-        query_filter=Filter(
-            must=must_filters,
-            should=should_filters
-        ),
-        limit=top_k * 2, # Fetch more to allow for re-ranking/sorting
+        query=q_emb.tolist(),
+        query_filter=search_filter,
+        limit=top_k * 2,
         with_payload=True
-    )
+    ).points
     retrieval_time = time.time() - t1
     
     # Page-Aware Sorting:

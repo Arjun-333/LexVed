@@ -34,7 +34,6 @@ def init_collection():
         field_schema=TextIndexParams(
             type="text",
             tokenizer=TokenizerType.WORD,
-            lowercase=True,
-            replace_whitespace=True
+            lowercase=True
         ),
     )

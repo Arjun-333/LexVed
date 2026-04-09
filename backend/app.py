@@ -31,12 +31,13 @@ def static_files(path):
 def chat():
     data = request.json
     question = data.get("message")
-    model = data.get("model", "Gemini 1.5 Pro")
+    provider = data.get("provider", "gemini") # Default to gemini
+    model = data.get("model") 
     
     if not question:
         return jsonify({"error": "No message provided"}), 400
         
-    print(f"User requested via {model}: {question}")
+    print(f"User requested via {provider} ({model or 'default'}): {question}")
     
     try:
         # Detect category and subcategory from question
@@ -51,31 +52,47 @@ def chat():
             subcategory=subcategory if subcategory != "General" else None
         )
         
-        # Build context string with metadata markers for LLM citation
+        # Build context string
         context = ""
         for m in res:
             source = os.path.basename(m.payload.get("source", "Unknown"))
             page = m.payload.get("page", "?")
             context += f"\n[Source: {source}, Page: {page}]\n{m.payload['text']}\n"
         
-        # If no context found with filters, fallback to unfiltered search
         if not context.strip():
-            print("No context found with filters, falling back to all-index search.")
             res, _ = retrieve(question, top_k=5)
             for m in res:
                 source = os.path.basename(m.payload.get("source", "Unknown"))
                 page = m.payload.get("page", "?")
                 context += f"\n[Source: {source}, Page: {page}]\n{m.payload['text']}\n"
 
-        # Generate Answer
-        answer, generation_time, prompt = generate_answer(question, context, model=model, max_tokens=500)
+        # Generate Answer with Fallback Logic
+        answer = None
+        generation_time = 0
+        
+        try:
+            # First attempt with requested provider
+            answer, generation_time, _ = generate_answer(
+                question, context, provider=provider, model=model
+            )
+        except Exception as e:
+            # If Gemini fails and Llama 3 was NOT the requested provider, fallback to Llama 3
+            if provider == "gemini":
+                print(f"Gemini failed ({str(e)}). Falling back to Local Llama 3...")
+                answer, generation_time, _ = generate_answer(
+                    question, context, provider="ollama", model="llama3"
+                )
+                provider = "ollama (fallback)"
+            else:
+                raise e
         
         return jsonify({
             "response": answer,
             "retrieval_time": retrieval_time,
             "generation_time": generation_time,
             "category": category,
-            "subcategory": subcategory
+            "subcategory": subcategory,
+            "provider": provider
         })
     except Exception as e:
         import traceback

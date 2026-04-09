@@ -1,13 +1,3 @@
-# LexVed Document Ingestion and Retrieval System
-
-### 5. Hybrid Search (Keyword + Vector)
-**How:** Combines Qdrant's vector similarity with a `match_text` filter for exact legal keywords.
-**Why:** Legal research often depends on specific statute numbers (e.g., "302"). Hybrid search ensures these terms are boosted while maintaining the semantic depth of the vector search.
-
-### 6. Page-Aware Sorting
-**How:** Results with similar semantic scores are sub-sorted by their page number.
-**Why:** Improves the narrative coherence of the retrieved context, presenting legal arguments in the order they appear in the original document.
-
 ## Project Vision
 LexVed is a professional-grade legal RAG (Retrieval-Augmented Generation) system. Unlike standard flat-search pipelines, LexVed is designed with **Hierarchical Sub-indexing**, ensuring that legal documents are partitioned into distinct domains (Criminal, Civil). This ensures that lawyers and legal researchers get the most precise citations without noise from unrelated legal fields.
 
@@ -35,6 +25,16 @@ LexVed is a professional-grade legal RAG (Retrieval-Augmented Generation) system
 ### 4. Page-Level Citation Logic (Verifiability)
 **The Implementation:** Metadata markers `[Source: filename, Page: X]` are injected into every context chunk.
 **Why:** A legal assistant is only as good as its citations. By forcing the LLM to cite specific pages, LexVed provides **verifiable evidence** rather than just general answers.
+
+# LexVed Document Ingestion and Retrieval System
+
+### 5. Hybrid Search (Keyword + Vector)
+**How:** Combines Qdrant's vector similarity with a `match_text` filter for exact legal keywords.
+**Why:** Legal research often depends on specific statute numbers (e.g., "302"). Hybrid search ensures these terms are boosted while maintaining the semantic depth of the vector search.
+
+### 6. Page-Aware Sorting
+**How:** Results with similar semantic scores are sub-sorted by their page number.
+**Why:** Improves the narrative coherence of the retrieved context, presenting legal arguments in the order they appear in the original document.
 
 ---
 

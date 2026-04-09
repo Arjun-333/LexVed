@@ -1,21 +1,21 @@
 import fitz
 import re
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+import spacy
+from dotenv import load_dotenv
+
+# Load variables from .env if present
+load_dotenv()
 
 # ============================================
-# 1. Load NER Model
+# 1. Load SpaCy NER Model (High Speed CPU)
 # ============================================
-ner_model_name = "dslim/bert-base-NER"
-
-ner_tokenizer = AutoTokenizer.from_pretrained(ner_model_name)
-ner_model = AutoModelForTokenClassification.from_pretrained(ner_model_name)
-
-ner_pipeline = pipeline(
-    "ner",
-    model=ner_model,
-    tokenizer=ner_tokenizer,
-    aggregation_strategy="simple"
-)
+try:
+    nlp = spacy.load("en_core_web_sm")
+except:
+    # Fallback if download failed in this specific environment
+    import os
+    os.system("python3 -m spacy download en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 # ============================================
 # 2. Extract and Chunk PDF
@@ -68,21 +68,20 @@ def extract_chunks(pdf_path, chunk_size=200):
     return chunks
 
 # ============================================
-# 3. NER-based Redaction (Names)
+# 3. SpaCy-based Redaction (Fast)
 # ============================================
-def run_ner_and_redact(text):
-    entities = ner_pipeline(text)
+def redact_names_spacy(text):
+    doc = nlp(text)
     redacted_text = text
-
-    for ent in entities:
-        if ent['entity_group'] == 'PER':
-            name = ent['word']
+    # Reverse order to avoid index shifts if we were doing string manipulation, 
+    # but here we use regex for safety with SpaCy words.
+    for ent in doc.ents:
+        if ent.label_ == "PERSON":
             redacted_text = re.sub(
-                r'\b{}\b'.format(re.escape(name)),
+                r'\b{}\b'.format(re.escape(ent.text)),
                 "[REDACTED_NAME]",
                 redacted_text
             )
-
     return redacted_text
 
 # ============================================
@@ -91,42 +90,27 @@ def run_ner_and_redact(text):
 def redact_sensitive_info(text):
     # Phone numbers (10-digit)
     text = re.sub(r'\b\d{10}\b', '[REDACTED_PHONE]', text)
-
-    # Aadhaar (12 digits, with or without spaces)
+    # Aadhaar (12 digits)
     text = re.sub(r'\b\d{4}\s?\d{4}\s?\d{4}\b', '[REDACTED_AADHAAR]', text)
-
     # PAN (ABCDE1234F)
     text = re.sub(r'\b[A-Z]{5}[0-9]{4}[A-Z]\b', '[REDACTED_PAN]', text)
-
     # Email
     text = re.sub(r'\b[\w\.-]+@[\w\.-]+\.\w+\b', '[REDACTED_EMAIL]', text)
-
-    # Bank account (basic detection)
-    text = re.sub(r'\b\d{9,18}\b', '[REDACTED_ACCOUNT]', text)
-
     return text
 
 # ============================================
 # 5. Categorization Logic
 # ============================================
 def categorize_text(text):
-    """
-    Categorizes text into categories (Criminal, Civil, Corporate) 
-    and subcategories (Robbery, Fraud, etc.)
-    """
     text_lower = text.lower()
-    
     categories = {
         "Criminal": ["police", "arrest", "theft", "murder", "robbery", "fraud", "criminal", "ipc", "crpc"],
         "Civil": ["property", "divorce", "marriage", "contract", "landlord", "tenant", "civil"],
-        "Corporate": ["company", "merger", "acquisition", "shares", "board", "director", "corporate"]
     }
-    
     subcategories = {
         "Robbery": ["robbery", "theft", "snatching", "loot"],
         "Fraud": ["fraud", "cheating", "scam", "forgery"],
         "Property": ["land", "house", "building", "possession", "title"],
-        "Marriage": ["marriage", "matrimonial", "husband", "wife", "alimony"]
     }
     
     detected_cat = "Uncategorized"
@@ -136,18 +120,45 @@ def categorize_text(text):
         if any(kw in text_lower for kw in keywords):
             detected_cat = cat
             break
-            
     for sub, keywords in subcategories.items():
         if any(kw in text_lower for kw in keywords):
             detected_sub = sub
             break
-            
     return detected_cat, detected_sub
 
 # ============================================
-# 6. Final Processing Pipeline
+# 6. Final Processing Pipeline (Turbo Batch)
 # ============================================
+def process_chunks_batch(chunks, batch_size=32):
+    """
+    Uses SpaCy's nlp.pipe for extreme speed on CPU.
+    """
+    texts = [c["text"] for c in chunks]
+    processed_texts = []
+    
+    # SpaCy pipe is much faster than individual calls
+    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=1):
+        text = doc.text
+        redacted_text = text
+        for ent in doc.ents:
+            if ent.label_ == "PERSON":
+                redacted_text = re.sub(
+                    r'\b{}\b'.format(re.escape(ent.text)),
+                    "[REDACTED_NAME]",
+                    redacted_text
+                )
+        # Regex cleanup
+        redacted_text = redact_sensitive_info(redacted_text)
+        processed_texts.append(redacted_text)
+            
+    # Update chunks in place
+    for i, chunk in enumerate(chunks):
+        chunk["text"] = processed_texts[i]
+        
+    return chunks
+
 def process_text(text):
-    text = run_ner_and_redact(text)
+    """Legacy support."""
+    text = redact_names_spacy(text)
     text = redact_sensitive_info(text)
     return text

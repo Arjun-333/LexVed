@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexVed Chat</title>
+    <title>LexVed | Advanced Legal Research</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -12,18 +12,18 @@
     <!-- Dark Sidebar -->
     <nav class="sidebar">
         <div class="nav-item active">
-            <span class="material-icons">chat_bubble_outline</span>
+            <span class="material-icons">gavel</span>
         </div>
         <div class="nav-item" id="theme-toggle" title="Toggle Theme">
             <span class="material-icons">dark_mode</span>
         </div>
         <div class="nav-spacer"></div>
         <div class="nav-item">
-            <span class="material-icons">logout</span>
+            <span class="material-icons">history</span>
         </div>
     </nav>
 
-    <!-- Main Content (Light Theme) -->
+    <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
         <header class="chat-header">
@@ -37,29 +37,25 @@
         <!-- Chat Area -->
         <div class="chat-container">
             <div class="chat-history" id="chat-history">
-                <!-- User Question -->
-                <div class="message user-message">
-                    <p>How do the reasoning capabilities of GPT-4o and Gemini 1.5 compare?</p>
-                </div>
-                <!-- Bot Answer -->
+                <!-- Welcome Message -->
                 <div class="message bot-message">
                     <div class="bot-icon">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="GPT">
+                        <span class="material-icons">gavel</span>
                     </div>
                     <div class="bubble">
-                        <p>Great question! Let's explore that... Here's a detailed response, marked 'GPT-4o'. Gemini 1.5 is powerful, but Llama 3 70B also has unique knowledge-based reasoning capabilities. It's worth comparing them.</p>
-                        <span class="model-badge">('GPT-4o')</span>
+                        <p>Welcome to <strong>LexVed</strong>. Your hierarchical legal RAG system is fully indexed and ready.</p>
+                        <p>I can assist with both <strong>Criminal</strong> and <strong>Civil</strong> law research using domain-specific filters.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Suggestions -->
             <div class="suggestions">
-                <p>Model suggestions based on the context:</p>
+                <p>Legal Research Quick Starts:</p>
                 <div class="suggestion-chips">
-                    <button>How do the reasoning capabilities of GPT-4o and Claude 3.5 compare?</button>
-                    <button>Llama 3 70B</button>
-                    <button>Mistral [Mistral Large 2]</button>
+                    <button><span class="material-icons">search</span> Abhishek Banerjee Case</button>
+                    <button><span class="material-icons">search</span> Indian Penal Code (IPC)</button>
+                    <button><span class="material-icons">search</span> Bail Grounds 2024</button>
                 </div>
             </div>
 
@@ -67,12 +63,9 @@
             <div class="input-area">
                 <div class="input-container">
                     <span class="material-icons icon-btn">attach_file</span>
-                    <span class="material-icons icon-btn">image</span>
-                    <span class="material-icons icon-btn">mood</span>
-                    <span class="material-icons icon-btn">mic</span>
-                    <input type="text" id="chat-input" placeholder="Ask anything to GPT-4o...">
+                    <input type="text" id="chat-input" placeholder="Ask anything to Gemini...">
                     <button id="send-btn">
-                        <span class="material-icons">send</span> Send
+                        <span class="material-icons">send</span> 
                     </button>
                 </div>
             </div>

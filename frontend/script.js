@@ -155,20 +155,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('send-btn');
     const chatHistory = document.getElementById('chat-history');
 
-    function addMessage(text, isUser, modelBadge = '') {
+    function addMessage(text, isUser, modelBadge = '', metadata = {}) {
         const div = document.createElement('div');
         div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
         
         if (isUser) {
             div.innerHTML = `<p>${text}</p>`;
         } else {
+            // Process citations if present
+            let citationHtml = '';
+            if (metadata.source) {
+                citationHtml = `<div class="citation-box">Source: ${metadata.source}, Page: ${metadata.page}</div>`;
+            }
+
             div.innerHTML = `
                 <div class="bot-icon">
-                    <span class="material-icons">smart_toy</span>
+                    <span class="material-icons">gavel</span>
                 </div>
                 <div class="bubble">
-                    <p>${text}</p>
-                    ${modelBadge ? `<span class="model-badge">('${modelBadge}')</span>` : ''}
+                    <p>${text.replace(/\n/g, '<br>')}</p>
+                    ${modelBadge ? `<span class="model-badge">Answered by ${modelBadge}</span>` : ''}
                 </div>
             `;
         }
@@ -179,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Also update dynamic placeholder
     function updatePlaceholder() {
+        if (!models[activeModelIndex]) return;
         chatInput.placeholder = `Ask anything to ${models[activeModelIndex].name}...`;
     }
     
@@ -189,7 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = chatInput.value.trim();
         if (!text) return;
 
-        const currentModelName = models[activeModelIndex].name;
+        const currentModel = models[activeModelIndex];
+        const currentModelName = currentModel.name;
 
         // Display User message
         addMessage(text, true);
@@ -200,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadingHtml = `
             <div id="${loadingId}" class="message bot-message">
                 <div class="bot-icon"><span class="material-icons">hourglass_empty</span></div>
-                <div class="bubble"><p><i>Thinking with ${currentModelName}...</i></p></div>
+                <div class="bubble"><p><i>Reasoning with ${currentModelName}...</i></p></div>
             </div>
         `;
         chatHistory.insertAdjacentHTML('beforeend', loadingHtml);
@@ -212,21 +220,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: text,
-                    model: currentModelName
+                    provider: currentModel.provider
                 })
             });
             const data = await res.json();
             
             // Remove loading msg
-            document.getElementById(loadingId).remove();
+            const loadingEl = document.getElementById(loadingId);
+            if(loadingEl) loadingEl.remove();
 
             if (data.error) {
                 addMessage(`❌ Error: ${data.error}`, false);
             } else {
-                addMessage(data.response, false, currentModelName);
+                addMessage(data.response, false, data.provider);
             }
         } catch (e) {
-            document.getElementById(loadingId).remove();
+            const loadingEl = document.getElementById(loadingId);
+            if(loadingEl) loadingEl.remove();
             addMessage(`❌ Request failed: ${e.message}`, false);
         }
     }

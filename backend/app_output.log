@@ -1,0 +1,75 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7063.69it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8189.11it/s]
+[1mBertForTokenClassification LOAD REPORT[0m from: dslim/bert-base-NER
+Key                      | Status     |  | 
+-------------------------+------------+--+-
+bert.pooler.dense.bias   | UNEXPECTED |  | 
+bert.pooler.dense.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ * Serving Flask app 'app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6436.45it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7491.37it/s]
+[1mBertForTokenClassification LOAD REPORT[0m from: dslim/bert-base-NER
+Key                      | Status     |  | 
+-------------------------+------------+--+-
+bert.pooler.dense.bias   | UNEXPECTED |  | 
+bert.pooler.dense.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ * Debugger is active!
+ * Debugger PIN: 122-243-643
+127.0.0.1 - - [10/Apr/2026 01:04:32] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [10/Apr/2026 01:09:39] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [10/Apr/2026 01:09:39] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Apr/2026 01:09:39] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Apr/2026 01:09:39] "GET /logo.png HTTP/1.1" 200 -
+127.0.0.1 - - [10/Apr/2026 01:09:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [10/Apr/2026 01:10:13] "POST /api/chat HTTP/1.1" 200 -
+ * Detected change in '/home/arjun/Desktop/LexVed/backend/test_embedding_qdrant.py', reloading
+User requested via gemini (default): searchAbhishek Banerjee Case
+Detected Category: Uncategorized, Subcategory: General
+ * Restarting with stat
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 5896.24it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8676.37it/s]
+[1mBertForTokenClassification LOAD REPORT[0m from: dslim/bert-base-NER
+Key                      | Status     |  | 
+-------------------------+------------+--+-
+bert.pooler.dense.weight | UNEXPECTED |  | 
+bert.pooler.dense.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ * Debugger is active!
+ * Debugger PIN: 122-243-643

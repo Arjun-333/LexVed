@@ -1,0 +1,25 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+=== LexVed RAG Diagnostic Audio ===
+
+[1/5] Checking Embedding Model (MPNet)...
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6997.48it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/all-mpnet-base-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+✅ Model loaded. Embedding dim: 768
+
+[2/5] Checking Qdrant Vector DB...
+✅ Qdrant connected. Collections: []
+
+[3/5] Checking Llama 3 (Ollama)...
+❌ Ollama returned status 404
+
+[4/5] Checking Embedding Cache...
+⚠️ Cache directory not found yet (will be created on first ingestion).
+
+[5/5] Checking spaCy NER...
+✅ spaCy loaded. Sample entities: [('Abhishek Banerjee', 'PERSON'), ('Kolkata', 'GPE')]

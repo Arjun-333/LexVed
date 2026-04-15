@@ -80,15 +80,40 @@ def _process_chat(question: str) -> dict:
         "provider": "Llama 3 (Local)"
     }
 
-from fastapi.responses import StreamingResponse
-import json
+def save_to_history(query, category, subcategory, metrics):
+    """Saves a query and its metrics to history.json."""
+    history_path = "history.json"
+    history = []
+    if os.path.exists(history_path):
+        try:
+            with open(history_path, "r") as f:
+                history = json.load(f)
+        except:
+            history = []
+    
+    import datetime
+    new_entry = {
+        "id": len(history) + 1,
+        "query": query,
+        "category": category,
+        "subcategory": subcategory,
+        "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "status": "verified",
+        "metrics": metrics
+    }
+    history.insert(0, new_entry) # Most recent first
+    with open(history_path, "w") as f:
+        json.dump(history[:50], f, indent=4) # Keep last 50
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
-    """Main chat endpoint with SSE-style streaming."""
+    """Main chat endpoint with SSE-style streaming and history persistence."""
+    import time
+    t_start = time.time()
     category, subcategory = categorize_text(req.message)
     
     # Simple retrieval first (not streamed)
+    t_ret_start = time.time()
     res, retrieval_time = retrieve(
         req.message,
         top_k=5,
@@ -104,7 +129,9 @@ async def chat(req: ChatRequest):
 
     from src.generation.generator import generate_answer_stream
     
+    full_answer = ""
     def stream_response():
+        nonlocal full_answer
         # Yield metadata first
         yield json.dumps({
             "type": "metadata",
@@ -115,7 +142,16 @@ async def chat(req: ChatRequest):
         
         # Yield answer chunks
         for chunk in generate_answer_stream(req.message, context):
+            full_answer += chunk
             yield json.dumps({"type": "content", "text": chunk}) + "\n"
+        
+        # After stream ends, save to history
+        total_time = time.time() - t_start
+        save_to_history(req.message, category, subcategory, {
+            "retrieval_lat": retrieval_time,
+            "e2e_lat": total_time,
+            "ans_length": len(full_answer.split())
+        })
 
     return StreamingResponse(stream_response(), media_type="application/x-ndjson")
 
@@ -140,21 +176,25 @@ async def list_files():
                 files.append({"name": f, "size": f"{os.path.getsize(os.path.join(data_dir, f))/1024:.1f} KB", "type": "Legal Document"})
     
     # Add system files for context
-    files.append({"name": "legal_dictionary.json", "size": "1.2 MB", "type": "Knowledge Base"})
+    if os.path.exists("src/ingestion/legal_dictionary.json"):
+         files.append({"name": "legal_dictionary.json", "size": "1.2 MB", "type": "Knowledge Base"})
     files.append({"name": "gold_dataset.json", "size": "450 KB", "type": "Evaluation Suite"})
     
     return files
 
 @app.get("/api/history")
 async def get_history():
-    """Returns mock research history based on evaluation logs."""
-    history = [
+    """Returns persistent research history."""
+    history_path = "history.json"
+    if os.path.exists(history_path):
+        with open(history_path, "r") as f:
+            return json.load(f)
+    
+    # Default initial state
+    return [
         {"id": 1, "query": "Liability in multi-vehicle collisions", "date": "2 hours ago", "status": "verified"},
         {"id": 2, "query": "Contractual breach of confidentiality", "date": "Yesterday", "status": "verified"},
-        {"id": 3, "query": "Intellectual property infringement in software", "date": "Oct 12", "status": "flagged"},
-        {"id": 4, "query": "Medical malpractice statute of limitations", "date": "Oct 10", "status": "verified"},
     ]
-    return history
 
 if __name__ == "__main__":
     import uvicorn

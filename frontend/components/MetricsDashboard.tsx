@@ -95,11 +95,11 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     doc.text("LexVed Institutional Audit Report", 14, 20);
     doc.setFontSize(9);
     doc.setTextColor(120);
-    doc.text(`Mission-Critical Metrics (M1-M24) | ${timestamp}`, 14, 27);
-    doc.text("System: Llama 3 8B (Local) | Vector DB: Qdrant | Encryption: AES-256", 14, 32);
+    doc.text("Mission-Critical Metrics (M1-M24) | " + timestamp, 14, 27);
+    doc.text("System: Llama 3 8B (Local) | Vector DB: Qdrant", 14, 32);
 
     // Table header
-    const colX = [14, 30, 62, 120, 162];
+    const colX = [14, 30, 62, 120, 165];
     const headers = ["ID", "Category", "Metric Label", "Value", "Unit"];
     let y = 42;
 
@@ -119,12 +119,12 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
         doc.rect(12, y - 4, 186, 7, "F");
       }
       doc.setTextColor(60);
-      const val = row.value !== null ? row.value.toFixed(row.decimals) : "Pending";
-      doc.text(row.id, colX[0], y);
-      doc.text(row.category, colX[1], y);
-      doc.text(row.label, colX[2], y);
-      doc.text(val, colX[3], y);
-      doc.text(row.unit, colX[4], y);
+      const val = row.value !== null && row.value !== undefined ? Number(row.value).toFixed(row.decimals) : "Pending";
+      doc.text(String(row.id), colX[0], y);
+      doc.text(String(row.category), colX[1], y);
+      doc.text(String(row.label), colX[2], y);
+      doc.text(String(val), colX[3], y);
+      doc.text(String(row.unit), colX[4], y);
       y += 7;
     });
 
@@ -134,7 +134,16 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     doc.setTextColor(150);
     doc.text("LexVed Confidential Audit Protocol 2.0 | Unauthorized duplication prohibited.", 14, y);
 
-    doc.save(`LexVed_Audit_${Date.now()}.pdf`);
+    // Download via blob
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const pdfLink = document.createElement("a");
+    pdfLink.href = pdfUrl;
+    pdfLink.download = "LexVed_Audit_Report.pdf";
+    document.body.appendChild(pdfLink);
+    pdfLink.click();
+    document.body.removeChild(pdfLink);
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
   };
 
   const handleExportCSV = () => {
@@ -142,17 +151,19 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     const timestamp = metrics.timestamp || new Date().toLocaleString();
     const header = "Metric ID,Category,Metric Label,Evaluated Value,Unit";
     const csvRows = rows.map(r => {
-      const val = r.value !== null ? r.value.toFixed(r.decimals) : "Pending";
+      const val = r.value !== null && r.value !== undefined ? Number(r.value).toFixed(r.decimals) : "Pending";
       return `${r.id},${r.category},"${r.label}",${val},${r.unit}`;
     });
-    const csv = `LexVed Performance Audit - ${timestamp}\n${header}\n${csvRows.join("\n")}`;
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `LexVed_Audit_${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const csvContent = "LexVed Performance Audit - " + timestamp + "\n" + header + "\n" + csvRows.join("\n");
+    const csvBlob = new Blob([csvContent], { type: "text/csv" });
+    const csvUrl = URL.createObjectURL(csvBlob);
+    const csvLink = document.createElement("a");
+    csvLink.href = csvUrl;
+    csvLink.download = "LexVed_Audit_Report.csv";
+    document.body.appendChild(csvLink);
+    csvLink.click();
+    document.body.removeChild(csvLink);
+    setTimeout(() => URL.revokeObjectURL(csvUrl), 100);
   };
 
   if (!isOpen) return null;

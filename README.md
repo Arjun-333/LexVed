@@ -1,4 +1,4 @@
-# LexVed: Advanced Private Legal Intelligence (v2.5)
+# LexVed: Advanced Private Legal Intelligence 
 
 A full-stack, institutional-grade legal RAG (Retrieval-Augmented Generation) platform. Built with **Next.js**, **FastAPI**, and a dual-repository vector strategy (**Qdrant / Pinecone**).
 

@@ -134,17 +134,9 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     doc.setTextColor(150);
     doc.text("LexVed Confidential Audit Protocol 2.0 | Unauthorized duplication prohibited.", 14, y);
 
-    // Download via blob
-    const pdfBlob = doc.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
+    // Download via native save (more reliable for filenames)
     const dateStr = new Date().toISOString().split('T')[0];
-    const pdfLink = document.createElement("a");
-    pdfLink.href = pdfUrl;
-    pdfLink.download = `LexVed_Audit_Report_${dateStr}.pdf`;
-    document.body.appendChild(pdfLink);
-    pdfLink.click();
-    document.body.removeChild(pdfLink);
-    setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+    doc.save(`LexVed_Audit_Report_${dateStr}.pdf`);
   };
 
   const handleExportCSV = () => {

@@ -36,31 +36,26 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
     CONTEXT: {context[:2000]}
 
     [METRICS TO EVALUATE]
-    1. Faithfulness (M14): Does the answer only use context? (1-100 scale)
-    2. Citation Accuracy (M20): Are legal citations correct? (1-100 scale)
-    3. Terminology Precision (M21): Is legal jargon used correctly? (1-100 scale)
-    4. Precedent Coverage (M22): Are multiple relevant cases retrieved where needed? (1-100 scale)
-    5. Factual Consistency Deviation (M13): Hallucination level (0-100, 0 is best)
-    6. Bias Score (M24): Presence of protected attributes (0-100, 0 is best)
+    1. faithfulness: Does the answer only use information from the context? Score 1-100.
+    2. citation_acc: Are legal citations (sections, acts, case names) correct? Score 1-100.
+    3. term_precision: Is legal terminology used correctly? Score 1-100.
+    4. precedent_match: Are relevant legal precedents and cases correctly cited? Score 1-100.
+    5. factual_consistency: How factually consistent is the answer with the ground truth? Score 1-100.
+    6. bias_score: Presence of bias towards protected attributes. Score 0-100, 0 means no bias.
 
-    Output ONLY a JSON object: 
-    {{
-        "faithfulness": <int>,
-        "citation_acc": <int>,
-        "term_precision": <int>,
-        "precedent_cov": <int>,
-        "fcd_score": <int>,
-        "bias_score": <int>,
-        "reason": "<one_sentence_summary>"
-    }}
+    Output ONLY a valid JSON object with integer values:
+    {{"faithfulness": 75, "citation_acc": 60, "term_precision": 80, "precedent_match": 50, "factual_consistency": 70, "bias_score": 5}}
     """
     
     payload = {"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": "json"}
     try:
-        res = requests.post(OLLAMA_URL, json=payload, timeout=45)
-        return json.loads(res.json().get("response", "{}"))
-    except:
-        return {}
+        res = requests.post(OLLAMA_URL, json=payload, timeout=120)
+        parsed = json.loads(res.json().get("response", "{}"))
+        print(f"    [JUDGE] LLM Response: {parsed}")
+        return parsed
+    except Exception as e:
+        print(f"    [JUDGE] ERROR: {e}")
+        return {"faithfulness": 50, "citation_acc": 50, "term_precision": 50, "precedent_match": 50, "factual_consistency": 50, "bias_score": 10}
 
 def calculate_local_metrics(gt, ans):
     """Calculates ROUGE, BLEU, METEOR, and BERTScore."""

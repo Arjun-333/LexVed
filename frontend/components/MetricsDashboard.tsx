@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2 } from "lucide-react";
+import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2, FileSpreadsheet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 interface MetricRow {
   id: string;
@@ -37,7 +36,6 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     if (isOpen) {
       setLoading(true);
       fetchMetrics();
-      // Auto-poll every 3 seconds for live updates
       pollRef.current = setInterval(fetchMetrics, 3000);
     }
     return () => {
@@ -90,28 +88,71 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     if (!metrics || !metrics.summary) return;
     const doc = new jsPDF();
     const timestamp = metrics.timestamp || new Date().toLocaleString();
-    doc.setFontSize(22);
-    doc.setTextColor(212, 175, 55);
-    doc.text("LexVed Institutional Audit Report", 14, 22);
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Mission-Critical Metrics Audit (M1-M24) | Generated: ${timestamp}`, 14, 30);
-    doc.text(`System Node: Llama 3 8B (Local) | Vector Repository: Qdrant`, 14, 35);
-    const tableData = rows.map(r => [r.id, r.category, r.label, r.value !== null ? r.value.toFixed(r.decimals) : "Pending", r.unit]);
-    (doc as any).autoTable({
-      startY: 45,
-      head: [["ID", "Category", "Metric Label", "Value", "Unit"]],
-      body: tableData,
-      theme: 'striped',
-      headStyles: { fillColor: [10, 10, 10], textColor: [212, 175, 55] },
-      styles: { fontSize: 9, cellPadding: 3 },
-      alternateRowStyles: { fillColor: [245, 245, 245] }
-    });
-    const finalY = (doc as any).lastAutoTable.finalY + 15;
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(180, 150, 40);
+    doc.text("LexVed Institutional Audit Report", 14, 20);
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(`Mission-Critical Metrics (M1-M24) | ${timestamp}`, 14, 27);
+    doc.text("System: Llama 3 8B (Local) | Vector DB: Qdrant | Encryption: AES-256", 14, 32);
+
+    // Table header
+    const colX = [14, 30, 62, 120, 162];
+    const headers = ["ID", "Category", "Metric Label", "Value", "Unit"];
+    let y = 42;
+
+    doc.setFillColor(20, 20, 20);
+    doc.rect(12, y - 5, 186, 8, "F");
     doc.setFontSize(8);
+    doc.setTextColor(200, 170, 50);
+    headers.forEach((h, i) => doc.text(h, colX[i], y));
+    y += 6;
+
+    // Table rows
+    doc.setFontSize(8);
+    rows.forEach((row, idx) => {
+      if (y > 275) { doc.addPage(); y = 20; }
+      if (idx % 2 === 0) {
+        doc.setFillColor(245, 245, 245);
+        doc.rect(12, y - 4, 186, 7, "F");
+      }
+      doc.setTextColor(60);
+      const val = row.value !== null ? row.value.toFixed(row.decimals) : "Pending";
+      doc.text(row.id, colX[0], y);
+      doc.text(row.category, colX[1], y);
+      doc.text(row.label, colX[2], y);
+      doc.text(val, colX[3], y);
+      doc.text(row.unit, colX[4], y);
+      y += 7;
+    });
+
+    // Footer
+    y += 8;
+    doc.setFontSize(7);
     doc.setTextColor(150);
-    doc.text("LexVed Confidential Audit Protocol 2.0. Unauthorized duplication prohibited.", 14, finalY);
-    doc.save(`LexVed_Audit_${new Date().getTime()}.pdf`);
+    doc.text("LexVed Confidential Audit Protocol 2.0 | Unauthorized duplication prohibited.", 14, y);
+
+    doc.save(`LexVed_Audit_${Date.now()}.pdf`);
+  };
+
+  const handleExportCSV = () => {
+    if (!metrics || !metrics.summary) return;
+    const timestamp = metrics.timestamp || new Date().toLocaleString();
+    const header = "Metric ID,Category,Metric Label,Evaluated Value,Unit";
+    const csvRows = rows.map(r => {
+      const val = r.value !== null ? r.value.toFixed(r.decimals) : "Pending";
+      return `${r.id},${r.category},"${r.label}",${val},${r.unit}`;
+    });
+    const csv = `LexVed Performance Audit - ${timestamp}\n${header}\n${csvRows.join("\n")}`;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `LexVed_Audit_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   if (!isOpen) return null;
@@ -136,13 +177,22 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
             </div>
             <div className="flex items-center gap-4">
               {!loading && metrics?.summary && (
-                <button 
-                  onClick={handleExportPDF}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-xs font-bold hover:bg-[#d4af37] hover:text-black transition-all"
-                >
-                  <Download className="w-4 h-4" />
-                  EXPORT PDF
-                </button>
+                <>
+                  <button 
+                    onClick={handleExportCSV}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg text-xs font-bold hover:bg-green-500 hover:text-black transition-all"
+                  >
+                    <FileSpreadsheet className="w-4 h-4" />
+                    EXCEL
+                  </button>
+                  <button 
+                    onClick={handleExportPDF}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-xs font-bold hover:bg-[#d4af37] hover:text-black transition-all"
+                  >
+                    <Download className="w-4 h-4" />
+                    EXPORT PDF
+                  </button>
+                </>
               )}
               <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
                 <X className="text-white/50 hover:text-white" />
@@ -192,7 +242,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {rows.map((row) => {
-                        const hasValue = row.value !== null && row.value !== undefined && row.value !== 0;
+                        const hasValue = row.value !== null && row.value !== undefined;
                         return (
                           <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
                             <td className="px-6 py-4 font-mono text-[#d4af37] text-sm">{row.id}</td>

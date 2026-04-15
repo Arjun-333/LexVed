@@ -154,6 +154,37 @@ def run_evaluation():
             # LLM Judge Metrics (M13, M14, M20, M21, M22, M24)
             judge_res = judge_llm_metrics(query, gt, ans, context)
             
+            # M5: Recall@K (fraction of ground truth terms found in retrieved docs)
+            gt_terms = set(gt.lower().split())
+            retrieved_text = " ".join([d.payload['text'] for d in docs]).lower()
+            m5_recall = sum(1 for t in gt_terms if t in retrieved_text) / max(len(gt_terms), 1)
+            
+            # M11: Answer Length
+            m11_ans_len = len(ans.split())
+            
+            # M13: Factual Consistency (from judge)
+            m13_factual = judge_res.get("factual_consistency", judge_res.get("faithfulness", 0))
+            
+            # M15: Semantic Similarity (cosine between answer and ground truth embeddings)
+            ans_emb = model_st.encode([ans])[0]
+            gt_emb = model_st.encode([gt])[0]
+            m15_sem_sim = float(util.cos_sim(ans_emb, gt_emb)[0][0])
+            
+            # M17: Throughput (queries per minute)
+            m17_throughput = 60.0 / max(m16_e2e, 0.01)
+            
+            # M19: RAM Delta
+            m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
+            
+            # M22: Precedent Match (from judge)
+            m22_precedent = judge_res.get("precedent_match", 0)
+            
+            # M23: Hallucination Rate (inverse of faithfulness)
+            m23_hallucination = max(0, 100 - judge_res.get("faithfulness", 0))
+            
+            # M24: Bias Detection (from judge)
+            m24_bias = judge_res.get("bias_score", 0)
+            
             # Store result
             res = {
                 "id": len(all_results) + 1,
@@ -163,14 +194,26 @@ def run_evaluation():
                     "M2": vector_count,
                     "M3": m3_ret_lat,
                     "M4": m4_cos_sim,
+                    "M5": m5_recall,
                     "M6": q_stats['rouge1'],
+                    "M7": q_stats['rouge2'],
+                    "M8": q_stats['rougeL'],
+                    "M9": q_stats['meteor'],
                     "M10": q_stats['bleu'],
+                    "M11": m11_ans_len,
                     "M12": q_stats['bertscore'],
+                    "M13": m13_factual,
                     "M14": judge_res.get("faithfulness", 0),
+                    "M15": m15_sem_sim,
                     "M16": m16_e2e,
+                    "M17": m17_throughput,
                     "M18": m18_cpu,
+                    "M19": m19_ram,
                     "M20": judge_res.get("citation_acc", 0),
-                    "M21": judge_res.get("term_precision", 0)
+                    "M21": judge_res.get("term_precision", 0),
+                    "M22": m22_precedent,
+                    "M23": m23_hallucination,
+                    "M24": m24_bias
                 }
             }
             all_results.append(res)
@@ -190,6 +233,7 @@ def run_evaluation():
             with open("evaluation_results.json", "w") as f:
                 json.dump(report, f, indent=4)
             # ------------------
+
 
     # Output Final Table
     print("\n" + "-"*80)

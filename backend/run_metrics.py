@@ -199,7 +199,15 @@ def run_evaluation():
     print(f"M16        | System Efficiency         | {avgs['M16']:.2f}        | sec")
     print(f"M20        | Legal-Specific            | {avgs['M20']}%           | %")
     print(f"M21        | Legal-Specific            | {avgs['M21']}%           | %")
-    print("-"*80)
+    # Save Results for UI
+    report = {
+        "timestamp": time.ctime(),
+        "summary": avgs,
+        "details": all_results
+    }
+    with open("evaluation_results.json", "w") as f:
+        json.dump(report, f, indent=4)
+    print("\n[SUCCESS] Metrics saved to evaluation_results.json")
 
 if __name__ == "__main__":
     run_evaluation()

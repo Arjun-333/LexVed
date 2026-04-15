@@ -119,6 +119,15 @@ async def chat(req: ChatRequest):
 
     return StreamingResponse(stream_response(), media_type="application/x-ndjson")
 
+@app.get("/api/metrics")
+async def get_metrics():
+    """Returns the latest performance audit results."""
+    metric_path = "evaluation_results.json"
+    if os.path.exists(metric_path):
+        with open(metric_path, "r") as f:
+            return json.load(f)
+    return {"status": "error", "message": "No audit report found. Please run run_metrics.py first."}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)

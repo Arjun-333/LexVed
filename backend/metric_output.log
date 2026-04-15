@@ -1,0 +1,49 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 16675.65it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[nltk_data] Downloading package wordnet to /home/arjun/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt_tab to /home/arjun/nltk_data...
+[nltk_data]   Package punkt_tab is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/arjun/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  98%|█████████▊| 195/199 [00:00<00:00, 1700.08it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 1697.86it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/all-mpnet-base-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+
+================================================================================
+                   LEXVED MISSION-CRITICAL BENCHMARK (M1-M24)                   
+================================================================================
+Traceback (most recent call last):
+  File "/home/arjun/Desktop/LexVed/backend/run_metrics.py", line 205, in <module>
+    run_evaluation()
+  File "/home/arjun/Desktop/LexVed/backend/run_metrics.py", line 131, in run_evaluation
+    docs, m3_ret_lat = retrieve(query, top_k=5)
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 45, in retrieve
+    search_result = client.query_points(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/qdrant_client/qdrant_client.py", line 423, in query_points
+    return self._client.query_points(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/qdrant_client/qdrant_remote.py", line 583, in query_points
+    query_result = self.http.search_api.query_points(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/qdrant_client/http/api/search_api.py", line 783, in query_points
+    return self._build_for_query_points(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/qdrant_client/http/api/search_api.py", line 181, in _build_for_query_points
+    return self.api_client.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/qdrant_client/http/api_client.py", line 95, in request
+    return self.send(request, type_)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/qdrant_client/http/api_client.py", line 130, in send
+    raise UnexpectedResponse.for_response(response)
+qdrant_client.http.exceptions.UnexpectedResponse: Unexpected Response: 404 (Not Found)
+Raw response content:
+b'{"status":{"error":"Not found: Collection `lexved_chunks` doesn\'t exist!"},"time":0.000020179}'

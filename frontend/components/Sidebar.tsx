@@ -2,9 +2,12 @@
 
 import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import MetricsDashboard from "./MetricsDashboard";
 
 export default function Sidebar() {
   const { theme, toggle } = useTheme();
+  const [showMetrics, setShowMetrics] = useState(false);
 
   return (
     <nav
@@ -38,6 +41,11 @@ export default function Sidebar() {
 
       {/* Actions */}
       <div className="flex flex-col gap-6 mb-2">
+        <IconButton 
+          icon="analytics" 
+          title="Performance Audit" 
+          onClick={() => setShowMetrics(true)} 
+        />
         <IconButton
           icon={theme === "dark" ? "light_mode" : "dark_mode"}
           title={theme === "dark" ? "Light Mode" : "Dark Mode"}
@@ -45,6 +53,11 @@ export default function Sidebar() {
         />
         <IconButton icon="tune" title="System Settings" />
       </div>
+
+      <MetricsDashboard 
+        isOpen={showMetrics} 
+        onClose={() => setShowMetrics(false)} 
+      />
     </nav>
   );
 }

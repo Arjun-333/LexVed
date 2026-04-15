@@ -59,6 +59,7 @@ def process_single_pdf(path):
         return None
 
 def main():
+    init_collection() # Ensure collection exists
     ingested_files = load_tracking()
     
     # Collect all PDF paths first

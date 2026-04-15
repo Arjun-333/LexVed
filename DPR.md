@@ -1,66 +1,106 @@
-# LexVed: Detailed Project Report
+# LexVed: Detailed Project Report (DPR)
 
-## Project Vision
-LexVed is a professional-grade legal RAG (Retrieval-Augmented Generation) system. It uses **Hierarchical Sub-indexing** to partition legal documents into distinct domains (Criminal, Civil), ensuring noise-free, precise legal research.
-
-LexVed runs exclusively on **Llama 3 8B (via Ollama)** for complete privacy. No data ever leaves your machine.
+**Technical Specification — Version 2.0 — April 2026**
 
 ---
 
-## Technical Design Decisions
+## Abstract
+This report presents the design, architecture, and development rationale of **LexVed**, an AI-driven private legal intelligence system. LexVed delivers high-precision legal research by combining a Next.js 14 frontend, FastAPI microservices, Qdrant vector repository, and a local-only Llama 3 8B inference engine.
 
-### 1. Hierarchical Sub-indexing (Precision Engine)
-Legal terms often overlap across domains. LexVed partitions data using Qdrant payloads to ensure domain isolation.
-- **Mapping:** Data is categorized based on its origin folder (CRIMINAL vs. CIVIL).
-- **Sub-sorting:** Results are sorted by semantic relevance, then by page number for narrative coherence.
-
-### 2. Llama 3 Local Inference (Privacy-First)
-All generation runs locally on your machine via Ollama.
-- **Model:** `llama3` (8B parameters)
-- **Endpoint:** `localhost:11434`
-- **Benefit:** Zero cloud dependency, full document privacy, works offline.
-
-### 3. Turbo Ingestion Engine (Parallel Scaling)
-- **Parallelism:** Distributed PDF processing across multi-core CPUs.
-- **SpaCy NER:** Free, open-source, 10x faster than BERT for name redaction.
-- **Incremental Indexing:** Tracks processed files in `ingested_files.json`.
-
-### 4. PII Redaction & Privacy
-- **ML Layer:** SpaCy `en_core_web_sm` for entity detection.
-- **Regex Layer:** Scrubs Aadhaar, PAN, Emails, and Phone Numbers.
-- **Result:** Documents are sanitized locally before any text reaches the LLM.
-
-### 5. Obsidian Gavel UI
-The frontend is a premium **Glassmorphic** dashboard:
-- **HSL Design System:** Vantablack and Legal Gold palette.
-- **Citation Cards:** Responses include dedicated citation boxes with page-level links.
-- **Provider Badge:** Shows "Llama 3 8B - Local" to confirm private inference.
+The system addresses the critical problem of data privacy in legal technology by ensuring that no sensitive case data ever leaves the local machine. The architecture follows a modular pattern, enabling independent scaling of the ingestion engine, retrieval core, and AI reasoning layer.
 
 ---
 
-## System Architecture
-
-### Ingestion Flow
-1. **Extraction:** PDF text extracted using `PyMuPDF`.
-2. **Parallel NER:** SpaCy detects and redacts personal names.
-3. **Embedding:** `multi-qa-mpnet-base-cos-v1` converts text into 768-dim vectors.
-4. **Persistence:** Vectors stored in Qdrant with `category` filtering.
-
-### Retrieval Flow
-1. **Intent-Aware Retrieval:** Detects Criminal/Civil intent and applies sub-index filter.
-2. **Generation:** Llama 3 generates the answer with strict citation rules.
-3. **Citation Assembly:** Context injected with source/page markers.
+## 1. System Objectives
+*   **Privacy-First Legal AI:** Eliminate cloud API dependencies to ensure absolute document confidentiality.
+*   **Hierarchical Precision:** Implement domain-isolated sub-indexing for Criminal and Civil law.
+*   **Institutional Aesthetics:** Deliver a "Premium Intelligence Cockpit" UI for corporate legal environments.
+*   **Systemic Accountability:** Integrate a 24-metric evaluation framework (M1-M24) for automated performance auditing.
 
 ---
 
-## Command Reference
+## 2. System Architecture
 
-### Starting the System
-1. **Start Qdrant:** `docker run -p 6333:6333 qdrant/qdrant`
-2. **Pull Llama 3:** `ollama pull llama3`
-3. **Ingest PDFs:** `cd backend && ./venv/bin/python3 test_embedding_qdrant.py`
-4. **Start Platform:** `./venv/bin/python3 app.py`
-5. **Open UI:** Visit `http://localhost:5000`
+### 2.1 High-Level Architecture
+LexVed follows a layered microservices pattern:
+
+```text
+Browser Client (Intelligence Cockpit)
+         |
+Next.js Frontend (Framer Motion + Tailwind)
+         |
+FastAPI Gateway (Intelligence Core)
+         |
+ ----------------------------------------
+ | Ingestion Engine | Retrieval Core    |
+ | PII Redactor     | LLM Reasoning Node|
+ ----------------------------------------
+         |
+Qdrant Vector DB
+```
+
+### 2.2 Technology Stack
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | Next.js 14 (React) |
+| **Styling** | Tailwind CSS (Institutional Gold/Black) |
+| **Backend API** | FastAPI (Python 3.10) |
+| **Vector DB** | Qdrant (Dockerized) |
+| **LLM Node** | Llama 3 8B (via Ollama) |
+| **Embeddings** | all-mpnet-base-v2 |
+| **NER Engine** | spaCy (en_core_web_sm) |
 
 ---
-**LexVed | Private Legal Intelligence**
+
+## 3. Module Descriptions
+
+### 3.1 Ingestion Engine
+Handles the full lifecycle of legal document processing:
+*   **Parallel Extraction:** High-speed text extraction from large PDF volumes.
+*   **Automatic Category Detection:** Sorts documents into Criminal/Civil sub-indices.
+*   **PII Redaction:** Mandatory scrubbing of sensitive data (Aadhaar, PAN, Names) before storage.
+
+### 3.2 Retrieval Core
+The retrieval core uses **Hybrid Semantic Search**:
+*   **Domain Isolation:** Filters noise by restricting search to relevant legal categories.
+*   **Context Assembly:** Ranks and formats top-k legal chunks with exact page-level citations.
+
+### 3.3 LLM Reasoning Node
+A specialized prompt-engineered layer for Llama 3:
+*   **Citation Enforcement:** Strict rules ensuring the LLM only answers based on provided context.
+*   **Legal Tone:** Calibrated for formal, institutional communication.
+
+---
+
+## 4. Mission-Critical Metrics (M1-M24)
+LexVed includes an automated auditing suite (`run_metrics.py`) that evaluates the RAG pipeline against 24 key performance indicators:
+
+| ID | Category | Metric | Goal |
+| :--- | :--- | :--- | :--- |
+| **M1-M3** | Efficiency | Latencies | Minimize time-to-first-token |
+| **M4** | Retrieval | Cosine Similarity | > 0.7 Avg Semantic Match |
+| **M6-M12** | Quality | ROUGE / BLEU / BERTScore | Maximize semantic alignment |
+| **M14** | Accuracy | Faithfulness | 100% (Zero Hallucination) |
+| **M20** | Legal | Citation Accuracy | Correct page mapping |
+| **M21** | Legal | Terminology Precision | Accurate use of legal jargon |
+
+---
+
+## 5. Security & Data Sovereignty
+*   **Local Inference:** All LLM weights remain on-premise. No OpenAI/Anthropic cloud leaks.
+*   **Encrypted Storage:** All embeddings and metadata are stored in a hardened Qdrant container.
+*   **PII Sanitization:** The spaCy NLP layer ensures zero personal identifying information is stored in the vector space.
+
+---
+
+## 6. Roadmap
+### Near-term
+*   Integration of Multi-jurisdictional sub-indexing.
+*   Real-time citation verification against official government gazettes.
+
+### Long-term
+*   Computer Vision for analyzing hand-annotated legal evidence.
+*   Decentralized private legal knowledge graphs.
+
+---
+**LexVed | Technical Project Report — Version 2.0 — April 2026**

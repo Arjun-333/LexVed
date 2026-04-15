@@ -1,0 +1,46 @@
+{
+  "civil": [
+    {
+      "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+      "ground_truth": "No, a person convicted of a criminal offence whose conviction has not been suspended is disqualified and cannot be appointed or continue as Chief Minister."
+    },
+    {
+      "query": "What was the main legal issue regarding the promotion of Sub-Inspectors to Inspectors in Uttar Pradesh?",
+      "ground_truth": "The main issue was whether promotions should be based on merit under the 1965 government order or on seniority subject to rejection of the unfit under the 1994 rules."
+    },
+    {
+      "query": "What dispute arose regarding the Floor Area Ratio (FAR) in the auctioned property case?",
+      "ground_truth": "The dispute arose because the auction and sale deed allowed a FAR of 2.0, but later building regulations reduced it to 1.75, leading to conflict over applicable development rights."
+    },
+    {
+      "query": "On what ground was the election of the returned candidate challenged?",
+      "ground_truth": "The election was challenged on the ground that the returned candidate was disqualified for holding an office of profit under the Government."
+    },
+    {
+      "query": "What was the central issue regarding the Income Tax Settlement Commission’s order?",
+      "ground_truth": "The issue was whether the settlement order could be declared void under Section 245D(6) on the ground that it was obtained by fraud or misrepresentation of facts."
+    }
+  ],
+  "criminal": [
+    {
+      "query": "What is the legal principle governing the plea of alibi in criminal cases?",
+      "ground_truth": "The plea of alibi requires proving that the accused was at a place so far away at the relevant time that it was physically impossible for them to be present at the scene of the crime."
+    },
+    {
+      "query": "Can prosecution continue after the omission of Section 276DD of the Income Tax Act?",
+      "ground_truth": "No, prosecution cannot continue after omission of Section 276DD because omission is treated as obliteration of the provision and Section 6 of the General Clauses Act does not apply to omissions."
+    },
+    {
+      "query": "Can a conviction be based solely on a dying declaration?",
+      "ground_truth": "Yes, a conviction can be based solely on a dying declaration if it is found to be true, voluntary, and inspires confidence, even without corroboration."
+    },
+    {
+      "query": "Does a Labour Court have jurisdiction to set aside an ex parte award after 30 days of its publication?",
+      "ground_truth": "No, once 30 days have passed after publication of the award and it becomes enforceable, the Labour Court becomes functus officio and has no jurisdiction to set aside the ex parte award."
+    },
+    {
+      "query": "What was the key evidence supporting the conviction under Section 307 IPC?",
+      "ground_truth": "The conviction was supported by the testimony of injured eyewitnesses and recovery of the knife with human blood matching the victim's blood group."
+    }
+  ]
+}

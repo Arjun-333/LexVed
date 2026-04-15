@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { X, ShieldCheck, Zap, Activity, HardDrive, Download } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -9,50 +9,95 @@ import "jspdf-autotable";
 interface MetricRow {
   id: string;
   category: string;
-  value: string | number;
+  value: number | null;
   unit: string;
   label: string;
+  decimals: number;
 }
 
 export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  const fetchMetrics = () => {
+    fetch("http://localhost:5000/api/metrics")
+      .then((res) => res.json())
+      .then((data) => {
+        setMetrics(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      fetch("http://localhost:5000/api/metrics")
-        .then((res) => res.json())
-        .then((data) => {
-          setMetrics(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+      fetchMetrics();
+      // Auto-poll every 3 seconds for live updates
+      pollRef.current = setInterval(fetchMetrics, 3000);
     }
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
   }, [isOpen]);
+
+  const isProcessing = metrics?.status === "processing";
+
+  const fmt = (v: any, d: number = 4): string | null => {
+    if (v === null || v === undefined) return null;
+    if (typeof v === 'number') return v.toFixed(d);
+    return String(v);
+  };
+
+  const getVal = (key: string): number | null => {
+    const v = metrics?.summary?.[key];
+    if (v === null || v === undefined) return null;
+    return v;
+  };
+
+  const rows: MetricRow[] = metrics?.summary ? [
+    { id: "M1",  category: "Retrieval",   label: "Embedding Latency",     value: getVal("M1"),   decimals: 4, unit: "sec" },
+    { id: "M2",  category: "Retrieval",   label: "Index Point Count",     value: getVal("M2"),   decimals: 0, unit: "vectors" },
+    { id: "M3",  category: "Retrieval",   label: "Retrieval Latency",     value: getVal("M3"),   decimals: 4, unit: "sec" },
+    { id: "M4",  category: "Retrieval",   label: "Cosine Similarity",     value: getVal("M4"),   decimals: 4, unit: "score" },
+    { id: "M5",  category: "Retrieval",   label: "Recall@K",              value: getVal("M5"),   decimals: 4, unit: "score" },
+    { id: "M6",  category: "Quality",     label: "ROUGE-1 Score",         value: getVal("M6"),   decimals: 4, unit: "score" },
+    { id: "M7",  category: "Quality",     label: "ROUGE-2 Score",         value: getVal("M7"),   decimals: 4, unit: "score" },
+    { id: "M8",  category: "Quality",     label: "ROUGE-L Score",         value: getVal("M8"),   decimals: 4, unit: "score" },
+    { id: "M9",  category: "Quality",     label: "METEOR Score",          value: getVal("M9"),   decimals: 4, unit: "score" },
+    { id: "M10", category: "Quality",     label: "BLEU Score",            value: getVal("M10"),  decimals: 4, unit: "score" },
+    { id: "M11", category: "Quality",     label: "Answer Length",         value: getVal("M11"),  decimals: 0, unit: "tokens" },
+    { id: "M12", category: "Quality",     label: "BERTScore (F1)",        value: getVal("M12"),  decimals: 4, unit: "score" },
+    { id: "M13", category: "Quality",     label: "Factual Consistency",   value: getVal("M13"),  decimals: 0, unit: "%" },
+    { id: "M14", category: "Quality",     label: "Faithfulness",          value: getVal("M14"),  decimals: 0, unit: "%" },
+    { id: "M15", category: "Quality",     label: "Semantic Similarity",   value: getVal("M15"),  decimals: 4, unit: "score" },
+    { id: "M16", category: "Efficiency",  label: "End-to-End Latency",    value: getVal("M16"),  decimals: 2, unit: "sec" },
+    { id: "M17", category: "Efficiency",  label: "Throughput",            value: getVal("M17"),  decimals: 2, unit: "q/min" },
+    { id: "M18", category: "Efficiency",  label: "CPU Utilization",       value: getVal("M18"),  decimals: 1, unit: "%" },
+    { id: "M19", category: "Efficiency",  label: "RAM Delta",             value: getVal("M19"),  decimals: 2, unit: "MB" },
+    { id: "M20", category: "Legal",       label: "Citation Accuracy",     value: getVal("M20"),  decimals: 0, unit: "%" },
+    { id: "M21", category: "Legal",       label: "Term Precision",        value: getVal("M21"),  decimals: 0, unit: "%" },
+    { id: "M22", category: "Legal",       label: "Precedent Match",       value: getVal("M22"),  decimals: 0, unit: "%" },
+    { id: "M23", category: "Legal",       label: "Hallucination Rate",    value: getVal("M23"),  decimals: 2, unit: "%" },
+    { id: "M24", category: "Legal",       label: "Bias Detection",        value: getVal("M24"),  decimals: 0, unit: "score" },
+  ] : [];
 
   const handleExportPDF = () => {
     if (!metrics || !metrics.summary) return;
-
     const doc = new jsPDF();
     const timestamp = metrics.timestamp || new Date().toLocaleString();
-
-    // Header
     doc.setFontSize(22);
-    doc.setTextColor(212, 175, 55); // LexVed Gold
+    doc.setTextColor(212, 175, 55);
     doc.text("LexVed Institutional Audit Report", 14, 22);
-    
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Mission-Critical Metrics Audit (M1-M24) | Generated: ${timestamp}`, 14, 30);
     doc.text(`System Node: Llama 3 8B (Local) | Vector Repository: Qdrant`, 14, 35);
-
-    // Summary Table
-    const tableData = rows.map(r => [r.id, r.category, r.label, r.value, r.unit]);
-    
+    const tableData = rows.map(r => [r.id, r.category, r.label, r.value !== null ? r.value.toFixed(r.decimals) : "Pending", r.unit]);
     (doc as any).autoTable({
       startY: 45,
       head: [["ID", "Category", "Metric Label", "Value", "Unit"]],
@@ -62,30 +107,14 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
       styles: { fontSize: 9, cellPadding: 3 },
       alternateRowStyles: { fillColor: [245, 245, 245] }
     });
-
     const finalY = (doc as any).lastAutoTable.finalY + 15;
     doc.setFontSize(8);
     doc.setTextColor(150);
     doc.text("LexVed Confidential Audit Protocol 2.0. Unauthorized duplication prohibited.", 14, finalY);
-
     doc.save(`LexVed_Audit_${new Date().getTime()}.pdf`);
   };
 
   if (!isOpen) return null;
-
-  const rows: MetricRow[] = metrics?.summary ? [
-    { id: "M1", category: "Retrieval", label: "Embedding Latency", value: metrics.summary.M1?.toFixed(4) || "0.00", unit: "sec" },
-    { id: "M2", category: "Retrieval", label: "Index Point Count", value: metrics.summary.M2 || "0", unit: "vectors" },
-    { id: "M3", category: "Retrieval", label: "Retrieval Latency", value: metrics.summary.M3?.toFixed(4) || "0.00", unit: "sec" },
-    { id: "M4", category: "Retrieval", label: "Cosine Similarity", value: metrics.summary.M4?.toFixed(4) || "0.00", unit: "score" },
-    { id: "M6", category: "Quality", label: "ROUGE-1 Score", value: metrics.summary.M6?.toFixed(4) || "0.00", unit: "score" },
-    { id: "M10", category: "Quality", label: "BLEU Score", value: metrics.summary.M10?.toFixed(4) || "0.00", unit: "score" },
-    { id: "M12", category: "Quality", label: "BERTScore (F1)", value: metrics.summary.M12?.toFixed(4) || "0.00", unit: "score" },
-    { id: "M14", category: "Quality", label: "Faithfulness (%)", value: metrics.summary.M14 || "0", unit: "%" },
-    { id: "M16", category: "Efficiency", label: "End-to-End Latency", value: metrics.summary.M16?.toFixed(2) || "0.00", unit: "sec" },
-    { id: "M20", category: "Legal", label: "Citation Accuracy", value: metrics.summary.M20 || "0", unit: "%" },
-    { id: "M21", category: "Legal", label: "Term Precision", value: metrics.summary.M21 || "0", unit: "%" },
-  ] : [];
 
   return (
     <AnimatePresence>
@@ -121,6 +150,16 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
             </div>
           </div>
 
+          {/* Processing Banner */}
+          {isProcessing && (
+            <div className="px-6 py-3 bg-[#d4af37]/10 border-b border-[#d4af37]/20 flex items-center gap-3">
+              <Loader2 className="w-4 h-4 text-[#d4af37] animate-spin" />
+              <span className="text-[#d4af37] text-xs font-bold uppercase tracking-wider">
+                Live Audit In Progress — {metrics.progress || "Processing..."}
+              </span>
+            </div>
+          )}
+
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-6">
             {loading ? (
@@ -152,19 +191,37 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                      {rows.map((row) => (
-                        <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
-                          <td className="px-6 py-4 font-mono text-[#d4af37] text-sm">{row.id}</td>
-                          <td className="px-6 py-4">
-                            <span className="px-2 py-1 rounded-md bg-white/5 text-white/50 text-[10px] font-bold">
-                              {row.category}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-white font-medium">{row.label}</td>
-                          <td className="px-6 py-4 text-white font-mono">{row.value}</td>
-                          <td className="px-6 py-4 text-white/30 text-xs">{row.unit}</td>
-                        </tr>
-                      ))}
+                      {rows.map((row) => {
+                        const hasValue = row.value !== null && row.value !== undefined && row.value !== 0;
+                        return (
+                          <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
+                            <td className="px-6 py-4 font-mono text-[#d4af37] text-sm">{row.id}</td>
+                            <td className="px-6 py-4">
+                              <span className="px-2 py-1 rounded-md bg-white/5 text-white/50 text-[10px] font-bold">
+                                {row.category}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-white font-medium">{row.label}</td>
+                            <td className="px-6 py-4 font-mono">
+                              {hasValue ? (
+                                <motion.span 
+                                  initial={{ opacity: 0, x: -10 }} 
+                                  animate={{ opacity: 1, x: 0 }} 
+                                  className="text-green-400"
+                                >
+                                  {row.value!.toFixed(row.decimals)}
+                                </motion.span>
+                              ) : (
+                                <span className="flex items-center gap-2 text-white/20">
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  <span className="text-xs">Evaluating...</span>
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-white/30 text-xs">{row.unit}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -173,17 +230,17 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                   <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <Zap className="text-[#d4af37] w-5 h-5 mb-2" />
                     <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Avg E2E Latency</div>
-                    <div className="text-white text-2xl font-bold">{metrics.summary.M16?.toFixed(2)}s</div>
+                    <div className="text-white text-2xl font-bold">{metrics.summary.M16 ? metrics.summary.M16.toFixed(2) + "s" : "—"}</div>
                   </div>
                   <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <Activity className="text-[#d4af37] w-5 h-5 mb-2" />
                     <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Faithfulness</div>
-                    <div className="text-white text-2xl font-bold">{metrics.summary.M14}%</div>
+                    <div className="text-white text-2xl font-bold">{metrics.summary.M14 ? metrics.summary.M14 + "%" : "—"}</div>
                   </div>
                   <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <HardDrive className="text-[#d4af37] w-5 h-5 mb-2" />
                     <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Total Vectors</div>
-                    <div className="text-white text-2xl font-bold">{metrics.summary.M2}</div>
+                    <div className="text-white text-2xl font-bold">{metrics.summary.M2 || "—"}</div>
                   </div>
                 </div>
               </div>
@@ -196,8 +253,10 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
               Authorized Internal Audit Report • Generated: {metrics?.timestamp || "Pending"}
             </p>
             <div className="flex gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-               <span className="text-[10px] text-green-500/80 font-bold uppercase py-0.5">Secure Node</span>
+               <div className={`w-1.5 h-1.5 rounded-full ${isProcessing ? 'bg-yellow-500' : 'bg-green-500'} animate-pulse`}></div>
+               <span className={`text-[10px] ${isProcessing ? 'text-yellow-500/80' : 'text-green-500/80'} font-bold uppercase py-0.5`}>
+                 {isProcessing ? "Processing" : "Secure Node"}
+               </span>
             </div>
           </div>
         </motion.div>

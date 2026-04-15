@@ -84,7 +84,7 @@ export default function WelcomeHero({ onSuggestionClick }: WelcomeHeroProps) {
 
             <div
               className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-all duration-400
-                       group-hover:scale-110 group-hover:rotate-6"
+                       group-hover:scale-110"
               style={{ background: `${f.color}10`, color: f.color, border: "1px solid rgba(0,0,0,0.03)" }}
             >
               <span className="material-icons-round text-[22px]">{f.icon}</span>

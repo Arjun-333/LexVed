@@ -23,7 +23,7 @@ export default function Sidebar() {
     >
       {/* Brand mark */}
       <motion.div
-        whileHover={{ scale: 1.1, rotate: 5 }}
+        whileHover={{ scale: 1.05 }}
         className="w-10 h-10 rounded-xl flex items-center justify-center mb-10 cursor-pointer shadow-lg"
         style={{
           background: "linear-gradient(135deg, var(--accent), var(--accent-dim))",

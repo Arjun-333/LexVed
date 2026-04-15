@@ -152,16 +152,16 @@ function Dashboard() {
                   <div className="max-w-[720px] mx-auto w-full px-6 py-4">
                     <div className="flex gap-4 p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] animate-pulse shadow-sm">
                       <div className="w-10 h-10 rounded-xl bg-[var(--accent-bg)] flex items-center justify-center text-[var(--accent)]">
-                        <span className="material-icons-round text-[20px] animate-spin">psychology</span>
+                        <span className="material-icons-round text-[20px] animate-spin">verified_user</span>
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="text-[var(--text-muted)] text-sm flex items-center gap-3">
-                          <span className="font-bold uppercase tracking-widest text-[10px]">Consulting Digital Library</span>
+                          <span className="font-bold uppercase tracking-widest text-[10px]">Querying Legal Repositories</span>
                           <span className="text-[var(--accent)] font-mono text-[11px] bg-[var(--accent-bg)] px-2 py-0.5 rounded border border-[var(--accent-glow)]">
                             {elapsed < 25 ? (
                               <>ANALYZING CONTEXT | ELAPSED: {elapsed.toFixed(1)}S</>
                             ) : (
-                              <>EXTRACTING LEGAL PRECEDENTS | ELAPSED: {elapsed.toFixed(1)}S</>
+                              <>GROUNDING FACTUAL ANALYSIS | {elapsed.toFixed(1)}S</>
                             )}
                           </span>
                         </div>

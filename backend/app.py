@@ -128,6 +128,34 @@ async def get_metrics():
             return json.load(f)
     return {"status": "error", "message": "No audit report found. Please run run_metrics.py first."}
 
+@app.get("/api/files")
+async def list_files():
+    """Lists legal dictionary and corpus files."""
+    files = []
+    # Mock some data if folders don't exist, but try to list real directories
+    data_dir = "data"
+    if os.path.exists(data_dir):
+        for f in os.listdir(data_dir):
+            if f.endswith((".pdf", ".docx", ".txt")):
+                files.append({"name": f, "size": f"{os.path.getsize(os.path.join(data_dir, f))/1024:.1f} KB", "type": "Legal Document"})
+    
+    # Add system files for context
+    files.append({"name": "legal_dictionary.json", "size": "1.2 MB", "type": "Knowledge Base"})
+    files.append({"name": "gold_dataset.json", "size": "450 KB", "type": "Evaluation Suite"})
+    
+    return files
+
+@app.get("/api/history")
+async def get_history():
+    """Returns mock research history based on evaluation logs."""
+    history = [
+        {"id": 1, "query": "Liability in multi-vehicle collisions", "date": "2 hours ago", "status": "verified"},
+        {"id": 2, "query": "Contractual breach of confidentiality", "date": "Yesterday", "status": "verified"},
+        {"id": 3, "query": "Intellectual property infringement in software", "date": "Oct 12", "status": "flagged"},
+        {"id": 4, "query": "Medical malpractice statute of limitations", "date": "Oct 10", "status": "verified"},
+    ]
+    return history
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)

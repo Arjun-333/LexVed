@@ -4,10 +4,14 @@ import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import MetricsDashboard from "./MetricsDashboard";
+import CaseFilesModal from "./CaseFilesModal";
+import ResearchHistoryModal from "./ResearchHistoryModal";
 
 export default function Sidebar() {
   const { theme, toggle } = useTheme();
   const [showMetrics, setShowMetrics] = useState(false);
+  const [showFiles, setShowFiles] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   return (
     <nav
@@ -33,8 +37,16 @@ export default function Sidebar() {
       {/* Navigation Items */}
       <div className="flex flex-col gap-6">
         <IconButton active icon="chat_bubble" title="New Brief" />
-        <IconButton icon="history" title="Research History" />
-        <IconButton icon="folder" title="Case Files" />
+        <IconButton 
+          icon="history" 
+          title="Research History" 
+          onClick={() => setShowHistory(true)}
+        />
+        <IconButton 
+          icon="folder" 
+          title="Case Files" 
+          onClick={() => setShowFiles(true)}
+        />
       </div>
 
       <div className="flex-1" />
@@ -57,6 +69,16 @@ export default function Sidebar() {
       <MetricsDashboard 
         isOpen={showMetrics} 
         onClose={() => setShowMetrics(false)} 
+      />
+      
+      <CaseFilesModal 
+        isOpen={showFiles} 
+        onClose={() => setShowFiles(false)} 
+      />
+
+      <ResearchHistoryModal 
+        isOpen={showHistory} 
+        onClose={() => setShowHistory(false)} 
       />
     </nav>
   );

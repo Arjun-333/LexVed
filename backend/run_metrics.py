@@ -11,7 +11,7 @@ from bert_score import score as bert_score_func
 import evaluate
 from src.retrieval.retriever import retrieve
 from src.generation.generator import generate_answer_stream
-import qdrant_client
+from src.utils.pinecone_client import index
 
 # Evaluation Config
 EVAL_DATA_PATH = "evaluation_data.json"
@@ -97,9 +97,8 @@ def run_evaluation():
     all_results = []
     
     # System Baseline (M2)
-    q_client = qdrant_client.QdrantClient("localhost", port=6333)
     try:
-        vector_count = q_client.count("lexved_chunks").count
+        vector_count = index.describe_index_stats()['total_vector_count']
     except:
         vector_count = 0
 

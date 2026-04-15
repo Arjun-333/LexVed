@@ -174,7 +174,22 @@ def run_evaluation():
                 }
             }
             all_results.append(res)
-            print(f"[{cat.upper()}] Case {res['id']}: Score(BERT)={q_stats['bertscore']:.2f} | Latency={m16_e2e:.2f}s")
+            
+            # --- LIVE UPDATE ---
+            print(f"[{cat.upper()}] Case {res['id']} complete: Score(BERT)={q_stats['bertscore']:.2f} | Latency={m16_e2e:.2f}s")
+            
+            # Update Dashboard File after every case
+            current_avgs = {k: sum(r['metrics'][k] for r in all_results)/len(all_results) for k in res['metrics'] if isinstance(res['metrics'][k], (int, float))}
+            report = {
+                "timestamp": time.ctime(),
+                "status": "processing",
+                "progress": f"{len(all_results)} cases processed",
+                "summary": current_avgs,
+                "details": all_results
+            }
+            with open("evaluation_results.json", "w") as f:
+                json.dump(report, f, indent=4)
+            # ------------------
 
     # Output Final Table
     print("\n" + "-"*80)

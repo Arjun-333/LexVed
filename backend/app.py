@@ -182,20 +182,58 @@ async def list_files():
     
     return files
 
+@app.post("/api/analyze")
+async def analyze_file(req: dict):
+    """Triggers the 24-metric evaluation suite in the background."""
+    import subprocess
+    import sys
+    
+    # Run run_metrics.py in the background
+    try:
+        # We use the current venv if available
+        python_exec = sys.executable 
+        subprocess.Popen([python_exec, "run_metrics.py"], 
+                         start_new_session=True,
+                         stdout=open("metric_output.log", "a"),
+                         stderr=open("metric_output.log", "a"))
+        return {"status": "success", "message": "Performance audit initiated. Results will appear in the dashboard soon."}
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to initiate audit: {str(e)}"}
+
 @app.get("/api/history")
 async def get_history():
     """Returns persistent research history."""
     history_path = "history.json"
     if os.path.exists(history_path):
-        with open(history_path, "r") as f:
-            return json.load(f)
+        try:
+            with open(history_path, "r") as f:
+                return json.load(f)
+        except:
+            return []
     
     # Default initial state
     return [
-        {"id": 1, "query": "Liability in multi-vehicle collisions", "date": "2 hours ago", "status": "verified"},
-        {"id": 2, "query": "Contractual breach of confidentiality", "date": "Yesterday", "status": "verified"},
+        {
+            "id": 1, 
+            "query": "Liability in multi-vehicle collisions", 
+            "date": "2024-04-15 14:20", 
+            "status": "verified",
+            "metrics": {"retrieval_lat": 0.45, "e2e_lat": 2.1, "ans_length": 120}
+        },
+        {
+            "id": 2, 
+            "query": "Contractual breach of confidentiality", 
+            "date": "2024-04-15 10:15", 
+            "status": "verified",
+            "metrics": {"retrieval_lat": 0.32, "e2e_lat": 1.8, "ans_length": 95}
+        },
     ]
 
 if __name__ == "__main__":
     import uvicorn
+    # Add history.json initial check
+    if not os.path.exists("history.json"):
+        with open("history.json", "w") as f:
+            json.dump([], f)
+            
     uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)

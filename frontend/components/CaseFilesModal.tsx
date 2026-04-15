@@ -78,7 +78,18 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
                       <p className="text-[10px] text-white/30 uppercase tracking-wider mt-0.5">{file.type} • {file.size}</p>
                     </div>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="text-[10px] font-bold text-blue-400 hover:text-white uppercase tracking-widest bg-blue-500/10 px-3 py-1.5 rounded-md border border-blue-500/20">Analyze</button>
+                      <button 
+                        onClick={() => {
+                          fetch("http://localhost:5000/api/analyze", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ file: file.name })
+                          }).then(() => alert("Mission-Critical Performance Audit Initiated. Check the Dashboard for live results."));
+                        }}
+                        className="text-[10px] font-bold text-blue-400 hover:text-white uppercase tracking-widest bg-blue-500/10 px-3 py-1.5 rounded-md border border-blue-500/20"
+                      >
+                        Analyze
+                      </button>
                     </div>
                   </motion.div>
                 ))}

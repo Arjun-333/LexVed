@@ -9,6 +9,11 @@ interface HistoryItem {
   query: string;
   date: string;
   status: string;
+  metrics?: {
+    retrieval_lat: number;
+    e2e_lat: number;
+    ans_length: number;
+  };
 }
 
 export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -61,15 +66,20 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
                 <div className="w-8 h-8 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
                 <p className="text-white/30 text-sm animate-pulse uppercase tracking-widest">Retrieving Logs...</p>
               </div>
+            ) : history.length === 0 ? (
+               <div className="flex flex-col items-center justify-center py-20 text-white/20 uppercase tracking-widest font-bold text-xs gap-4">
+                 <AlertCircle size={32} />
+                 No History Recorded
+               </div>
             ) : (
-              <div className="grid gap-2">
+              <div className="grid gap-3">
                 {history.map((item, idx) => (
                   <motion.div 
                     key={item.id}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group flex flex-col gap-2 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-purple-500/30 transition-all cursor-pointer"
+                    className="group flex flex-col gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-purple-500/30 transition-all cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-[10px] text-white/40 uppercase tracking-widest">
@@ -90,6 +100,23 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
                         {item.query}
                       </p>
                     </div>
+                    
+                    {item.metrics && (
+                      <div className="flex items-center gap-4 mt-2 pt-3 border-t border-white/5 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <div className="flex flex-col">
+                          <span className="text-[8px] uppercase tracking-widest text-white/30">Retrieval</span>
+                          <span className="text-[10px] font-mono text-purple-400">{item.metrics.retrieval_lat.toFixed(3)}s</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[8px] uppercase tracking-widest text-white/30">E2E Latency</span>
+                          <span className="text-[10px] font-mono text-white/80">{item.metrics.e2e_lat.toFixed(2)}s</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[8px] uppercase tracking-widest text-white/30">Words</span>
+                          <span className="text-[10px] font-mono text-white/80">{item.metrics.ans_length}</span>
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>

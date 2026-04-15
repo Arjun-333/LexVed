@@ -17,7 +17,8 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      fetch("http://localhost:5000/api/files")
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+      fetch(`${API_URL}/api/files`)
         .then((res) => res.json())
         .then((data) => {
           setFiles(data);
@@ -80,7 +81,8 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => {
-                          fetch("http://localhost:5000/api/analyze", {
+                          const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+                          fetch(`${API_URL}/api/analyze`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ file: file.name })

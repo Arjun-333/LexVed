@@ -19,8 +19,10 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   const [loading, setLoading] = useState(true);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
   const fetchMetrics = () => {
-    fetch("http://localhost:5000/api/metrics")
+    fetch(`${API_URL}/api/metrics`)
       .then((res) => res.json())
       .then((data) => {
         setMetrics(data);

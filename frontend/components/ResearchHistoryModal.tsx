@@ -23,7 +23,8 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      fetch("http://localhost:5000/api/history")
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+      fetch(`${API_URL}/api/history`)
         .then((res) => res.json())
         .then((data) => {
           setHistory(data);

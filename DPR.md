@@ -102,5 +102,19 @@ LexVed includes an automated auditing suite (`run_metrics.py`) that evaluates th
 *   Computer Vision for analyzing hand-annotated legal evidence.
 *   Decentralized private legal knowledge graphs.
 
+## Institutional Performance Audit (M1-M24)
+To ensure mission-critical precision, LexVed incorporates a 24-metric evaluation framework. This suit audits the RAG pipeline across retrieval latency, semantic similarity (BERTScore), and legal citation accuracy using an LLM-as-a-Judge protocol.
+
+### Metric Overview
+*   **Retrieval Performance (M1-M5):** Tracks embedding latency and vector counts.
+*   **Answer Quality (M6-M15):** Measures ROUGE, BLEU, and Faithfulness.
+*   **Legal-Specific Accuracy (M20-M22):** Validates legal terminology and case precedents.
+
+### Professional PDF Export
+The "LexVed Intelligence Cockpit" now features a professional export engine. Legal users can generate an institutional-grade PDF report of the latest performance audit with a single click, ensuring transparency and archive-readiness for legal audits.
+
+---
+**LexVed | Institutional Legal Intelligence**
+
 ---
 **LexVed | Technical Project Report — Version 2.0 — April 2026**

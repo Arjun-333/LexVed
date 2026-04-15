@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 load_dotenv()
 
 from src.retrieval.retriever import retrieve
-from src.generation.generator import generate_answer
+from src.generation.generator import generate_answer_stream, generate_answer
 from src.ingestion.pdf_processor import categorize_text
 
 app = FastAPI(title="LexVed API", version="2.0")

@@ -50,3 +50,9 @@ def generate_answer_stream(question, context, model=None):
     )
     
     return generate_with_ollama_stream(prompt, model=model)
+def generate_answer(question, context, model=None):
+    """Non-streaming version of generate_answer for legacy endpoints."""
+    ans = ""
+    for chunk in generate_answer_stream(question, context, model=model):
+        ans += chunk
+    return ans, 0, 0 # Return 0 for times as they are handled elsewhere or ignored

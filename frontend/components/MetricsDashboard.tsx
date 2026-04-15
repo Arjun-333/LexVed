@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, ShieldCheck, Zap, Activity, HardDrive } from "lucide-react";
+import { X, ShieldCheck, Zap, Activity, HardDrive, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 interface MetricRow {
   id: string;
@@ -18,6 +20,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
 
   useEffect(() => {
     if (isOpen) {
+      setLoading(true);
       fetch("http://localhost:5000/api/metrics")
         .then((res) => res.json())
         .then((data) => {
@@ -30,6 +33,43 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
         });
     }
   }, [isOpen]);
+
+  const handleExportPDF = () => {
+    if (!metrics || !metrics.summary) return;
+
+    const doc = new jsPDF();
+    const timestamp = metrics.timestamp || new Date().toLocaleString();
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(212, 175, 55); // LexVed Gold
+    doc.text("LexVed Institutional Audit Report", 14, 22);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Mission-Critical Metrics Audit (M1-M24) | Generated: ${timestamp}`, 14, 30);
+    doc.text(`System Node: Llama 3 8B (Local) | Vector Repository: Qdrant`, 14, 35);
+
+    // Summary Table
+    const tableData = rows.map(r => [r.id, r.category, r.label, r.value, r.unit]);
+    
+    (doc as any).autoTable({
+      startY: 45,
+      head: [["ID", "Category", "Metric Label", "Value", "Unit"]],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [10, 10, 10], textColor: [212, 175, 55] },
+      styles: { fontSize: 9, cellPadding: 3 },
+      alternateRowStyles: { fillColor: [245, 245, 245] }
+    });
+
+    const finalY = (doc as any).lastAutoTable.finalY + 15;
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text("LexVed Confidential Audit Protocol 2.0. Unauthorized duplication prohibited.", 14, finalY);
+
+    doc.save(`LexVed_Audit_${new Date().getTime()}.pdf`);
+  };
 
   if (!isOpen) return null;
 
@@ -65,9 +105,20 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
               </h2>
               <p className="text-white/50 text-sm mt-1">Institutional RAG Benchmarking — Mission-Critical (M1-M24)</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
-              <X className="text-white/50 hover:text-white" />
-            </button>
+            <div className="flex items-center gap-4">
+              {!loading && metrics?.summary && (
+                <button 
+                  onClick={handleExportPDF}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-xs font-bold hover:bg-[#d4af37] hover:text-black transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  EXPORT PDF
+                </button>
+              )}
+              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+                <X className="text-white/50 hover:text-white" />
+              </button>
+            </div>
           </div>
 
           {/* Content */}

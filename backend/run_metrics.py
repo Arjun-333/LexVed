@@ -21,6 +21,7 @@ OLLAMA_MODEL = "llama3"
 scorer_rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
 metric_bleu = evaluate.load("bleu")
 metric_meteor = evaluate.load("meteor")
+metric_bertscore = evaluate.load("bertscore")
 model_st = SentenceTransformer(get_active_model_name())
 
 def judge_llm_metrics(query, ground_truth, model_answer, context):
@@ -41,9 +42,11 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
     4. precedent_match: Are relevant legal precedents and cases correctly cited? Score 1-100.
     5. factual_consistency: How factually consistent is the answer with the ground truth? Score 1-100.
     6. bias_score: Presence of bias towards protected attributes. Score 0-100, 0 means no bias.
+    7. regulatory_alignment: Does the answer align with standard legal regulations? Score 1-100.
+    8. jurisdictional_comp: Is the jurisdictional context appropriate? Score 1-100.
 
     Output ONLY a valid JSON object with integer values:
-    {{"faithfulness": 75, "citation_acc": 60, "term_precision": 80, "precedent_match": 50, "factual_consistency": 70, "bias_score": 5}}
+    {{"faithfulness": 75, "citation_acc": 60, "term_precision": 80, "precedent_match": 50, "factual_consistency": 70, "bias_score": 5, "regulatory_alignment": 85, "jurisdictional_comp": 90}}
     """
     
     payload = {"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": "json"}
@@ -52,7 +55,7 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
         parsed = json.loads(res.json().get("response", "{}"))
         return parsed
     except Exception as e:
-        return {"faithfulness": 50, "citation_acc": 50, "term_precision": 50, "precedent_match": 50, "factual_consistency": 50, "bias_score": 10}
+        return {"faithfulness": 50, "citation_acc": 50, "term_precision": 50, "precedent_match": 50, "factual_consistency": 50, "bias_score": 10, "regulatory_alignment": 50, "jurisdictional_comp": 50}
 
 def calculate_local_metrics(gt, ans):
     rouge_res = scorer_rouge.score(gt, ans)
@@ -60,13 +63,23 @@ def calculate_local_metrics(gt, ans):
     except: bleu_res = {"bleu": 0}
     try: meteor_res = metric_meteor.compute(predictions=[ans], references=[gt])
     except: meteor_res = {"meteor": 0}
+    try: bert_res = metric_bertscore.compute(predictions=[ans], references=[gt], lang="en")
+    except: bert_res = {"f1": [0]}
+    
     return {
         "rouge1": rouge_res['rouge1'].fmeasure,
         "rouge2": rouge_res['rouge2'].fmeasure,
         "rougeL": rouge_res['rougeL'].fmeasure,
         "bleu": bleu_res.get("bleu", 0),
-        "meteor": meteor_res.get("meteor", 0)
+        "meteor": meteor_res.get("meteor", 0),
+        "bert_f1": bert_res['f1'][0]
     }
+
+def calculate_recall_at_k(docs, query_category):
+    # Heuristic recall: Check if any retrieved doc matches the expected category sample
+    # In this limited 10-PDF case, we assume docs tagged with the correct 'category' are relevant.
+    hits = [1 for d in docs if d.payload.get('category', '').lower() == query_category.lower()]
+    return (sum(hits) / len(docs)) if docs else 0
 
 def run_evaluation():
     if not os.path.exists(EVAL_DATA_PATH):
@@ -94,9 +107,9 @@ def run_evaluation():
     print(f" LEXVED BENCHMARK - {active_db.upper()} ".center(80))
     print("="*80)
 
-    # Simplified loop for 1 case per category
+    # Process ALL queries (10 total)
     for cat in ["civil", "criminal"]:
-        for item in data[cat][:1]:
+        for item in data[cat]:
             query = item['query']
             gt = item['ground_truth']
             ram_before = psutil.virtual_memory().used
@@ -130,16 +143,46 @@ def run_evaluation():
             
             m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
             
+            gt_emb = model_st.encode([gt])[0]
+            ans_emb = model_st.encode([ans])[0]
+            m11_sem_score = util.cos_sim(gt_emb, ans_emb)[0].item()
+            
+            total_tokens = max(len(ans.split()), 1)
+            m17_tgl = (m16_e2e - m3_ret_lat - m1_emb_time) / total_tokens
+            m18_cost = (len(context.split()) + len(query.split()) + len(ans.split())) * 0.000002
+            
+            def to_int(val, default=50):
+                try: return int(str(val).replace("%", ""))
+                except: return default
+
             res = {
                 "id": len(all_results) + 1,
                 "category": cat,
                 "metrics": {
-                    "M1": m1_emb_time, "M2": vector_count, "M3": m3_ret_lat,
-                    "M4": m4_cos_sim, "M6": q_stats['rouge1'], "M7": q_stats['rouge2'],
-                    "M8": q_stats['rougeL'], "M9": q_stats['meteor'], "M10": q_stats['bleu'],
-                    "M14": judge_res.get("faithfulness", 0), "M16": m16_e2e,
-                    "M19": m19_ram, "M20": judge_res.get("citation_acc", 0),
-                    "M21": judge_res.get("term_precision", 0)
+                    "M1": m1_emb_time, 
+                    "M2": vector_count, 
+                    "M3": m3_ret_lat,
+                    "M4": m4_cos_sim, 
+                    "M5": calculate_recall_at_k(docs, cat),
+                    "M6": q_stats['rouge1'], 
+                    "M7": q_stats['rouge2'],
+                    "M8": q_stats['rougeL'], 
+                    "M9": q_stats['meteor'], 
+                    "M10": q_stats['bleu'],
+                    "M11": m11_sem_score, # Semantic Mapping Score calculated
+                    "M12": q_stats['bert_f1'],
+                    "M13": 100 - to_int(judge_res.get("factual_consistency", 0)), # Hallucination Rate
+                    "M14": to_int(judge_res.get("faithfulness", 0)), 
+                    "M15": to_int(judge_res.get("factual_consistency", 0)),
+                    "M16": m16_e2e,
+                    "M17": m17_tgl,
+                    "M18": m18_cost,
+                    "M19": m19_ram, 
+                    "M20": to_int(judge_res.get("citation_acc", 0)),
+                    "M21": to_int(judge_res.get("term_precision", 0)),
+                    "M22": to_int(judge_res.get("precedent_match", 0)),
+                    "M23": to_int(judge_res.get("regulatory_alignment", 0)),
+                    "M24": to_int(judge_res.get("jurisdictional_comp", 0))
                 }
             }
             all_results.append(res)

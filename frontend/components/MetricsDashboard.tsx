@@ -112,15 +112,30 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   };
 
   const rows: MetricRow[] = metrics?.summary ? [
-    { id: "M1",  category: "Retrieval",   label: "Embedding Latency",     value: getVal("M1"),   decimals: 4, unit: "sec" },
-    { id: "M2",  category: "Retrieval",   label: "Index Point Count",     value: getVal("M2"),   decimals: 0, unit: "vectors" },
-    { id: "M3",  category: "Retrieval",   label: "Retrieval Latency",     value: getVal("M3"),   decimals: 4, unit: "sec" },
+    { id: "M1",  category: "Retrieval",   label: "Embedding Latency",     value: getVal("M1"),   decimals: 4, unit: "s" },
+    { id: "M2",  category: "Retrieval",   label: "Index Point Count",     value: getVal("M2"),   decimals: 0, unit: "vec" },
+    { id: "M3",  category: "Retrieval",   label: "Retrieval Latency",     value: getVal("M3"),   decimals: 4, unit: "s" },
     { id: "M4",  category: "Retrieval",   label: "Cosine Similarity",     value: getVal("M4"),   decimals: 4, unit: "score" },
     { id: "M5",  category: "Retrieval",   label: "Recall@K",              value: getVal("M5"),   decimals: 4, unit: "score" },
     { id: "M6",  category: "Quality",     label: "ROUGE-1 Score",         value: getVal("M6"),   decimals: 4, unit: "score" },
+    { id: "M7",  category: "Quality",     label: "ROUGE-2 Score",         value: getVal("M7"),   decimals: 4, unit: "score" },
+    { id: "M8",  category: "Quality",     label: "ROUGE-L Score",         value: getVal("M8"),   decimals: 4, unit: "score" },
+    { id: "M9",  category: "Quality",     label: "METEOR Score",          value: getVal("M9"),   decimals: 4, unit: "score" },
+    { id: "M10", category: "Quality",     label: "BLEU Score",            value: getVal("M10"),  decimals: 4, unit: "score" },
+    { id: "M11", category: "Quality",     label: "SemScore (Approx)",     value: getVal("M11"),  decimals: 4, unit: "score" },
     { id: "M12", category: "Quality",     label: "BERTScore (F1)",        value: getVal("M12"),  decimals: 4, unit: "score" },
+    { id: "M13", category: "Safety",      label: "Hallucination Rate",    value: getVal("M13"),  decimals: 0, unit: "%" },
     { id: "M14", category: "Quality",     label: "Faithfulness",          value: getVal("M14"),  decimals: 0, unit: "%" },
-    { id: "M16", category: "Efficiency",  label: "End-to-End Latency",    value: getVal("M16"),  decimals: 2, unit: "sec" },
+    { id: "M15", category: "Quality",     label: "Factual Consistency",   value: getVal("M15"),  decimals: 0, unit: "%" },
+    { id: "M16", category: "Efficiency",  label: "End-to-End Latency",    value: getVal("M16"),  decimals: 2, unit: "s" },
+    { id: "M17", category: "Efficiency",  label: "Token Gen Latency",     value: getVal("M17"),  decimals: 4, unit: "s" },
+    { id: "M18", category: "Efficiency",  label: "Cost Per Query",        value: getVal("M18"),  decimals: 4, unit: "$" },
+    { id: "M19", category: "Efficiency",  label: "RAM Utilization",       value: getVal("M19"),  decimals: 2, unit: "MB" },
+    { id: "M20", category: "Legal",       label: "Citation Accuracy",     value: getVal("M20"),  decimals: 0, unit: "%" },
+    { id: "M21", category: "Legal",       label: "Term Precision",        value: getVal("M21"),  decimals: 0, unit: "%" },
+    { id: "M22", category: "Legal",       label: "Precedent Match",       value: getVal("M22"),  decimals: 0, unit: "%" },
+    { id: "M23", category: "Legal",       label: "Regulatory Align.",     value: getVal("M23"),  decimals: 0, unit: "%" },
+    { id: "M24", category: "Legal",       label: "Jurisdictional Comp.",  value: getVal("M24"),  decimals: 0, unit: "%" },
   ] : [];
 
   const handleExportPDF = () => {

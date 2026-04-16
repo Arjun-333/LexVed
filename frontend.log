@@ -15,3 +15,17 @@
  GET / 200 in 53ms (next.js: 6ms, application-code: 47ms)
  GET / 200 in 46ms (next.js: 4ms, application-code: 42ms)
  GET / 200 in 63ms (next.js: 7ms, application-code: 56ms)
+[browser] Uncaught TypeError: files.map is not a function
+    at CaseFilesModal (components/CaseFilesModal.tsx:66:24)
+    at Sidebar (components/Sidebar.tsx:74:7)
+    at Dashboard (app/page.tsx:114:7)
+    at Home (app/page.tsx:191:8)
+  64 |             ) : (
+  65 |               <div className="grid gap-2">
+> 66 |                 {files.map((file, idx) => (
+     |                        ^
+  67 |                   <motion.div 
+  68 |                     key={idx}
+  69 |                     initial={{ opacity: 0, x: -10 }}
+ GET / 200 in 90ms (next.js: 7ms, application-code: 83ms)
+✓ Compiled in 562ms

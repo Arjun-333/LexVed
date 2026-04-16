@@ -8,7 +8,8 @@ import os
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
-load_dotenv()
+from src.utils.config_manager import set_active_model, get_active_model_name, get_active_model_params
+import subprocess
 
 from src.retrieval.retriever import retrieve
 from src.generation.generator import generate_answer_stream, generate_answer
@@ -127,6 +128,54 @@ async def get_metrics():
         with open(metric_path, "r") as f:
             return json.load(f)
     return {"status": "error", "message": "No audit report found. Please run run_metrics.py first."}
+
+class ModelSettings(BaseModel):
+    model: str
+
+@app.get("/api/settings/embedding_model")
+async def get_model_setting():
+    return {"model": get_active_model_name()}
+
+@app.post("/api/settings/embedding_model")
+async def set_model_setting(settings: ModelSettings):
+    success = set_active_model(settings.model)
+    if success:
+        return {"status": "success", "model": settings.model}
+    return {"status": "error", "message": "Invalid model name"}
+
+@app.post("/api/workflow/evaluate")
+async def trigger_evaluation():
+    """Triggers a full re-ingestion and evaluation cycle."""
+    # We run this in the background to avoid blocking the API
+    def run_eval():
+        print("[LexVed] Starting Evaluation Workflow...")
+        # 1. Update status to processing immediately
+        try:
+            with open("evaluation_results.json", "w") as f:
+                json.dump({"status": "processing", "progress": "Initializing Intelligence Node..."}, f)
+        except:
+            pass
+
+        # 2. Re-initialize Vector DB
+        try:
+            from src.utils.qdrant_client import init_collection as init_qdrant
+            init_qdrant()
+            print("[LexVed] Qdrant initialized.")
+        except:
+            pass
+        
+        # 3. Run Metrics
+        try:
+            print("[LexVed] Running Benchmark...")
+            # Use the same venv as the app
+            subprocess.Popen(["./venv/bin/python3", "run_metrics.py"])
+        except Exception as e:
+            print(f"[LexVed] Benchmark error: {e}")
+            with open("evaluation_results.json", "w") as f:
+                json.dump({"status": "error", "message": str(e)}, f)
+
+    executor.submit(run_eval)
+    return {"status": "processing", "message": "Evaluation started in background"}
 
 if __name__ == "__main__":
     import uvicorn

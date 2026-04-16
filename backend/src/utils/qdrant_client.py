@@ -1,13 +1,16 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PayloadSchemaType
 
+from src.utils.config_manager import get_active_model_params
+
 client = QdrantClient(host="localhost", port=6333)
 COLLECTION_NAME = "lexved_chunks"
 
 def init_collection():
+    params = get_active_model_params()
     client.recreate_collection(
         collection_name=COLLECTION_NAME,
-        vectors_config=VectorParams(size=768, distance=Distance.COSINE),
+        vectors_config=VectorParams(size=params["dimension"], distance=Distance.COSINE),
     )
     
     # Create payload indices for fast filtering (Sub-indexing)

@@ -1,7 +1,7 @@
 sentence-transformers
 google-genai
 qdrant-client
-pinecone-client
+pinecone
 python-dotenv
 PyMuPDF
 transformers

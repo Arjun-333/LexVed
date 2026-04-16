@@ -18,11 +18,13 @@ EVAL_DATA_PATH = "evaluation_data.json"
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3"
 
+from src.utils.config_manager import get_active_model_name
+
 # Initialize local metrics
 scorer_rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
 metric_bleu = evaluate.load("bleu")
 metric_meteor = evaluate.load("meteor")
-model_st = SentenceTransformer('all-mpnet-base-v2')
+model_st = SentenceTransformer(get_active_model_name())
 
 def judge_llm_metrics(query, ground_truth, model_answer, context):
     """Uses Llama 3 to evaluate complex metrics like Faithfulness, Bias, and Terminology Precision."""
@@ -255,12 +257,14 @@ def run_evaluation():
     # Save Results for UI
     report = {
         "timestamp": time.ctime(),
+        "status": "complete",
+        "progress": f"Audit Complete — {len(all_results)} cases verified",
         "summary": avgs,
         "details": all_results,
         "system_info": {
-            "vector_db": "Pinecone",
+            "vector_db": "Pinecone" if "PINECONE_INDEX_NAME" in os.environ else "Qdrant",
             "model": "Llama 3 8B (Local)",
-            "embedding": "all-mpnet-base-v2",
+            "embedding": get_active_model_name(),
             "encryption": "AES-256"
         }
     }

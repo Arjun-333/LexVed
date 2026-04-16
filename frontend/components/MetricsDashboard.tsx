@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2, FileSpreadsheet } from "lucide-react";
+import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2, FileSpreadsheet, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
+import EmbeddingOmnitrix from "./EmbeddingOmnitrix";
 
 interface MetricRow {
   id: string;
@@ -17,6 +18,8 @@ interface MetricRow {
 export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedModel, setSelectedModel] = useState("multi-qa-mpnet-base-cos-v1");
+  const [isStartingEval, setIsStartingEval] = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchMetrics = () => {
@@ -36,12 +39,47 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     if (isOpen) {
       setLoading(true);
       fetchMetrics();
+      // Also fetch current model setting
+      fetch("http://localhost:5000/api/settings/embedding_model")
+        .then(res => res.json())
+        .then(data => setSelectedModel(data.model))
+        .catch(console.error);
+        
       pollRef.current = setInterval(fetchMetrics, 3000);
     }
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, [isOpen]);
+
+  const handleModelChange = async (modelId: string) => {
+    setSelectedModel(modelId);
+    try {
+      await fetch("http://localhost:5000/api/settings/embedding_model", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: modelId }),
+      });
+    } catch (err) {
+      console.error("Failed to update model setting", err);
+    }
+  };
+
+  const handleStartEvaluation = async () => {
+    setIsStartingEval(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/workflow/evaluate", { method: "POST" });
+      const data = await res.json();
+      if (data.status === "processing") {
+        // The poll will pick up the processing status
+        fetchMetrics();
+      }
+    } catch (err) {
+      console.error("Failed to start evaluation", err);
+    } finally {
+      setIsStartingEval(false);
+    }
+  };
 
   const isProcessing = metrics?.status === "processing";
 
@@ -234,70 +272,101 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                 </div>
               </div>
             ) : (
-              <div className="space-y-6">
-                {/* Summary Table */}
-                <div className="overflow-hidden border border-white/10 rounded-xl">
-                  <table className="w-full text-left">
-                    <thead className="bg-white/5 text-white/40 text-xs font-bold uppercase tracking-wider">
-                      <tr>
-                        <th className="px-6 py-4">Metric ID</th>
-                        <th className="px-6 py-4">Target Area</th>
-                        <th className="px-6 py-4">Metric Label</th>
-                        <th className="px-6 py-4">Evaluated Value</th>
-                        <th className="px-6 py-4">Unit</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {rows.map((row) => {
-                        const hasValue = row.value !== null && row.value !== undefined;
-                        return (
-                          <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
-                            <td className="px-6 py-4 font-mono text-[#d4af37] text-sm">{row.id}</td>
-                            <td className="px-6 py-4">
-                              <span className="px-2 py-1 rounded-md bg-white/5 text-white/50 text-[10px] font-bold">
-                                {row.category}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-white font-medium">{row.label}</td>
-                            <td className="px-6 py-4 font-mono">
-                              {hasValue ? (
-                                <motion.span 
-                                  initial={{ opacity: 0, x: -10 }} 
-                                  animate={{ opacity: 1, x: 0 }} 
-                                  className="text-green-400"
-                                >
-                                  {row.value!.toFixed(row.decimals)}
-                                </motion.span>
-                              ) : (
-                                <span className="flex items-center gap-2 text-white/20">
-                                  <Loader2 className="w-3 h-3 animate-spin" />
-                                  <span className="text-xs">Evaluating...</span>
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-white/30 text-xs">{row.unit}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Left: Omnitrix Selection & Trigger */}
+                <div className="lg:w-1/3 flex flex-col gap-6">
+                   <EmbeddingOmnitrix 
+                     selectedModel={selectedModel} 
+                     onSelect={handleModelChange} 
+                   />
+                   
+                   <motion.button
+                     whileHover={{ scale: 1.02 }}
+                     whileTap={{ scale: 0.98 }}
+                     onClick={handleStartEvaluation}
+                     disabled={isProcessing || isStartingEval}
+                     className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs transition-all
+                       ${isProcessing || isStartingEval 
+                         ? 'bg-white/5 text-white/20 border border-white/5' 
+                         : 'bg-[var(--accent)] text-black border border-[var(--accent-glow)] shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]'}`}
+                   >
+                     {isStartingEval ? (
+                       <Loader2 className="w-4 h-4 animate-spin" />
+                     ) : isProcessing ? (
+                        <Activity className="w-4 h-4 animate-pulse" />
+                     ) : (
+                       <Play className="w-4 h-4 fill-current" />
+                     )}
+                     {isProcessing ? "Benchmarking..." : "Start Evaluation"}
+                   </motion.button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                    <Zap className="text-[#d4af37] w-5 h-5 mb-2" />
-                    <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Avg E2E Latency</div>
-                    <div className="text-white text-2xl font-bold">{metrics.summary.M16 ? metrics.summary.M16.toFixed(2) + "s" : "—"}</div>
+                {/* Right: Detailed Metrics */}
+                <div className="lg:w-2/3 space-y-6">
+                  {/* Summary Table */}
+                  <div className="overflow-hidden border border-white/10 rounded-xl bg-white/[0.02]">
+                    <table className="w-full text-left">
+                      <thead className="bg-white/5 text-white/40 text-xs font-bold uppercase tracking-wider">
+                        <tr>
+                          <th className="px-6 py-4">Metric ID</th>
+                          <th className="px-6 py-4">Target Area</th>
+                          <th className="px-6 py-4">Metric Label</th>
+                          <th className="px-6 py-4">Evaluated Value</th>
+                          <th className="px-6 py-4">Unit</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {rows.map((row) => {
+                          const hasValue = row.value !== null && row.value !== undefined;
+                          return (
+                            <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
+                              <td className="px-6 py-4 font-mono text-[#d4af37] text-sm">{row.id}</td>
+                              <td className="px-6 py-4">
+                                <span className="px-2 py-1 rounded-md bg-white/5 text-white/50 text-[10px] font-bold">
+                                  {row.category}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-white font-medium">{row.label}</td>
+                              <td className="px-6 py-4 font-mono">
+                                {hasValue ? (
+                                  <motion.span 
+                                    initial={{ opacity: 0, x: -10 }} 
+                                    animate={{ opacity: 1, x: 0 }} 
+                                    className="text-green-400"
+                                  >
+                                    {row.value!.toFixed(row.decimals)}
+                                  </motion.span>
+                                ) : (
+                                  <span className="flex items-center gap-2 text-white/20">
+                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                    <span className="text-xs">Evaluating...</span>
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-white/30 text-xs">{row.unit}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                    <Activity className="text-[#d4af37] w-5 h-5 mb-2" />
-                    <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Faithfulness</div>
-                    <div className="text-white text-2xl font-bold">{metrics.summary.M14 ? metrics.summary.M14 + "%" : "—"}</div>
-                  </div>
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                    <HardDrive className="text-[#d4af37] w-5 h-5 mb-2" />
-                    <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Total Vectors</div>
-                    <div className="text-white text-2xl font-bold">{metrics.summary.M2 || "—"}</div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <Zap className="text-[#d4af37] w-5 h-5 mb-2" />
+                      <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Avg E2E Latency</div>
+                      <div className="text-white text-2xl font-bold">{metrics.summary.M16 ? metrics.summary.M16.toFixed(2) + "s" : "—"}</div>
+                    </div>
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <Activity className="text-[#d4af37] w-5 h-5 mb-2" />
+                      <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Faithfulness</div>
+                      <div className="text-white text-2xl font-bold">{metrics.summary.M14 ? metrics.summary.M14 + "%" : "—"}</div>
+                    </div>
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <HardDrive className="text-[#d4af37] w-5 h-5 mb-2" />
+                      <div className="text-white/40 text-xs uppercase font-bold tracking-widest">Total Vectors</div>
+                      <div className="text-white text-2xl font-bold">{metrics.summary.M2 || "—"}</div>
+                    </div>
                   </div>
                 </div>
               </div>

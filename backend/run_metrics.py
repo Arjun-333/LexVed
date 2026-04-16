@@ -107,84 +107,87 @@ def run_evaluation():
     print(f" LEXVED BENCHMARK - {active_db.upper()} ".center(80))
     print("="*80)
 
-    # Process ALL queries (10 total)
-    for cat in ["civil", "criminal"]:
-        for item in data[cat]:
-            query = item['query']
-            gt = item['ground_truth']
-            ram_before = psutil.virtual_memory().used
+    import threading
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    all_results = []
+    lock = threading.Lock()
+    
+    def process_query(cat, query, gt):
+        ram_before = psutil.virtual_memory().used
+        
+        # M1: Embedding Time
+        t_start_emb = time.time()
+        query_emb = model_st.encode([query])[0]
+        m1_emb_time = time.time() - t_start_emb
+        
+        # M3: Retrieval Latency
+        docs, m3_ret_lat = retrieve(query, top_k=5)
+        
+        if not docs:
+            print(f"Warning: No documents found for query: {query}")
+            return
             
-            # M1: Embedding Time
-            t_start_emb = time.time()
-            query_emb = model_st.encode([query])[0]
-            m1_emb_time = time.time() - t_start_emb
-            
-            # M3: Retrieval Latency
-            docs, m3_ret_lat = retrieve(query, top_k=5)
-            
-            if not docs:
-                print(f"Warning: No documents found for query: {query}")
-                continue
+        # M4: Cosine Similarity
+        doc_embs = model_st.encode([d.payload['text'] for d in docs])
+        cos_sims = util.cos_sim(query_emb, doc_embs)[0]
+        m4_cos_sim = cos_sims.mean().item()
+        
+        context = "".join([f"[Source: {d.payload.get('source')}] {d.payload['text']}\n" for d in docs])
+        
+        # M16: End-to-End Latency
+        ans = ""
+        for chunk in generate_answer_stream(query, context): ans += chunk
+        m16_e2e = time.time() - t_start_emb
+        
+        q_stats = calculate_local_metrics(gt, ans)
+        judge_res = judge_llm_metrics(query, gt, ans, context)
+        
+        m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
+        
+        gt_emb = model_st.encode([gt])[0]
+        ans_emb = model_st.encode([ans])[0]
+        m11_sem_score = util.cos_sim(gt_emb, ans_emb)[0].item()
+        
+        total_tokens = max(len(ans.split()), 1)
+        m17_tgl = (m16_e2e - m3_ret_lat - m1_emb_time) / total_tokens
+        m18_cost = (len(context.split()) + len(query.split()) + len(ans.split())) * 0.000002
+        
+        def to_int(val, default=50):
+            try: return int(str(val).replace("%", ""))
+            except: return default
 
-            # M4: Cosine Similarity
-            doc_embs = model_st.encode([d.payload['text'] for d in docs])
-            cos_sims = util.cos_sim(query_emb, doc_embs)[0]
-            m4_cos_sim = cos_sims.mean().item()
-            
-            context = "".join([f"[Source: {d.payload.get('source')}] {d.payload['text']}\n" for d in docs])
-            
-            # M16: End-to-End Latency
-            ans = ""
-            for chunk in generate_answer_stream(query, context): ans += chunk
-            m16_e2e = time.time() - t_start_emb
-            
-            q_stats = calculate_local_metrics(gt, ans)
-            judge_res = judge_llm_metrics(query, gt, ans, context)
-            
-            m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
-            
-            gt_emb = model_st.encode([gt])[0]
-            ans_emb = model_st.encode([ans])[0]
-            m11_sem_score = util.cos_sim(gt_emb, ans_emb)[0].item()
-            
-            total_tokens = max(len(ans.split()), 1)
-            m17_tgl = (m16_e2e - m3_ret_lat - m1_emb_time) / total_tokens
-            m18_cost = (len(context.split()) + len(query.split()) + len(ans.split())) * 0.000002
-            
-            def to_int(val, default=50):
-                try: return int(str(val).replace("%", ""))
-                except: return default
-
-            res = {
-                "id": len(all_results) + 1,
-                "category": cat,
-                "metrics": {
-                    "M1": m1_emb_time, 
-                    "M2": vector_count, 
-                    "M3": m3_ret_lat,
-                    "M4": m4_cos_sim, 
-                    "M5": calculate_recall_at_k(docs, cat),
-                    "M6": q_stats['rouge1'], 
-                    "M7": q_stats['rouge2'],
-                    "M8": q_stats['rougeL'], 
-                    "M9": q_stats['meteor'], 
-                    "M10": q_stats['bleu'],
-                    "M11": m11_sem_score, # Semantic Mapping Score calculated
-                    "M12": q_stats['bert_f1'],
-                    "M13": 100 - to_int(judge_res.get("factual_consistency", 0)), # Hallucination Rate
-                    "M14": to_int(judge_res.get("faithfulness", 0)), 
-                    "M15": to_int(judge_res.get("factual_consistency", 0)),
-                    "M16": m16_e2e,
-                    "M17": m17_tgl,
-                    "M18": m18_cost,
-                    "M19": m19_ram, 
-                    "M20": to_int(judge_res.get("citation_acc", 0)),
-                    "M21": to_int(judge_res.get("term_precision", 0)),
-                    "M22": to_int(judge_res.get("precedent_match", 0)),
-                    "M23": to_int(judge_res.get("regulatory_alignment", 0)),
-                    "M24": to_int(judge_res.get("jurisdictional_comp", 0))
-                }
+        res = {
+            "category": cat,
+            "metrics": {
+                "M1": m1_emb_time, 
+                "M2": vector_count, 
+                "M3": m3_ret_lat,
+                "M4": m4_cos_sim, 
+                "M5": calculate_recall_at_k(docs, cat),
+                "M6": q_stats['rouge1'], 
+                "M7": q_stats['rouge2'],
+                "M8": q_stats['rougeL'], 
+                "M9": q_stats['meteor'], 
+                "M10": q_stats['bleu'],
+                "M11": m11_sem_score,
+                "M12": q_stats['bert_f1'],
+                "M13": 100 - to_int(judge_res.get("factual_consistency", 0)), 
+                "M14": to_int(judge_res.get("faithfulness", 0)), 
+                "M15": to_int(judge_res.get("factual_consistency", 0)),
+                "M16": m16_e2e,
+                "M17": m17_tgl,
+                "M18": m18_cost,
+                "M19": m19_ram, 
+                "M20": to_int(judge_res.get("citation_acc", 0)),
+                "M21": to_int(judge_res.get("term_precision", 0)),
+                "M22": to_int(judge_res.get("precedent_match", 0)),
+                "M23": to_int(judge_res.get("regulatory_alignment", 0)),
+                "M24": to_int(judge_res.get("jurisdictional_comp", 0))
             }
+        }
+        
+        with lock:
+            res["id"] = len(all_results) + 1
             all_results.append(res)
             
             # Update status
@@ -196,6 +199,18 @@ def run_evaluation():
                 "details": all_results
             }
             with open("evaluation_results.json", "w") as f: json.dump(report, f, indent=4)
+            print(f"[{len(all_results)}/10] Completed evaluation for query.")
+
+    queries = []
+    for cat in ["civil", "criminal"]:
+        for item in data[cat]:
+            queries.append((cat, item['query'], item['ground_truth']))
+
+    # Use 5 workers to parallelize efficiently across the 10 queries
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = [executor.submit(process_query, c, q, gt) for c, q, gt in queries]
+        for _ in as_completed(futures):
+            pass
 
     # Final Report
     avgs = {k: sum(r['metrics'][k] for r in all_results)/len(all_results) for k in all_results[0]['metrics']}

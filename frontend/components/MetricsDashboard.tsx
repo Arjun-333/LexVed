@@ -89,14 +89,21 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     const doc = new jsPDF();
     const timestamp = metrics.timestamp || new Date().toLocaleString();
 
-    // Header
+    // Dynamic System Metadata
+    const sys = metrics.system_info || { 
+      vector_db: "Qdrant", 
+      model: "Llama 3 8B (Local)", 
+      embedding: "all-mpnet-base-v2",
+      encryption: "AES-256"
+    };
+
     doc.setFontSize(20);
     doc.setTextColor(180, 150, 40);
     doc.text("LexVed Institutional Audit Report", 14, 20);
     doc.setFontSize(9);
     doc.setTextColor(120);
     doc.text(`Mission-Critical Metrics (M1-M24) | ${timestamp}`, 14, 27);
-    doc.text("System: Llama 3 8B (Local) | Vector DB: Qdrant | Encryption: AES-256", 14, 32);
+    doc.text(`System: ${sys.model} | Vector DB: ${sys.vector_db} | Encryption: ${sys.encryption}`, 14, 32);
 
     // Table header
     const colX = [14, 30, 62, 120, 162];

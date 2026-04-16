@@ -256,7 +256,13 @@ def run_evaluation():
     report = {
         "timestamp": time.ctime(),
         "summary": avgs,
-        "details": all_results
+        "details": all_results,
+        "system_info": {
+            "vector_db": "Pinecone",
+            "model": "Llama 3 8B (Local)",
+            "embedding": "all-mpnet-base-v2",
+            "encryption": "AES-256"
+        }
     }
     with open("evaluation_results.json", "w") as f:
         json.dump(report, f, indent=4)

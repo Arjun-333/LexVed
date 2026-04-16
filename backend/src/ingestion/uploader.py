@@ -21,3 +21,28 @@ def upload_to_pinecone(chunks, embeddings, category="Uncategorized", subcategory
     for i in range(0, len(vectors), 100):
         batch = vectors[i:i+100]
         index.upsert(vectors=batch)
+
+def upload_to_qdrant(chunks, embeddings, category="Uncategorized", subcategory="General"):
+    """
+    Upserts vector embeddings and metadata to Qdrant.
+    """
+    from src.utils.qdrant_provider import client, COLLECTION_NAME
+    from qdrant_client.models import PointStruct
+    
+    points = []
+    for i, emb in enumerate(embeddings):
+        points.append(PointStruct(
+            id=str(uuid.uuid4()),
+            vector=emb.tolist(),
+            payload={
+                **chunks[i],
+                "category": category,
+                "subcategory": subcategory
+            }
+        ))
+
+    # Upload points in batches
+    client.upsert(
+        collection_name=COLLECTION_NAME,
+        points=points
+    )

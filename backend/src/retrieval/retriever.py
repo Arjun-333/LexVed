@@ -4,8 +4,12 @@ from src.utils.config_manager import get_active_db_name
 from src.ingestion.embedder import get_embeddings
 
 def retrieve_qdrant(q_emb, category, subcategory, top_k):
-    from src.utils.qdrant_client import client, COLLECTION_NAME
+    from qdrant_client import QdrantClient
     from qdrant_client.models import Filter, FieldCondition, MatchValue
+    from src.utils.qdrant_provider import COLLECTION_NAME
+
+    # Local instantiation for absolute certainty
+    client = QdrantClient(host="localhost", port=6333)
 
     must_filters = []
     if category and category != "Uncategorized":
@@ -13,13 +17,33 @@ def retrieve_qdrant(q_emb, category, subcategory, top_k):
     if subcategory and subcategory != "General":
         must_filters.append(FieldCondition(key="subcategory", match=MatchValue(value=subcategory)))
 
-    search_result = client.search(
-        collection_name=COLLECTION_NAME,
-        query_vector=q_emb.tolist(),
-        query_filter=Filter(must=must_filters) if must_filters else None,
-        limit=top_k,
-        with_payload=True
-    )
+    final_filter = Filter(must=must_filters) if must_filters else None
+
+    if hasattr(client, "search"):
+        search_result = client.search(
+            collection_name=COLLECTION_NAME,
+            query_vector=q_emb.tolist(),
+            query_filter=final_filter,
+            limit=top_k,
+            with_payload=True
+        )
+    elif hasattr(client, "query_points"):
+        search_result = client.query_points(
+            collection_name=COLLECTION_NAME,
+            query=q_emb.tolist(),
+            query_filter=final_filter,
+            limit=top_k,
+            with_payload=True
+        ).points
+    else:
+        # Fallback for older versions or issues
+        search_result = client.search_points(
+            collection_name=COLLECTION_NAME,
+            query_vector=q_emb.tolist(),
+            query_filter=final_filter,
+            limit=top_k,
+            with_payload=True
+        )
     
     # Standardize result format
     results = []

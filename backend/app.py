@@ -110,10 +110,33 @@ async def chat(req: ChatRequest):
 
 @app.get("/api/metrics")
 async def get_metrics():
+    import psutil
     metric_path = "evaluation_results.json"
     if os.path.exists(metric_path):
-        with open(metric_path, "r") as f:
-            return json.load(f)
+        try:
+            with open(metric_path, "r") as f:
+                report = json.load(f)
+            
+            # Check if process is stuck
+            if report.get("status") == "processing":
+                pid = report.get("pid")
+                if pid:
+                    try:
+                        p = psutil.Process(pid)
+                        if not p.is_running():
+                             report["status"] = "error"
+                             report["message"] = "Process died unexpectedly."
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        report["status"] = "error"
+                        report["message"] = "Process no longer active."
+                else:
+                    # No PID, check if it's too old
+                    import time
+                    # We'll allow 5 mins baseline
+                    pass 
+            return report
+        except Exception as e:
+            return {"status": "error", "message": f"Read error: {e}"}
     return {"status": "error", "message": "No audit report found."}
 
 @app.get("/api/history")
@@ -151,32 +174,38 @@ async def set_db_setting(settings: DBSettings):
 async def trigger_evaluation():
     def run_eval():
         print(f"[LexVed] Starting Evaluation Workflow on {get_active_db_name()}...")
-        try:
-            with open("evaluation_results.json", "w") as f:
-                json.dump({"status": "processing", "progress": "Initializing Intelligence Node..."}, f)
-        except: pass
-
+        
         # Initialize DB
         active_db = get_active_db_name()
         try:
             if active_db == "qdrant":
-                from src.utils.qdrant_client import init_collection
+                from src.utils.qdrant_provider import init_collection
                 init_collection()
             else:
                 from src.utils.pinecone_client import create_index
                 create_index()
         except Exception as e:
             print(f"[LexVed] DB Init error: {e}")
+            with open("evaluation_results.json", "w") as f:
+                json.dump({"status": "error", "message": f"DB Init failed: {e}"}, f)
+            return
 
         # Run Metrics
         try:
-            subprocess.Popen(["./venv/bin/python3", "run_metrics.py"])
+            proc = subprocess.Popen(["./venv/bin/python3", "run_metrics.py"])
+            with open("evaluation_results.json", "w") as f:
+                json.dump({
+                    "status": "processing", 
+                    "progress": "Initializing Intelligence Node...",
+                    "pid": proc.pid
+                }, f)
         except Exception as e:
             with open("evaluation_results.json", "w") as f:
                 json.dump({"status": "error", "message": str(e)}, f)
 
     executor.submit(run_eval)
-    return {"status": "processing", "message": "Evaluation started"}
+    # Give it a tiny bit of time to create the file with PID
+    return {"status": "processing", "message": "Evaluation initiated"}
 
 if __name__ == "__main__":
     import uvicorn

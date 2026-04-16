@@ -1,5 +1,6 @@
 {
-    "embedding_model": "multi-qa-mpnet-base-cos-v1",
+    "embedding_model": "multi-qa-distilbert-cos-v1",
+    "vector_db": "qdrant",
     "models": {
         "multi-qa-MiniLM-L6-cos-v1": {
             "dimension": 384
@@ -10,5 +11,9 @@
         "multi-qa-distilbert-cos-v1": {
             "dimension": 768
         }
-    }
+    },
+    "providers": [
+        "qdrant",
+        "pinecone"
+    ]
 }

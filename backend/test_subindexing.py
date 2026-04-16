@@ -4,7 +4,7 @@ import os
 # Add backend to path
 sys.path.append(os.getcwd())
 
-from src.utils.qdrant_client import init_collection, client, COLLECTION_NAME
+from src.utils.qdrant_provider import init_collection, client, COLLECTION_NAME
 from src.ingestion.uploader import upload_to_qdrant
 from src.retrieval.retriever import retrieve
 import numpy as np

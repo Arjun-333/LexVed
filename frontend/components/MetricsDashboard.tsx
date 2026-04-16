@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2, FileSpreadsheet, Play, Database } from "lucide-react";
+import { X, ShieldCheck, Zap, Activity, HardDrive, Download, Loader2, FileSpreadsheet, Play, Database, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import EmbeddingOmnitrix from "./EmbeddingOmnitrix";
@@ -21,6 +21,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   const [selectedModel, setSelectedModel] = useState("multi-qa-mpnet-base-cos-v1");
   const [selectedDb, setSelectedDb] = useState("qdrant");
   const [isStartingEval, setIsStartingEval] = useState(false);
+  const [isDbDropdownOpen, setIsDbDropdownOpen] = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
@@ -76,6 +77,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
 
   const handleDbChange = async (dbId: string) => {
     setSelectedDb(dbId);
+    setIsDbDropdownOpen(false);
     try {
       await fetch(`${API_URL}/api/settings/vector_db`, {
         method: "POST",
@@ -116,15 +118,9 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     { id: "M4",  category: "Retrieval",   label: "Cosine Similarity",     value: getVal("M4"),   decimals: 4, unit: "score" },
     { id: "M5",  category: "Retrieval",   label: "Recall@K",              value: getVal("M5"),   decimals: 4, unit: "score" },
     { id: "M6",  category: "Quality",     label: "ROUGE-1 Score",         value: getVal("M6"),   decimals: 4, unit: "score" },
-    { id: "M7",  category: "Quality",     label: "ROUGE-2 Score",         value: getVal("M7"),   decimals: 4, unit: "score" },
-    { id: "M8",  category: "Quality",     label: "ROUGE-L Score",         value: getVal("M8"),   decimals: 4, unit: "score" },
     { id: "M12", category: "Quality",     label: "BERTScore (F1)",        value: getVal("M12"),  decimals: 4, unit: "score" },
-    { id: "M13", category: "Quality",     label: "Factual Consistency",   value: getVal("M13"),  decimals: 0, unit: "%" },
     { id: "M14", category: "Quality",     label: "Faithfulness",          value: getVal("M14"),  decimals: 0, unit: "%" },
     { id: "M16", category: "Efficiency",  label: "End-to-End Latency",    value: getVal("M16"),  decimals: 2, unit: "sec" },
-    { id: "M17", category: "Efficiency",  label: "Throughput",            value: getVal("M17"),  decimals: 2, unit: "q/min" },
-    { id: "M20", category: "Legal",       label: "Citation Accuracy",     value: getVal("M20"),  decimals: 0, unit: "%" },
-    { id: "M21", category: "Legal",       label: "Term Precision",        value: getVal("M21"),  decimals: 0, unit: "%" },
   ] : [];
 
   const handleExportPDF = () => {
@@ -155,7 +151,6 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     headers.forEach((h, i) => doc.text(h, colX[i], y));
     y += 6;
 
-    doc.setFontSize(8);
     rows.forEach((row, idx) => {
       if (y > 275) { doc.addPage(); y = 20; }
       if (idx % 2 === 0) {
@@ -224,19 +219,48 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* Left: Controls */}
                 <div className="lg:w-1/3 flex flex-col gap-6">
-                   <div className="p-5 bg-white/5 border border-white/10 rounded-2xl space-y-4">
-                     <div className="flex items-center gap-2 text-[#d4af37] mb-2">
+                   {/* Custom DB Selector */}
+                   <div className="p-5 bg-white/5 border border-white/10 rounded-2xl relative">
+                     <div className="flex items-center gap-2 text-[#d4af37] mb-3">
                        <Database className="w-4 h-4" />
                        <span className="text-[10px] uppercase font-bold tracking-[0.2em]">Vector Infrastructure</span>
                      </div>
-                     <select 
-                        value={selectedDb}
-                        onChange={(e) => handleDbChange(e.target.value)}
-                        className="w-full bg-black border border-[#d4af37]/30 text-white rounded-lg p-3 text-sm focus:border-[#d4af37] outline-none appearance-none cursor-pointer hover:bg-white/5 transition-all"
-                     >
-                       <option value="qdrant">QDRANT (Self-Hosted)</option>
-                       <option value="pinecone">PINECONE (Serverless)</option>
-                     </select>
+                     
+                     <div className="relative">
+                       <button 
+                         onClick={() => setIsDbDropdownOpen(!isDbDropdownOpen)}
+                         className="w-full bg-black border border-[#d4af37]/30 text-white rounded-lg p-3 text-sm flex items-center justify-between hover:border-[#d4af37] transition-all"
+                       >
+                         <span className="font-medium text-white">
+                           {selectedDb === "qdrant" ? "QDRANT (Self-Hosted)" : "PINECONE (Serverless)"}
+                         </span>
+                         <ChevronDown className={`w-4 h-4 text-[#d4af37] transition-transform ${isDbDropdownOpen ? 'rotate-180' : ''}`} />
+                       </button>
+
+                       <AnimatePresence>
+                         {isDbDropdownOpen && (
+                           <motion.div 
+                             initial={{ opacity: 0, y: -10 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             exit={{ opacity: 0, y: -10 }}
+                             className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#d4af37]/30 rounded-lg overflow-hidden z-20 shadow-2xl"
+                           >
+                             {[
+                               { id: "qdrant", label: "QDRANT (Self-Hosted)" },
+                               { id: "pinecone", label: "PINECONE (Serverless)" }
+                             ].map((opt) => (
+                               <button
+                                 key={opt.id}
+                                 onClick={() => handleDbChange(opt.id)}
+                                 className={`w-full text-left p-3 text-sm transition-colors ${selectedDb === opt.id ? 'bg-[#d4af37] text-black font-bold' : 'text-white hover:bg-white/5'}`}
+                               >
+                                 {opt.label}
+                               </button>
+                             ))}
+                           </motion.div>
+                         )}
+                       </AnimatePresence>
+                     </div>
                    </div>
 
                    <EmbeddingOmnitrix 
@@ -281,7 +305,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                           <th className="px-6 py-3">ID</th>
                           <th className="px-6 py-3">Metric Label</th>
                           <th className="px-6 py-3">Value</th>
-                          <th className="px-6 py-3">Unit</th>
+                          <th className="px-3 py-3">Unit</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -296,7 +320,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                                 <span className="text-white/10">PENDING</span>
                               )}
                             </td>
-                            <td className="px-6 py-3 text-white/30 text-[10px]">{row.unit}</td>
+                            <td className="px-3 py-3 text-white/30 text-[10px]">{row.unit}</td>
                           </tr>
                         ))}
                       </tbody>

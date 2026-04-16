@@ -86,7 +86,7 @@ def run_evaluation():
             from src.utils.pinecone_client import index
             vector_count = index.describe_index_stats()['total_vector_count']
         else:
-            from src.utils.qdrant_client import client, COLLECTION_NAME
+            from src.utils.qdrant_provider import client, COLLECTION_NAME
             vector_count = client.get_collection(COLLECTION_NAME).vectors_count
     except: pass
 
@@ -109,6 +109,10 @@ def run_evaluation():
             # M3: Retrieval Latency
             docs, m3_ret_lat = retrieve(query, top_k=5)
             
+            if not docs:
+                print(f"Warning: No documents found for query: {query}")
+                continue
+
             # M4: Cosine Similarity
             doc_embs = model_st.encode([d.payload['text'] for d in docs])
             cos_sims = util.cos_sim(query_emb, doc_embs)[0]

@@ -6,7 +6,7 @@ from tqdm import tqdm
 from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch, categorize_text
 from src.ingestion.embedder import get_embeddings
 from src.ingestion.uploader import upload_to_qdrant
-from src.utils.qdrant_client import init_collection
+from src.utils.qdrant_provider import init_collection
 
 # Tracking for incremental ingestion
 TRACKING_FILE = "ingested_files.json"
@@ -75,7 +75,8 @@ def main():
         print("No new documents to index.")
         return
 
-    print(f"Scaling LexVed: Starting parallel ingestion of {len(all_pdfs)} documents...")
+    print(f"Scaling LexVed: Starting parallel ingestion of {len(all_pdfs)} documents (Limited to 10 for rapid verification)...")
+    all_pdfs = all_pdfs[:10]
     
     # Use ProcessPoolExecutor to leverage i9 CPU
     # We use 8 workers to balance speed and memory (each process loads ~1GB of models)

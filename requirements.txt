@@ -1,6 +1,7 @@
 sentence-transformers
 google-genai
 qdrant-client
+pinecone
 python-dotenv
 PyMuPDF
 transformers
@@ -12,3 +13,11 @@ tiktoken
 backoff
 flask
 flask-cors
+fastapi
+uvicorn
+pydantic
+spacy
+evaluate
+rouge-score
+bert-score
+jsPDF

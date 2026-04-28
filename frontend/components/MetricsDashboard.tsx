@@ -58,12 +58,18 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
         .then(data => setSelectedDb(data.db))
         .catch(console.error);
 
-      fetch(`${API_URL}/api/comparative`)
-        .then(res => res.json())
-        .then(data => setComparative(data))
-        .catch(console.error);
-        
-      pollRef.current = setInterval(fetchMetrics, 3000);
+      const fetchComp = () => {
+        fetch(`${API_URL}/api/comparative`)
+          .then(res => res.json())
+          .then(data => setComparative(data))
+          .catch(console.error);
+      };
+
+      fetchComp();
+      pollRef.current = setInterval(() => {
+         fetchMetrics();
+         fetchComp();
+      }, 3000);
     }
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -457,12 +463,43 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                             </tbody>
                           </table>
                         </div>
-                      ) : comparative?.status === "processing" ? (
-                        <div className="flex flex-col items-center justify-center py-16 gap-3">
-                          <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
-                          <p className="text-purple-300 text-xs uppercase tracking-widest">{comparative.progress}</p>
-                        </div>
-                      ) : (
+                      ) : comparative?.status === "processing" ? (() => {
+                        let pct = 10;
+                        if (comparative?.progress) {
+                          const modelMatch = comparative.progress.match(/model\s+(\d+)\s*\/\s*(\d+)/i);
+                          const queryMatch = comparative.progress.match(/(\d+)\s*\/\s*(\d+)\s+queries/i);
+
+                          if (modelMatch) {
+                            const currModel = parseInt(modelMatch[1]);
+                            const totalModels = parseInt(modelMatch[2]);
+                            
+                            let subProgress = 0;
+                            if (queryMatch) {
+                              const currQuery = parseInt(queryMatch[1]);
+                              const totalQueries = parseInt(queryMatch[2]);
+                              subProgress = currQuery / totalQueries;
+                            }
+                            
+                            pct = Math.round(((currModel - 1 + subProgress) / totalModels) * 100);
+                          }
+                        }
+                        pct = Math.max(5, Math.min(pct, 99)); // Keep bounded 5-99%
+                        return (
+                          <div className="flex flex-col items-center justify-center py-16 px-8 gap-4">
+                            <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
+                            <p className="text-purple-300 text-xs uppercase font-bold tracking-widest">{comparative.progress}</p>
+                            <div className="w-full max-w-md bg-white/5 rounded-full h-2 overflow-hidden border border-white/10 mt-2">
+                              <motion.div 
+                                className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ duration: 0.5 }}
+                              />
+                            </div>
+                            <span className="text-[10px] font-mono text-white/40">{pct}% Complete</span>
+                          </div>
+                        );
+                      })() : (
                         <div className="flex flex-col items-center justify-center py-16 gap-3 text-white/20">
                           <Database className="w-8 h-8" />
                           <p className="text-xs uppercase tracking-widest">No comparative data. Run a benchmark.</p>

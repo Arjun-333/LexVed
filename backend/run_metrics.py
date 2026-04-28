@@ -159,6 +159,10 @@ def ensure_data_ingested():
             for f in files:
                 if f.lower().endswith(".pdf"):
                     pdf_paths.append(os.path.join(root, f))
+                    if len(pdf_paths) >= 5: # Max 5 files for a quick but realistic test
+                        break
+            if len(pdf_paths) >= 5:
+                break
                 
     if not pdf_paths:
         print("[LexVed] No PDFs found in data/PDF/. Cannot evaluate.")
@@ -167,11 +171,31 @@ def ensure_data_ingested():
     from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch
     from src.ingestion.embedder import get_embeddings
     
+    CACHE_FILE = "data/evaluation_chunk_cache.json"
+    chunk_cache = {}
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                chunk_cache = json.load(f)
+        except: pass
+
     for path in pdf_paths:
         try:
             print(f"[LexVed] Auto-ingesting: {os.path.basename(path)}")
-            chunks = extract_chunks(path)
-            chunks = process_chunks_batch(chunks)
+            if path in chunk_cache:
+                print(f"[LexVed] Using pre-parsed chunks from cache.")
+                chunks = chunk_cache[path]
+            else:
+                chunks = extract_chunks(path)
+                chunks = process_chunks_batch(chunks)
+                chunk_cache[path] = chunks
+                # Save cache update
+                try:
+                    os.makedirs("data", exist_ok=True)
+                    with open(CACHE_FILE, "w") as f:
+                        json.dump(chunk_cache, f)
+                except: pass
+                
             texts = [c["text"] for c in chunks]
             embeddings = get_embeddings(texts)
             
@@ -352,6 +376,23 @@ def run_evaluation():
                 "details": all_results
             }
             with open("evaluation_results.json", "w") as f: json.dump(report, f, indent=4)
+            
+            # Also update comparative results if active
+            if os.path.exists("comparative_results.json"):
+                try:
+                    with open("comparative_results.json", "r") as f:
+                        comp_data = json.load(f)
+                    if comp_data.get("status") == "processing":
+                        # We are in a comparative run
+                        orig_progress = comp_data.get("progress", "")
+                        # Remove existing query suffix if present
+                        if " (" in orig_progress:
+                            orig_progress = orig_progress.split(" (")[0]
+                        comp_data["progress"] = f"{orig_progress} ({len(all_results)}/10 queries evaluated)"
+                        with open("comparative_results.json", "w") as f:
+                            json.dump(comp_data, f, indent=4)
+                except: pass
+
             print(f"[{len(all_results)}/10] Completed evaluation for query.")
 
     queries = []

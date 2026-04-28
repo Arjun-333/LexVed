@@ -29,3 +29,4 @@
   69 |                     initial={{ opacity: 0, x: -10 }}
  GET / 200 in 90ms (next.js: 7ms, application-code: 83ms)
 ✓ Compiled in 562ms
+✓ Compiled in 36ms

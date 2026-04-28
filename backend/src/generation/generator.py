@@ -3,14 +3,18 @@ import time
 import requests
 import json
 from dotenv import load_dotenv
+from src.utils.config_manager import get_active_generation_model, load_config
 
 load_dotenv()
 
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
-
 def generate_with_ollama_stream(prompt, model=None):
     """Yields chunks of the generated answer from Local Ollama API."""
-    model = model or OLLAMA_MODEL
+    model = model or get_active_generation_model()
+
+    if model in load_config().get("groq_models", []):
+        yield from generate_with_groq_stream(prompt, model)
+        return
+
     url = "http://localhost:11434/api/generate"
     payload = {
         "model": model,
@@ -22,37 +26,102 @@ def generate_with_ollama_stream(prompt, model=None):
         }
     }
     
-    with requests.post(url, json=payload, stream=True) as response:
-        response.raise_for_status()
-        for line in response.iter_lines():
-            if line:
-                chunk = json.loads(line)
-                yield chunk.get("response", "")
-                if chunk.get("done"):
-                    break
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            with requests.post(url, json=payload, stream=True, timeout=120) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if line:
+                        chunk = json.loads(line)
+                        yield chunk.get("response", "")
+                        if chunk.get("done"):
+                            break
+                return  # Success — exit retry loop
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            if attempt < max_retries - 1:
+                import time
+                wait = 2 ** attempt  # 1s, 2s, 4s
+                print(f"[LexVed] Ollama connection failed (attempt {attempt+1}/{max_retries}), retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                yield f"\n\n[Error: Could not connect to Ollama at {url} after {max_retries} attempts. Is the service running?]"
+        except requests.exceptions.HTTPError as e:
+            yield f"\n\n[Error: Ollama returned HTTP {e.response.status_code}. Model '{model}' may not be available.]"
+            return
 
-def generate_answer_stream(question, context, model=None):
+def generate_with_groq_stream(prompt, model):
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        yield "Error: GROQ_API_KEY not found in environment."
+        return
+
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": True,
+        "temperature": 0.2
+    }
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            with requests.post(url, headers=headers, json=payload, stream=True, timeout=60) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if line:
+                        line_str = line.decode("utf-8")
+                        if line_str.startswith("data: ") and line_str != "data: [DONE]":
+                            try:
+                                chunk = json.loads(line_str[6:])
+                                yield chunk["choices"][0]["delta"].get("content", "")
+                            except:
+                                pass
+                return  # Success
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            if attempt < max_retries - 1:
+                import time
+                time.sleep(2 ** attempt)
+            else:
+                yield f"\n\n[Error: Groq API unreachable after {max_retries} attempts.]"
+        except requests.exceptions.HTTPError as e:
+            yield f"\n\n[Error: Groq returned HTTP {e.response.status_code}.]"
+            return
+
+def generate_answer_stream(question, context, model=None, history=None):
     """
     Generator that provides a legal answer and its metadata.
     Trims context to prevent extreme latency.
+    Supports multi-turn conversation via optional history.
     """
-    model = model or OLLAMA_MODEL
+    model = model or get_active_generation_model()
     
-    # Trim context to ~3000 chars to ensure fast inference on local hardware
+    # Trim context to ~6000 chars to ensure fast inference on local hardware
     trimmed_context = context[:6000] 
+
+    # Build conversation history prefix
+    history_prefix = ""
+    if history and len(history) > 0:
+        history_prefix = "Previous conversation:\n"
+        for turn in history[-3:]:  # Last 3 turns
+            history_prefix += f"Q: {turn.get('question', '')}\nA: {turn.get('answer', '')}\n\n"
+        history_prefix += "Now answer the following new question based on the context and previous conversation.\n\n"
 
     prompt = (
         "You are a professional legal assistant. "
         "Answer the question using ONLY the provided context. "
         "Cite the source and page number(s) (e.g., [Source: file.pdf, Page: 4]).\n\n"
+        f"{history_prefix}"
         f"Context:\n{trimmed_context}\n\n"
         f"Q: {question}\nA:"
     )
     
     return generate_with_ollama_stream(prompt, model=model)
-def generate_answer(question, context, model=None):
+
+def generate_answer(question, context, model=None, history=None):
     """Non-streaming version of generate_answer for legacy endpoints."""
     ans = ""
-    for chunk in generate_answer_stream(question, context, model=model):
+    for chunk in generate_answer_stream(question, context, model=model, history=history):
         ans += chunk
     return ans, 0, 0 # Return 0 for times as they are handled elsewhere or ignored

@@ -10,12 +10,11 @@ from rouge_score import rouge_scorer
 import evaluate
 from src.retrieval.retriever import retrieve
 from src.generation.generator import generate_answer_stream
-from src.utils.config_manager import get_active_model_name, get_active_db_name
+from src.utils.config_manager import get_active_model_name, get_active_db_name, get_active_generation_model
 
 # Evaluation Config
 EVAL_DATA_PATH = "evaluation_data.json"
 OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "llama3"
 
 # Initialize local metrics
 scorer_rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
@@ -23,6 +22,51 @@ metric_bleu = evaluate.load("bleu")
 metric_meteor = evaluate.load("meteor")
 metric_bertscore = evaluate.load("bertscore")
 model_st = SentenceTransformer(get_active_model_name())
+
+def check_hallucination_nli(context, answer):
+    try:
+        if not globals().get("nli_pipeline"):
+            from transformers import pipeline
+            globals()["nli_pipeline"] = pipeline("text-classification", model="cross-encoder/nli-deberta-v3-small")
+            
+        ctx_trunc = context[:2000] 
+        res = globals()["nli_pipeline"]({"text": ctx_trunc, "text_pair": answer})
+        label = res.get("label", "").lower()
+        score = res.get("score", 0.5)
+        
+        if "entailment" in label or "label_1" in label or "label_2" in label:
+            return int(score * 100)
+        elif "contradiction" in label or "label_0" in label:
+            return int((1 - score) * 100)
+        return 50 # Neutral
+    except Exception as e:
+        print(f"NLI Error: {e}")
+        return 75
+
+def get_ner_precision(gt, ans):
+    try:
+        if not globals().get("nlp"):
+            import spacy
+            try:
+                globals()["nlp"] = spacy.load("en_core_web_sm")
+            except:
+                import os
+                os.system("python3 -m spacy download en_core_web_sm")
+                globals()["nlp"] = spacy.load("en_core_web_sm")
+        
+        gt_doc = globals()["nlp"](gt)
+        ans_doc = globals()["nlp"](ans)
+        
+        gt_ents = {ent.text.lower() for ent in gt_doc.ents if ent.label_ in ["PERSON", "ORG", "GPE", "LAW", "DATE"]}
+        ans_ents = {ent.text.lower() for ent in ans_doc.ents if ent.label_ in ["PERSON", "ORG", "GPE", "LAW", "DATE"]}
+        
+        if not gt_ents: return 100
+        overlap = gt_ents.intersection(ans_ents)
+        return int((len(overlap) / len(gt_ents)) * 100)
+        
+    except Exception as e:
+        print(f"NER Error: {e}")
+        return 50
 
 def judge_llm_metrics(query, ground_truth, model_answer, context):
     """Uses Llama 3 to evaluate complex metrics like Faithfulness, Bias, and Terminology Precision."""
@@ -49,12 +93,20 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
     {{"faithfulness": 75, "citation_acc": 60, "term_precision": 80, "precedent_match": 50, "factual_consistency": 70, "bias_score": 5, "regulatory_alignment": 85, "jurisdictional_comp": 90}}
     """
     
-    payload = {"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": "json"}
+    payload = {"model": get_active_generation_model(), "prompt": prompt, "stream": False, "format": "json"}
     try:
-        res = requests.post(OLLAMA_URL, json=payload, timeout=120)
-        parsed = json.loads(res.json().get("response", "{}"))
+        import re
+        res = requests.post(OLLAMA_URL, json=payload, timeout=180) # Increased timeout to 180s
+        raw_resp = res.json().get("response", "{}")
+        # Try finding json in the response using regex in case formatting failed
+        match = re.search(r'\{.*\}', raw_resp, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group(0))
+        else:
+            parsed = json.loads(raw_resp)
         return parsed
     except Exception as e:
+        print(f"Exception during Llama 3 Judge Evaluation: {e}")
         return {"faithfulness": 50, "citation_acc": 50, "term_precision": 50, "precedent_match": 50, "factual_consistency": 50, "bias_score": 10, "regulatory_alignment": 50, "jurisdictional_comp": 50}
 
 def calculate_local_metrics(gt, ans):
@@ -141,6 +193,8 @@ def run_evaluation():
         
         q_stats = calculate_local_metrics(gt, ans)
         judge_res = judge_llm_metrics(query, gt, ans, context)
+        nli_score = check_hallucination_nli(context, ans)
+        ner_score = get_ner_precision(gt, ans)
         
         m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
         
@@ -171,15 +225,15 @@ def run_evaluation():
                 "M10": q_stats['bleu'],
                 "M11": m11_sem_score,
                 "M12": q_stats['bert_f1'],
-                "M13": 100 - to_int(judge_res.get("factual_consistency", 0)), 
-                "M14": to_int(judge_res.get("faithfulness", 0)), 
+                "M13": 100 - nli_score, 
+                "M14": nli_score, 
                 "M15": to_int(judge_res.get("factual_consistency", 0)),
                 "M16": m16_e2e,
                 "M17": m17_tgl,
                 "M18": m18_cost,
                 "M19": m19_ram, 
                 "M20": to_int(judge_res.get("citation_acc", 0)),
-                "M21": to_int(judge_res.get("term_precision", 0)),
+                "M21": ner_score,
                 "M22": to_int(judge_res.get("precedent_match", 0)),
                 "M23": to_int(judge_res.get("regulatory_alignment", 0)),
                 "M24": to_int(judge_res.get("jurisdictional_comp", 0))
@@ -222,7 +276,7 @@ def run_evaluation():
         "details": all_results,
         "system_info": {
             "vector_db": active_db.upper(),
-            "model": "Llama 3 8B (Local)",
+            "model": get_active_generation_model(),
             "embedding": get_active_model_name(),
             "encryption": "AES-256"
         }

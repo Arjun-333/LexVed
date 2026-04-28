@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider } from "../components/ThemeProvider";
 import Sidebar from "../components/Sidebar";
@@ -11,11 +11,35 @@ import ModelWheel from "../components/ModelWheel";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
 
+interface HealthData {
+  active_generation_model?: string;
+  ollama?: string;
+  active_vector_db?: string;
+  uptime_seconds?: number;
+}
+
 function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [health, setHealth] = useState<HealthData | null>(null);
+  
+  // Conversation history for multi-turn chat
+  const conversationHistory = useRef<{question: string; answer: string}[]>([]);
+
+  // Fetch health status
+  useEffect(() => {
+    const fetchHealth = () => {
+      fetch(`${API_URL}/api/health`)
+        .then(res => res.json())
+        .then(data => setHealth(data))
+        .catch(() => setHealth({ ollama: "offline" }));
+    };
+    fetchHealth();
+    const interval = setInterval(fetchHealth, 15000); // Poll every 15s
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     let timer: any;
@@ -32,10 +56,24 @@ function Dashboard() {
 
   const [hasStarted, setHasStarted] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<{ focus: () => void }>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+K — Focus search input
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   async function handleSend(text: string) {
     if (!hasStarted) setHasStarted(true);
@@ -51,7 +89,10 @@ function Dashboard() {
       const res = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ 
+          message: text,
+          history: conversationHistory.current.slice(-3)  // Send last 3 turns
+        }),
       });
 
       if (!res.body) throw new Error("No response body");
@@ -97,6 +138,10 @@ function Dashboard() {
           }
         }
       }
+
+      // Store in conversation history for multi-turn
+      conversationHistory.current.push({ question: text, answer: fullText });
+      
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Unknown error";
       setMessages((prev) => [
@@ -108,6 +153,11 @@ function Dashboard() {
       setIsTyping(false);
     }
   }
+
+  // Dynamic status bar values
+  const modelName = health?.active_generation_model || "Connecting...";
+  const ollamaStatus = health?.ollama === "connected" ? "OPTIMAL" : health?.ollama === "offline" ? "OFFLINE" : "CONNECTING";
+  const statusColor = health?.ollama === "connected" ? "bg-green-500" : health?.ollama === "offline" ? "bg-red-500" : "bg-yellow-500";
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
@@ -127,9 +177,9 @@ function Dashboard() {
              <div className="flex flex-col items-end">
                <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] opacity-40">System Status</span>
                <div className="flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                 <span className={`w-1.5 h-1.5 rounded-full ${statusColor} ${health?.ollama === "connected" ? "animate-pulse" : ""}`} />
                  <span className="text-[0.65rem] font-bold uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
-                   Llama-3-8B · 127.0.0.1
+                   {modelName} · {ollamaStatus}
                  </span>
                </div>
              </div>
@@ -177,7 +227,7 @@ function Dashboard() {
         </div>
 
         <div className="shrink-0 z-20">
-           <InputBar onSend={handleSend} disabled={loading} />
+           <InputBar onSend={handleSend} disabled={loading} ref={inputRef} />
         </div>
       </main>
       <ModelWheel />

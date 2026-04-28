@@ -4,13 +4,19 @@ import json
 CONFIG_PATH = "system_config.json"
 
 DEFAULT_CONFIG = {
+    "generation_model": "llama3",
     "embedding_model": "multi-qa-mpnet-base-cos-v1",
     "vector_db": "qdrant",
     "models": {
         "multi-qa-MiniLM-L6-cos-v1": {"dimension": 384},
         "multi-qa-mpnet-base-cos-v1": {"dimension": 768},
-        "multi-qa-distilbert-cos-v1": {"dimension": 768}
+        "multi-qa-distilbert-cos-v1": {"dimension": 768},
+        "BAAI/bge-m3": {"dimension": 1024},
+        "intfloat/multilingual-e5-large-instruct": {"dimension": 1024},
+        "Cohere/Cohere-embed-english-v3.0": {"dimension": 1024}
     },
+    "generation_models": ["llama3", "llama3:70b", "qwen2.5:70b", "qwen2.5:7b", "mistral", "phi3", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
+    "groq_models": ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
     "providers": ["qdrant", "pinecone"]
 }
 
@@ -50,6 +56,17 @@ def set_active_db(db_name):
     config = load_config()
     if db_name in config.get("providers", ["qdrant", "pinecone"]):
         config["vector_db"] = db_name
+        save_config(config)
+        return True
+    return False
+
+def get_active_generation_model():
+    return load_config().get("generation_model", "llama3")
+
+def set_active_generation_model(model_name):
+    config = load_config()
+    if model_name in config.get("generation_models", []):
+        config["generation_model"] = model_name
         save_config(config)
         return True
     return False

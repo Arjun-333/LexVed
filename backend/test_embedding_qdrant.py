@@ -5,8 +5,8 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch, categorize_text
 from src.ingestion.embedder import get_embeddings
-from src.ingestion.uploader import upload_to_qdrant
-from src.utils.qdrant_provider import init_collection
+from src.ingestion.uploader import upload_to_qdrant, upload_to_pinecone
+from src.utils.config_manager import get_active_db_name
 
 # Tracking for incremental ingestion
 TRACKING_FILE = "ingested_files.json"
@@ -51,7 +51,10 @@ def process_single_pdf(path):
         texts = [c["text"] for c in chunks]
         if texts:
             embeddings = get_embeddings(texts)
-            upload_to_qdrant(chunks, embeddings, category=dir_category, subcategory=subcategory)
+            if get_active_db_name() == "pinecone":
+                upload_to_pinecone(chunks, embeddings, category=dir_category, subcategory=subcategory)
+            else:
+                upload_to_qdrant(chunks, embeddings, category=dir_category, subcategory=subcategory)
         
         return path
     except Exception as e:

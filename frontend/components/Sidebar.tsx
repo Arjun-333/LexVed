@@ -2,7 +2,7 @@
 
 import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MetricsDashboard from "./MetricsDashboard";
 import CaseFilesModal from "./CaseFilesModal";
 import ResearchHistoryModal from "./ResearchHistoryModal";
@@ -12,6 +12,30 @@ export default function Sidebar() {
   const [showMetrics, setShowMetrics] = useState(false);
   const [showFiles, setShowFiles] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+
+  // Global keyboard shortcuts for modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape — close any open modal
+      if (e.key === "Escape") {
+        setShowMetrics(false);
+        setShowFiles(false);
+        setShowHistory(false);
+      }
+      // Ctrl+M — Open Metrics Dashboard
+      if ((e.ctrlKey || e.metaKey) && e.key === "m") {
+        e.preventDefault();
+        setShowMetrics(prev => !prev);
+      }
+      // Ctrl+H — Open Research History
+      if ((e.ctrlKey || e.metaKey) && e.key === "h") {
+        e.preventDefault();
+        setShowHistory(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <nav
@@ -39,7 +63,7 @@ export default function Sidebar() {
         <IconButton active icon="chat_bubble" title="New Brief" />
         <IconButton 
           icon="history" 
-          title="Research History" 
+          title="Research History (Ctrl+H)" 
           onClick={() => setShowHistory(true)}
         />
         <IconButton 
@@ -55,7 +79,7 @@ export default function Sidebar() {
       <div className="flex flex-col gap-6 mb-2">
         <IconButton 
           icon="analytics" 
-          title="Performance Audit" 
+          title="Performance Audit (Ctrl+M)" 
           onClick={() => setShowMetrics(true)} 
         />
         <IconButton

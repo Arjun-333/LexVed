@@ -3,24 +3,48 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const models = [
-  { name: "LLaMA-3 8B (Instruct)",   icon: "security",      color: "#D4A017", active: true  },
-  { name: "LLaMA-3 70B (Instruct)",   icon: "all_inclusive", color: "#8B5CF6", active: false },
-  { name: "Qwen2.5-70B (Instruct)",   icon: "auto_awesome", color: "#EF4444", active: false },
-  { name: "Qwen2.5-7B (Instruct)",    icon: "star",         color: "#F59E0B", active: false },
-  { name: "Mistral 7B (Instruct)",    icon: "bolt",         color: "#10B981", active: false },
-  { name: "Phi-3",                    icon: "memory",       color: "#06B6D4", active: false },
+const modelsList = [
+  { id: "llama3", name: "LLaMA-3 8B (Instruct)",   icon: "security",      color: "#D4A017" },
+  { id: "llama3:70b", name: "LLaMA-3 70B (Instruct)",   icon: "all_inclusive", color: "#8B5CF6" },
+  { id: "qwen2.5:70b", name: "Qwen2.5-70B (Instruct)",   icon: "auto_awesome", color: "#EF4444" },
+  { id: "qwen2.5:7b", name: "Qwen2.5-7B (Instruct)",    icon: "star",         color: "#F59E0B" },
+  { id: "mistral", name: "Mistral 7B (Instruct)",    icon: "bolt",         color: "#10B981" },
+  { id: "phi3", name: "Phi-3",                    icon: "memory",       color: "#06B6D4" },
 ];
 
-const DEG = 360 / models.length;
+const DEG = 360 / modelsList.length;
 const R = 150;
 
 export default function ModelWheel() {
   const [rotation, setRotation] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
+  const [activeModelId, setActiveModelId] = useState("llama3");
   const dragging = useRef(false);
   const lastY = useRef(0);
   const vel = useRef(0);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/settings/generation_model`)
+      .then(res => res.json())
+      .then(data => setActiveModelId(data.model))
+      .catch(console.error);
+  }, []);
+
+  const handleModelClick = async (id: string, idx: number) => {
+    setActiveModelId(id);
+    setRotation(idx * DEG);
+    try {
+      await fetch(`${API_URL}/api/settings/generation_model`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: id }),
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const snap = (r: number) => Math.round(r / DEG) * DEG;
 
@@ -74,31 +98,35 @@ export default function ModelWheel() {
             transition: dragging.current ? "none" : "transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          {models.map((m, i) => (
-            <div
-              key={m.name}
-              className="absolute w-[200px] h-[85px] left-[20px] top-[127px] rounded-2xl flex flex-col items-center justify-center gap-1.5 p-4 transition-all duration-500"
-              style={{
-                transform: `rotateX(${-i * DEG}deg) translateZ(${R}px)`,
-                backfaceVisibility: "hidden",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderTopColor: m.active ? "var(--accent)" : "var(--border)",
-                boxShadow: m.active ? "var(--shadow-gold)" : "var(--shadow-prestige)",
-                opacity: m.active ? 1 : 0.3,
-              }}
-            >
-              <span className="material-icons-round text-[22px]" style={{ color: m.color }}>
-                {m.icon}
-              </span>
-              <span className="font-bold text-[0.7rem] text-center tracking-tight" style={{ color: "var(--text)" }}>
-                {m.name}
-              </span>
-              <span className="text-[0.45rem] font-bold uppercase tracking-[0.2em] opacity-50">
-                {m.active ? "Active Link" : "Standby"}
-              </span>
-            </div>
-          ))}
+          {modelsList.map((m, i) => {
+            const isActive = activeModelId === m.id;
+            return (
+              <div
+                key={m.name}
+                onClick={() => handleModelClick(m.id, i)}
+                className="absolute w-[200px] h-[85px] left-[20px] top-[127px] rounded-2xl flex flex-col items-center justify-center gap-1.5 p-4 transition-all duration-500 cursor-pointer"
+                style={{
+                  transform: `rotateX(${-i * DEG}deg) translateZ(${R}px)`,
+                  backfaceVisibility: "hidden",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderTopColor: isActive ? "var(--accent)" : "var(--border)",
+                  boxShadow: isActive ? "var(--shadow-gold)" : "var(--shadow-prestige)",
+                  opacity: isActive ? 1 : 0.4,
+                }}
+              >
+                <span className="material-icons-round text-[22px]" style={{ color: m.color }}>
+                  {m.icon}
+                </span>
+                <span className="font-bold text-[0.7rem] text-center tracking-tight" style={{ color: "var(--text)" }}>
+                  {m.name}
+                </span>
+                <span className="text-[0.45rem] font-bold uppercase tracking-[0.2em] opacity-50">
+                  {isActive ? "Active Link" : "Standby"}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 h-32 z-10 pointer-events-none"

@@ -1,7 +1,29 @@
+# Environment
 .env
 venv/
 .venv/
 __pycache__/
 *.pyc
+
+# Data & Storage
 qdrant_db/
 metrics_log.csv
+backend/history.json
+backend/evaluation_results.json
+backend/comparative_results.json
+backend/system_config.json
+
+# Logs
+*.log
+backend/backend.log
+frontend.log
+
+# Node
+node_modules/
+.next/
+frontend/.next/
+frontend/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

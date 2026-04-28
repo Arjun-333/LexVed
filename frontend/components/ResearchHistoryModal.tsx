@@ -125,7 +125,15 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
           </div>
 
           <div className="p-4 bg-black/40 border-t border-white/5 flex items-center justify-center">
-            <button className="text-[10px] font-bold text-white/30 hover:text-white uppercase tracking-[0.2em] transition-colors">
+            <button 
+              onClick={() => {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+                fetch(`${API_URL}/api/history`, { method: "DELETE" })
+                  .then(() => setHistory([]))
+                  .catch(console.error);
+              }}
+              className="text-[10px] font-bold text-white/30 hover:text-red-400 uppercase tracking-[0.2em] transition-colors"
+            >
               Clear History Log
             </button>
           </div>

@@ -7,6 +7,9 @@ const embeddingModels = [
   { id: "multi-qa-mpnet-base-cos-v1", name: "MPNet Base", icon: "hub", color: "var(--accent)" },
   { id: "multi-qa-MiniLM-L6-cos-v1", name: "MiniLM L6", icon: "architecture", color: "#60A5FA" },
   { id: "multi-qa-distilbert-cos-v1", name: "DistilBERT", icon: "psychology", color: "#F472B6" },
+  { id: "BAAI/bge-m3", name: "BGE-M3", icon: "language", color: "#34D399" },
+  { id: "intfloat/multilingual-e5-large-instruct", name: "E5-Mistral", icon: "auto_awesome", color: "#FB923C" },
+  { id: "Cohere/Cohere-embed-english-v3.0", name: "Cohere v3", icon: "cloud", color: "#A78BFA" },
 ];
 
 interface Props {
@@ -120,7 +123,7 @@ export default function EmbeddingOmnitrix({ selectedModel, onSelect }: Props) {
               {embeddingModels[currentIndex].name}
             </span>
             <span className="text-[9px] uppercase tracking-widest text-[var(--accent)] font-bold mt-1">
-              {selectedModel.includes("mpnet") ? "768 DIM" : selectedModel.includes("MiniLM") ? "384 DIM" : "768 DIM"}
+              {selectedModel.includes("MiniLM") ? "384 DIM" : selectedModel.includes("bge-m3") || selectedModel.includes("e5-large") || selectedModel.includes("Cohere") ? "1024 DIM" : "768 DIM"}
             </span>
           </motion.div>
         </AnimatePresence>

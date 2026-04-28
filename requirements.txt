@@ -20,4 +20,6 @@ spacy
 evaluate
 rouge-score
 bert-score
-jsPDF
+rank_bm25
+cohere
+groq

@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 
 interface InputBarProps {
   onSend: (text: string) => void;
   disabled?: boolean;
 }
 
-export default function InputBar({ onSend, disabled }: InputBarProps) {
+const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, disabled }, ref) => {
   const [text, setText] = useState("");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus()
+  }));
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
@@ -43,11 +47,20 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="Ask Llama 3 for a legal analysis..."
+          placeholder="Ask a legal question..."
           disabled={disabled}
           className="flex-1 bg-transparent border-none outline-none text-[0.95rem] transition-all duration-300"
           style={{ color: "var(--text)", fontWeight: 400 }}
         />
+
+        {/* Keyboard shortcut hint */}
+        {!focused && !text && (
+          <div className="hidden md:flex items-center gap-1 opacity-30">
+            <kbd className="px-1.5 py-0.5 text-[9px] font-bold border border-[var(--border)] rounded bg-[var(--surface-active)]" style={{ color: "var(--text-muted)" }}>
+              Ctrl+K
+            </kbd>
+          </div>
+        )}
 
         <button
           onClick={handleSubmit}
@@ -68,9 +81,12 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
       <div className="flex items-center justify-center gap-3 mt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">
          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
          <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
-           Encrypted Local Inference · No Cloud Latency
+           Encrypted Local Inference · Multi-Turn Context
          </p>
       </div>
     </div>
   );
-}
+});
+
+InputBar.displayName = "InputBar";
+export default InputBar;

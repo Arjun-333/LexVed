@@ -22,6 +22,9 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   const [selectedDb, setSelectedDb] = useState("qdrant");
   const [isStartingEval, setIsStartingEval] = useState(false);
   const [isDbDropdownOpen, setIsDbDropdownOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"single" | "comparative">("single");
+  const [comparative, setComparative] = useState<any>(null);
+  const [isStartingComparative, setIsStartingComparative] = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
@@ -53,6 +56,11 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
       fetch(`${API_URL}/api/settings/vector_db`)
         .then(res => res.json())
         .then(data => setSelectedDb(data.db))
+        .catch(console.error);
+
+      fetch(`${API_URL}/api/comparative`)
+        .then(res => res.json())
+        .then(data => setComparative(data))
         .catch(console.error);
         
       pollRef.current = setInterval(fetchMetrics, 3000);
@@ -106,6 +114,35 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
 
   const isProcessing = metrics?.status === "processing";
 
+  const handleStartComparative = async () => {
+    setIsStartingComparative(true);
+    try {
+      await fetch(`${API_URL}/api/workflow/comparative`, { method: "POST" });
+      setActiveTab("comparative");
+    } catch (err) { console.error(err); }
+    finally { setIsStartingComparative(false); }
+  };
+
+  const handleExportDOCX = () => {
+    if (!metrics?.summary) return;
+    let content = "LEXVED INSTITUTIONAL AUDIT REPORT\n";
+    content += "=" .repeat(40) + "\n\n";
+    content += `Timestamp: ${metrics.timestamp || new Date().toLocaleString()}\n`;
+    content += `Database: ${selectedDb.toUpperCase()}\nEmbedding: ${selectedModel}\n\n`;
+    content += "METRIC ID | LABEL | VALUE | UNIT\n";
+    content += "-".repeat(50) + "\n";
+    rows.forEach(r => {
+      const val = r.value !== null ? r.value.toFixed(r.decimals) : "PENDING";
+      content += `${r.id} | ${r.label} | ${val} | ${r.unit}\n`;
+    });
+    const blob = new Blob([content], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `LexVed_Audit_${new Date().toISOString().split("T")[0]}.docx`;
+    a.click();
+  };
+
   const getVal = (key: string): number | null => {
     const v = metrics?.summary?.[key];
     return (v !== null && v !== undefined) ? v : null;
@@ -144,7 +181,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     const timestamp = metrics.timestamp || new Date().toLocaleString();
     const sys = metrics.system_info || { 
       vector_db: selectedDb, 
-      model: "Llama 3 8B (Local)", 
+      model: "Local AI Node", 
       embedding: selectedModel
     };
 
@@ -154,7 +191,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     doc.setFontSize(9);
     doc.setTextColor(120);
     doc.text(`Mission-Critical Metrics (M1-M24) | ${timestamp}`, 14, 27);
-    doc.text(`System: ${sys.model} | Vector DB: ${sys.vector_db.toUpperCase()}`, 14, 32);
+    doc.text(`System: ${sys.model} | DB: ${sys.vector_db.toUpperCase()} | Model: ${sys.embedding}`, 14, 32);
 
     const colX = [14, 30, 62, 120, 165];
     const headers = ["ID", "Category", "Metric Label", "Value", "Unit"];
@@ -297,68 +334,142 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                      {isProcessing ? "Benchmarking..." : "Start Evaluation"}
                    </motion.button>
 
-                   <div className="flex gap-2">
-                      <button onClick={handleExportCSV} className="flex-1 py-3 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg text-[10px] font-bold hover:bg-green-500 hover:text-black transition-all">
-                        EXCEL
-                      </button>
-                      <button onClick={handleExportPDF} className="flex-1 py-3 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-[10px] font-bold hover:bg-[#d4af37] hover:text-black transition-all">
-                        EXPORT PDF
-                      </button>
-                   </div>
+                   <div className="grid grid-cols-3 gap-2">
+                       <button onClick={handleExportCSV} className="py-3 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg text-[10px] font-bold hover:bg-green-500 hover:text-black transition-all">
+                         CSV
+                       </button>
+                       <button onClick={handleExportPDF} className="py-3 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-[10px] font-bold hover:bg-[#d4af37] hover:text-black transition-all">
+                         PDF
+                       </button>
+                       <button onClick={handleExportDOCX} className="py-3 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-lg text-[10px] font-bold hover:bg-blue-500 hover:text-black transition-all">
+                         DOCX
+                       </button>
+                    </div>
+
+                    {/* Tab Switcher */}
+                    <div className="flex gap-1 bg-white/5 p-1 rounded-lg">
+                      <button onClick={() => setActiveTab("single")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "single" ? "bg-[#d4af37] text-black" : "text-white/40 hover:text-white"}`}>Single</button>
+                      <button onClick={() => setActiveTab("comparative")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "comparative" ? "bg-[#d4af37] text-black" : "text-white/40 hover:text-white"}`}>Compare</button>
+                    </div>
+
+                    {activeTab === "comparative" && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleStartComparative}
+                        disabled={isStartingComparative || comparative?.status === "processing"}
+                        className="w-full py-3 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500 hover:text-black transition-all disabled:opacity-30"
+                      >
+                        {isStartingComparative ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3 fill-current" />}
+                        Benchmark All 6 Models
+                      </motion.button>
+                    )}
                 </div>
 
                 {/* Right: Metrics */}
                 <div className="lg:w-2/3 space-y-6">
-                  <div className="overflow-hidden border border-white/10 rounded-xl bg-white/[0.02]">
-                    <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Audit Metrics Report</span>
-                      <span className="text-[10px] text-[#d4af37] font-mono">{metrics?.system_info?.vector_db?.toUpperCase() || "NODE"} ACTIVE</span>
-                    </div>
-                    <table className="w-full text-left">
-                      <thead className="text-white/40 text-[10px] font-bold uppercase tracking-wider">
-                        <tr>
-                          <th className="px-6 py-3">ID</th>
-                          <th className="px-6 py-3">Metric Label</th>
-                          <th className="px-6 py-3">Value</th>
-                          <th className="px-3 py-3">Unit</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/5">
-                        {rows.map((row) => (
-                          <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
-                            <td className="px-6 py-3 font-mono text-[#d4af37] text-xs">{row.id}</td>
-                            <td className="px-6 py-3 text-white/80 text-xs font-medium">{row.label}</td>
-                            <td className="px-6 py-3 font-mono text-xs">
-                              {row.value !== null ? (
-                                <span className="text-green-400">{row.value.toFixed(row.decimals)}</span>
-                              ) : (
-                                <span className="text-white/10">PENDING</span>
-                              )}
-                            </td>
-                            <td className="px-3 py-3 text-white/30 text-[10px]">{row.unit}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { icon: Zap, label: "E2E Latency", val: metrics?.summary?.M16, suffix: "s" },
-                      { icon: Activity, label: "Faithfulness", val: metrics?.summary?.M14, suffix: "%" },
-                      { icon: HardDrive, label: "Vector Count", val: metrics?.summary?.M2, suffix: "" }
-                    ].map((card, i) => (
-                      <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
-                          <card.icon className="w-8 h-8 text-[#d4af37]" />
-                        </div>
-                        <div className="text-white/40 text-[8px] uppercase font-bold tracking-widest mb-1">{card.label}</div>
-                        <div className="text-white text-lg font-bold">
-                          {card.val ? `${Number(card.val).toFixed(i === 2 ? 0 : 2)}${card.suffix}` : "—"}
-                        </div>
+                  {activeTab === "single" ? (
+                    <>
+                    <div className="overflow-hidden border border-white/10 rounded-xl bg-white/[0.02]">
+                      <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Audit Metrics Report</span>
+                        <span className="text-[10px] text-[#d4af37] font-mono">{metrics?.system_info?.vector_db?.toUpperCase() || "NODE"} ACTIVE</span>
                       </div>
-                    ))}
-                  </div>
+                      <table className="w-full text-left">
+                        <thead className="text-white/40 text-[10px] font-bold uppercase tracking-wider">
+                          <tr>
+                            <th className="px-6 py-3">ID</th>
+                            <th className="px-6 py-3">Metric Label</th>
+                            <th className="px-6 py-3">Value</th>
+                            <th className="px-3 py-3">Unit</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {rows.map((row) => (
+                            <tr key={row.id} className="hover:bg-white/[0.02] transition-colors group">
+                              <td className="px-6 py-3 font-mono text-[#d4af37] text-xs">{row.id}</td>
+                              <td className="px-6 py-3 text-white/80 text-xs font-medium">{row.label}</td>
+                              <td className="px-6 py-3 font-mono text-xs">
+                                {row.value !== null ? (
+                                  <span className="text-green-400">{row.value.toFixed(row.decimals)}</span>
+                                ) : (
+                                  <span className="text-white/10">PENDING</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-3 text-white/30 text-[10px]">{row.unit}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[
+                        { icon: Zap, label: "E2E Latency", val: metrics?.summary?.M16, suffix: "s" },
+                        { icon: Activity, label: "Faithfulness", val: metrics?.summary?.M14, suffix: "%" },
+                        { icon: HardDrive, label: "Vector Count", val: metrics?.summary?.M2, suffix: "" }
+                      ].map((card, i) => (
+                        <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl relative overflow-hidden group">
+                          <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
+                            <card.icon className="w-8 h-8 text-[#d4af37]" />
+                          </div>
+                          <div className="text-white/40 text-[8px] uppercase font-bold tracking-widest mb-1">{card.label}</div>
+                          <div className="text-white text-lg font-bold">
+                            {card.val ? `${Number(card.val).toFixed(i === 2 ? 0 : 2)}${card.suffix}` : "—"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    </>
+                  ) : (
+                    /* Comparative Tab */
+                    <div className="overflow-hidden border border-purple-500/20 rounded-xl bg-white/[0.02]">
+                      <div className="px-6 py-4 border-b border-purple-500/20 bg-purple-500/5 flex justify-between items-center">
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-purple-300">Comparative Benchmark</span>
+                        <span className="text-[10px] text-purple-400 font-mono">{comparative?.status === "complete" ? `${comparative.models_benchmarked?.length || 0} MODELS` : comparative?.status?.toUpperCase() || "NO DATA"}</span>
+                      </div>
+                      {comparative?.status === "complete" && comparative.comparison_table ? (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left">
+                            <thead className="text-white/40 text-[9px] font-bold uppercase tracking-wider">
+                              <tr>
+                                <th className="px-4 py-3 sticky left-0 bg-[#0a0a0a]">Metric</th>
+                                {comparative.models_benchmarked.map((m: string) => (
+                                  <th key={m} className="px-3 py-3 text-center whitespace-nowrap">{m.split('/').pop()?.substring(0, 12)}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {Object.entries(comparative.comparison_table).map(([mk, vals]: [string, any]) => (
+                                <tr key={mk} className="hover:bg-white/[0.02]">
+                                  <td className="px-4 py-2 font-mono text-[#d4af37] text-[10px] sticky left-0 bg-[#0a0a0a]">{mk}</td>
+                                  {comparative.models_benchmarked.map((m: string) => {
+                                    const v = vals[m];
+                                    const isBest = comparative.best_per_metric?.[mk] === m;
+                                    return (
+                                      <td key={m} className={`px-3 py-2 font-mono text-[10px] text-center ${isBest ? 'text-green-400 font-bold' : 'text-white/50'}`}>
+                                        {v !== null && v !== undefined ? Number(v).toFixed(2) : '—'}
+                                        {isBest && <span className="ml-1 text-[8px]">★</span>}
+                                      </td>
+                                    );
+                                  })}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : comparative?.status === "processing" ? (
+                        <div className="flex flex-col items-center justify-center py-16 gap-3">
+                          <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
+                          <p className="text-purple-300 text-xs uppercase tracking-widest">{comparative.progress}</p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-16 gap-3 text-white/20">
+                          <Database className="w-8 h-8" />
+                          <p className="text-xs uppercase tracking-widest">No comparative data. Run a benchmark.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

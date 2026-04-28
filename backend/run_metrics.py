@@ -159,10 +159,6 @@ def ensure_data_ingested():
             for f in files:
                 if f.lower().endswith(".pdf"):
                     pdf_paths.append(os.path.join(root, f))
-                    if len(pdf_paths) >= 2: # Max 2 files for quick benchmark
-                        break
-            if len(pdf_paths) >= 2:
-                break
                 
     if not pdf_paths:
         print("[LexVed] No PDFs found in data/PDF/. Cannot evaluate.")

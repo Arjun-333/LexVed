@@ -400,21 +400,7 @@ async def get_full_config():
 async def trigger_evaluation():
     def run_eval():
         print(f"[LexVed] Starting Evaluation Workflow on {get_active_db_name()}...")
-        
-        # Initialize DB
-        active_db = get_active_db_name()
-        try:
-            if active_db == "qdrant":
-                from src.utils.qdrant_provider import init_collection
-                init_collection()
-            else:
-                from src.utils.pinecone_client import create_index
-                create_index()
-        except Exception as e:
-            print(f"[LexVed] DB Init error: {e}")
-            with open("evaluation_results.json", "w") as f:
-                json.dump({"status": "error", "message": f"DB Init failed: {e}"}, f)
-            return
+        # Run Metrics
 
         # Run Metrics
         try:

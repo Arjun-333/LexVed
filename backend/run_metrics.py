@@ -133,10 +133,113 @@ def calculate_recall_at_k(docs, query_category):
     hits = [1 for d in docs if d.payload.get('category', '').lower() == query_category.lower()]
     return (sum(hits) / len(docs)) if docs else 0
 
+def ensure_data_ingested():
+    active_db = get_active_db_name()
+    vector_count = 0
+    try:
+        if active_db == "pinecone":
+            from src.utils.pinecone_client import index
+            vector_count = index.describe_index_stats()['total_vector_count']
+        else:
+            from src.utils.qdrant_provider import client, COLLECTION_NAME
+            vector_count = client.get_collection(COLLECTION_NAME).vectors_count
+    except:
+        pass
+        
+    if vector_count > 0:
+        return
+        
+    print(f"[LexVed] No data found in {active_db.upper()}. Auto-ingesting evaluation documents...")
+    
+    # Search for PDFs
+    pdf_paths = []
+    pdf_dir = "data/PDF"
+    if os.path.exists(pdf_dir):
+        for root, dirs, files in os.walk(pdf_dir):
+            for f in files:
+                if f.lower().endswith(".pdf"):
+                    pdf_paths.append(os.path.join(root, f))
+                    if len(pdf_paths) >= 2: # Max 2 files for quick benchmark
+                        break
+            if len(pdf_paths) >= 2:
+                break
+                
+    if not pdf_paths:
+        print("[LexVed] No PDFs found in data/PDF/. Cannot evaluate.")
+        return
+        
+    from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch
+    from src.ingestion.embedder import get_embeddings
+    
+    for path in pdf_paths:
+        try:
+            print(f"[LexVed] Auto-ingesting: {os.path.basename(path)}")
+            chunks = extract_chunks(path)
+            chunks = process_chunks_batch(chunks)
+            texts = [c["text"] for c in chunks]
+            embeddings = get_embeddings(texts)
+            
+            # Helper for categorization
+            def categorize_text(text):
+                text_lower = text.lower()
+                if any(k in text_lower for k in ["contract", "lease", "tenant", "owner", "property", "agreement", "civil"]):
+                    return "civil", "general"
+                return "criminal", "general"
+
+            if active_db == "qdrant":
+                from qdrant_client import QdrantClient
+                from qdrant_client.models import PointStruct
+                from src.utils.qdrant_provider import COLLECTION_NAME
+                import uuid
+                
+                qc = QdrantClient(host="localhost", port=6333)
+                points = []
+                for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
+                    cat, sub = categorize_text(chunk["text"])
+                    points.append(PointStruct(
+                        id=str(uuid.uuid4()),
+                        vector=emb.tolist(),
+                        payload={
+                            "text": chunk["text"],
+                            "source": chunk["source"],
+                            "page": chunk["page"],
+                            "category": cat,
+                            "subcategory": sub
+                        }
+                    ))
+                qc.upsert(collection_name=COLLECTION_NAME, points=points)
+            else:
+                from src.utils.pinecone_client import index
+                import uuid
+                vectors = []
+                for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
+                    cat, sub = categorize_text(chunk["text"])
+                    vectors.append({
+                        "id": str(uuid.uuid4()),
+                        "values": emb.tolist(),
+                        "metadata": {
+                            "text": chunk["text"],
+                            "source": chunk["source"],
+                            "page": chunk["page"],
+                            "category": cat,
+                            "subcategory": sub
+                        }
+                    })
+                index.upsert(vectors=vectors)
+                
+            from src.retrieval.retriever import invalidate_bm25
+            invalidate_bm25()
+            
+        except Exception as e:
+            print(f"[LexVed] Error ingesting {path}: {e}")
+
 def run_evaluation():
     if not os.path.exists(EVAL_DATA_PATH):
         print("Data target missing.")
         return
+
+    # Guarantee we have data to benchmark
+    ensure_data_ingested()
 
     with open(EVAL_DATA_PATH, 'r') as f:
         data = json.load(f)
@@ -209,7 +312,7 @@ def run_evaluation():
         def to_int(val, default=50):
             try: return int(str(val).replace("%", ""))
             except: return default
-
+ 
         res = {
             "category": cat,
             "metrics": {
@@ -267,7 +370,12 @@ def run_evaluation():
             pass
 
     # Final Report
-    avgs = {k: sum(r['metrics'][k] for r in all_results)/len(all_results) for k in all_results[0]['metrics']}
+    if all_results:
+        avgs = {k: sum(r['metrics'][k] for r in all_results)/len(all_results) for k in all_results[0]['metrics']}
+    else:
+        print("[Warning] No queries processed successfully.")
+        avgs = {f"M{i}": 0 for i in range(1, 25)}
+        
     report = {
         "timestamp": time.ctime(),
         "status": "complete",

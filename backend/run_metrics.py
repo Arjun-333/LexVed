@@ -117,7 +117,7 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
         url = "https://api.groq.com/openai/v1/chat/completions"
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         eval_payload = {
-            "model": "llama-3.3-70b-versatile",
+            "model": "llama3-8b-8192",
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.1,
             "response_format": {"type": "json_object"}

@@ -129,7 +129,10 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
                 import re
                 match = re.search(r'\{.*\}', raw_resp, re.DOTALL)
                 if match:
-                    return json.loads(match.group(0))
+                    parsed = json.loads(match.group(0))
+                    if isinstance(parsed, dict):
+                        parsed = {k.lower(): v for k, v in parsed.items()}
+                    return parsed
         except Exception as e:
             print(f"[LexVed] Groq Judge failed ({e}), falling back to Ollama...")
 
@@ -143,6 +146,10 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
             parsed = json.loads(match.group(0))
         else:
             parsed = json.loads(raw_resp)
+            
+        # Normalize keys to lowercase to prevent 8B model formatting bugs
+        if isinstance(parsed, dict):
+            parsed = {k.lower(): v for k, v in parsed.items()}
         return parsed
     except Exception as e:
         print(f"Exception during Llama 3 Judge Evaluation: {e}")

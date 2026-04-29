@@ -184,9 +184,16 @@ def ensure_data_ingested():
     
     try:
         if active_db == "pinecone":
-            from src.utils.pinecone_client import index
+            from src.utils.pinecone_client import index, create_index
             stats = index.describe_index_stats()
-            vector_count = stats['total_vector_count']
+            vector_count = stats.get('total_vector_count', 0)
+            
+            if expected_dim and 'dimension' in stats:
+                if stats['dimension'] != expected_dim:
+                    print(f"[LexVed] Dimension mismatch! Pinecone has {stats['dimension']}d vectors, model needs {expected_dim}d. Recreating index...")
+                    create_index()
+                    vector_count = 0
+                    dimension_ok = False
         else:
             from src.utils.qdrant_provider import client, COLLECTION_NAME
             try:

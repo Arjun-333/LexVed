@@ -53,7 +53,7 @@ export default function WelcomeHero({ onSuggestionClick }: WelcomeHeroProps) {
         </div>
         <h1
           className="text-5xl md:text-6xl font-bold tracking-tight mb-4 transition-colors duration-300"
-          style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}
+          style={{ fontFamily: "var(--font-serif)", color: "var(--text)" }}
         >
           Lex<span style={{ color: "var(--accent)" }}>Ved</span>
         </h1>

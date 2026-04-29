@@ -8660,3 +8660,1803 @@ INFO:     127.0.0.1:53300 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:47886 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51250 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:38518 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58846 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34772 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50010 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43236 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48200 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37186 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45948 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53042 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54266 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34344 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34550 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40400 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40402 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40412 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56468 - "GET /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56474 - "GET /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "OPTIONS /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:56456 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:56456 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56490 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50190 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48458 - "GET /api/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48460 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48458 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39002 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39010 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39010 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53262 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53278 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55314 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55318 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35342 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38110 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38120 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53796 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53806 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46118 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46126 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56254 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56256 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56256 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34974 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34982 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41566 - "GET /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41576 - "GET /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41590 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41590 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41590 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41592 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41590 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41590 - "GET /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55686 - "GET /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59876 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59880 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41562 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52372 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:41562 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52386 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:52386 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:52386 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:52386 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:52386 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:52386 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:52386 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52386 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52386 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52386 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:55690 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55690 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52386 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51498 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54036 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54042 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54036 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[LexVed] Loading Embedding Model: multi-qa-MiniLM-L6-cos-v1
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6589.29it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:47:18 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '5', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '6', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+INFO:     127.0.0.1:54052 - "POST /api/chat HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/uvicorn/protocols/http/httptools_impl.py", line 420, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/home/arjun/Desktop/LexVed/backend/app.py", line 90, in chat
+    res, retrieval_time = retrieve(
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 240, in retrieve
+    dense_results = dense_future.result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 458, in result
+    return self.__get_result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 198, in retrieve_pinecone
+    query_response = index.query(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/utils/error_handling.py", line 42, in inner_func
+    raise e from e
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/utils/error_handling.py", line 27, in inner_func
+    return func(*args, **kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/db_data/index.py", line 1036, in query
+    response = self._query(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/db_data/index.py", line 1096, in _query
+    result = self._vector_api.query_vectors(request, **self._openapi_kwargs(kwargs))
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/endpoint.py", line 102, in __call__
+    return self.callable(self, *args, **kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/core/openapi/db_data/api/vector_operations_api.py", line 548, in __query_vectors
+    QueryResponse | ApplyResult[QueryResponse], self.call_with_http_info(**kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/endpoint.py", line 134, in call_with_http_info
+    return self.api_client.call_api(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 320, in call_api
+    return self.__call_api(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 185, in __call_api
+    raise e
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 173, in __call_api
+    response_data = self.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 400, in request
+    return self.rest_client.POST(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_utils.py", line 146, in POST
+    return self.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_urllib3.py", line 270, in request
+    return raise_exceptions_or_return(r)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_utils.py", line 49, in raise_exceptions_or_return
+    raise PineconeApiException(http_resp=r)
+pinecone.exceptions.exceptions.PineconeApiException: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:47:17 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '356', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '357', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+INFO:     127.0.0.1:54036 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36468 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49074 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49088 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60794 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43200 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43518 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43532 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35242 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56066 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58594 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58608 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46432 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47016 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49152 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49162 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46008 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43666 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53000 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53012 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38262 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42172 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60882 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60890 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53648 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53658 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34234 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47866 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47880 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59970 - "GET /api/health HTTP/1.1" 200 OK
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:50:51 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '3', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '4', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+INFO:     127.0.0.1:59970 - "POST /api/chat HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/uvicorn/protocols/http/httptools_impl.py", line 420, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/home/arjun/Desktop/LexVed/backend/app.py", line 90, in chat
+    res, retrieval_time = retrieve(
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 240, in retrieve
+    dense_results = dense_future.result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 458, in result
+    return self.__get_result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 198, in retrieve_pinecone
+    query_response = index.query(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/utils/error_handling.py", line 42, in inner_func
+    raise e from e
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/utils/error_handling.py", line 27, in inner_func
+    return func(*args, **kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/db_data/index.py", line 1036, in query
+    response = self._query(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/db_data/index.py", line 1096, in _query
+    result = self._vector_api.query_vectors(request, **self._openapi_kwargs(kwargs))
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/endpoint.py", line 102, in __call__
+    return self.callable(self, *args, **kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/core/openapi/db_data/api/vector_operations_api.py", line 548, in __query_vectors
+    QueryResponse | ApplyResult[QueryResponse], self.call_with_http_info(**kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/endpoint.py", line 134, in call_with_http_info
+    return self.api_client.call_api(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 320, in call_api
+    return self.__call_api(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 185, in __call_api
+    raise e
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 173, in __call_api
+    response_data = self.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 400, in request
+    return self.rest_client.POST(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_utils.py", line 146, in POST
+    return self.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_urllib3.py", line 270, in request
+    return raise_exceptions_or_return(r)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_utils.py", line 49, in raise_exceptions_or_return
+    raise PineconeApiException(http_resp=r)
+pinecone.exceptions.exceptions.PineconeApiException: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:50:49 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '415', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '417', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+INFO:     127.0.0.1:47712 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35236 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35244 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52904 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52916 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57502 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57518 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42108 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32960 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50456 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50474 - "GET /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:50486 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:50486 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36734 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41792 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49226 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46210 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38092 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42840 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55216 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55228 - "GET /api/health HTTP/1.1" 200 OK
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:53:44 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '1', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+INFO:     127.0.0.1:55228 - "POST /api/chat HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/uvicorn/protocols/http/httptools_impl.py", line 420, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/home/arjun/Desktop/LexVed/backend/app.py", line 90, in chat
+    res, retrieval_time = retrieve(
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 240, in retrieve
+    dense_results = dense_future.result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 458, in result
+    return self.__get_result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/src/retrieval/retriever.py", line 198, in retrieve_pinecone
+    query_response = index.query(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/utils/error_handling.py", line 42, in inner_func
+    raise e from e
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/utils/error_handling.py", line 27, in inner_func
+    return func(*args, **kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/db_data/index.py", line 1036, in query
+    response = self._query(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/db_data/index.py", line 1096, in _query
+    result = self._vector_api.query_vectors(request, **self._openapi_kwargs(kwargs))
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/endpoint.py", line 102, in __call__
+    return self.callable(self, *args, **kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/core/openapi/db_data/api/vector_operations_api.py", line 548, in __query_vectors
+    QueryResponse | ApplyResult[QueryResponse], self.call_with_http_info(**kwargs)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/endpoint.py", line 134, in call_with_http_info
+    return self.api_client.call_api(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 320, in call_api
+    return self.__call_api(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 185, in __call_api
+    raise e
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 173, in __call_api
+    response_data = self.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/api_client.py", line 400, in request
+    return self.rest_client.POST(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_utils.py", line 146, in POST
+    return self.request(
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_urllib3.py", line 270, in request
+    return raise_exceptions_or_return(r)
+  File "/home/arjun/Desktop/LexVed/backend/venv/lib/python3.10/site-packages/pinecone/openapi_support/rest_utils.py", line 49, in raise_exceptions_or_return
+    raise PineconeApiException(http_resp=r)
+pinecone.exceptions.exceptions.PineconeApiException: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:53:43 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '328', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '330', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+INFO:     127.0.0.1:38232 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38248 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36056 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36066 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36074 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35886 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56738 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53104 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53108 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55154 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60644 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47756 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47768 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49542 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49558 - "GET /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "OPTIONS /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:49572 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51820 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "OPTIONS /api/settings/vector_db HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:49578 - "POST /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:49572 - "POST /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "OPTIONS /api/workflow/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "POST /api/workflow/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46526 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+[nltk_data] Downloading package wordnet to /home/arjun/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt_tab to /home/arjun/nltk_data...
+[nltk_data]   Package punkt_tab is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/arjun/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+
+================================================================================
+ LEXVED COMPARATIVE BENCHMARK — 6 Models
+================================================================================
+
+[1/6] Benchmarking: multi-qa-MiniLM-L6-cos-v1
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading SentenceTransformer for metrics: multi-qa-MiniLM-L6-cos-v1
+[LexVed] Loading SentenceTransformer for metrics: multi-qa-MiniLM-L6-cos-v1
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s][ALoading weights: 100%|██████████| 103/103 [00:00<00:00, 2406.04it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2256.90it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:60802 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] Loading Embedding Model: multi-qa-MiniLM-L6-cos-v1
+[LexVed] Loading Embedding Model: multi-qa-MiniLM-L6-cos-v1
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s][ALoading weights: 100%|██████████| 103/103 [00:00<00:00, 1967.70it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2357.10it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54778 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:10 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '4', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:10 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '1', 'x-envoy-upstream-service-time': '2', 'x-pinecone-response-duration-ms': '3', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:11 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '4', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '5', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:11 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '14', 'x-pinecone-response-duration-ms': '25', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:12 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '6', 'x-pinecone-response-duration-ms': '14', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:12 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '7', 'x-pinecone-response-duration-ms': '14', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:12 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '1', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:12 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '1', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:13 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '1', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:56:13 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '3', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+[Warning] No queries processed successfully.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[2/6] Benchmarking: multi-qa-mpnet-base-cos-v1
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading SentenceTransformer for metrics: multi-qa-mpnet-base-cos-v1
+[LexVed] Loading SentenceTransformer for metrics: multi-qa-mpnet-base-cos-v1
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s][ALoading weights:  98%|█████████▊| 196/199 [00:00<00:00, 1959.54it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 1960.93it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2154.41it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59806 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] Loading Embedding Model: multi-qa-mpnet-base-cos-v1
+[LexVed] Loading Embedding Model: multi-qa-mpnet-base-cos-v1
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 3664.02it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 4378.39it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48846 - "GET /api/health HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 5991.54it/s]
+[1mBertForSequenceClassification LOAD REPORT[0m from: cross-encoder/ms-marco-MiniLM-L-6-v2
+Key                          | Status     |  | 
+-----------------------------+------------+--+-
+bert.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8069.66it/s]
+[1mBertForSequenceClassification LOAD REPORT[0m from: cross-encoder/ms-marco-MiniLM-L-6-v2
+Key                          | Status     |  | 
+-----------------------------+------------+--+-
+bert.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50754 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 6686.85it/s]
+[1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                             | Status     | 
+--------------------------------+------------+-
+roberta.embeddings.position_ids | UNEXPECTED | 
+lm_head.layer_norm.weight       | UNEXPECTED | 
+lm_head.layer_norm.bias         | UNEXPECTED | 
+lm_head.dense.weight            | UNEXPECTED | 
+lm_head.bias                    | UNEXPECTED | 
+lm_head.dense.bias              | UNEXPECTED | 
+pooler.dense.bias               | MISSING    | 
+pooler.dense.weight             | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Loading weights:   0%|          | 0/106 [00:00<?, ?it/s]Loading weights: 100%|██████████| 106/106 [00:00<00:00, 5000.91it/s]
+[1mDebertaV2ForSequenceClassification LOAD REPORT[0m from: cross-encoder/nli-deberta-v3-small
+Key                             | Status     |  | 
+--------------------------------+------------+--+-
+deberta.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 5946.96it/s]
+[1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                             | Status     | 
+--------------------------------+------------+-
+roberta.embeddings.position_ids | UNEXPECTED | 
+lm_head.layer_norm.weight       | UNEXPECTED | 
+lm_head.layer_norm.bias         | UNEXPECTED | 
+lm_head.dense.weight            | UNEXPECTED | 
+lm_head.bias                    | UNEXPECTED | 
+lm_head.dense.bias              | UNEXPECTED | 
+pooler.dense.bias               | MISSING    | 
+pooler.dense.weight             | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Loading weights:   0%|          | 0/106 [00:00<?, ?it/s]Loading weights: 100%|██████████| 106/106 [00:00<00:00, 5671.45it/s]
+[1mDebertaV2ForSequenceClassification LOAD REPORT[0m from: cross-encoder/nli-deberta-v3-small
+Key                             | Status     |  | 
+--------------------------------+------------+--+-
+deberta.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+Token indices sequence length is longer than the specified maximum sequence length for this model (516 > 512). Running this sequence through the model will result in indexing errors
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[3/6] Benchmarking: multi-qa-distilbert-cos-v1
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading SentenceTransformer for metrics: multi-qa-distilbert-cos-v1
+[LexVed] Loading SentenceTransformer for metrics: multi-qa-distilbert-cos-v1
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|██████████| 100/100 [00:00<00:00, 4128.29it/s]
+INFO:     127.0.0.1:50068 - "GET /api/health HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|██████████| 100/100 [00:00<00:00, 6070.70it/s]
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38294 - "GET /api/health HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[4/6] Benchmarking: BAAI/bge-m3
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading SentenceTransformer for metrics: BAAI/bge-m3
+[LexVed] Loading SentenceTransformer for metrics: BAAI/bge-m3
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 11886.96it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 31291.22it/s]
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39376 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56754 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[5/6] Benchmarking: intfloat/multilingual-e5-large-instruct
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading SentenceTransformer for metrics: intfloat/multilingual-e5-large-instruct
+[LexVed] Loading SentenceTransformer for metrics: intfloat/multilingual-e5-large-instruct
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s][ALoading weights:  33%|███▎      | 130/391 [00:00<00:00, 1299.16it/s]
+Loading weights:  46%|████▌     | 179/391 [00:00<00:00, 1787.90it/s][ALoading weights:  89%|████████▉ | 349/391 [00:00<00:00, 1815.55it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 1782.83it/s]
+Loading weights: 100%|██████████| 391/391 [00:00<00:00, 2337.32it/s]
+INFO:     127.0.0.1:46910 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36222 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57238 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54504 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56410 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45750 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53850 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37034 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47904 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[6/6] Benchmarking: embed-english-v3.0
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 3827.04it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 5164.50it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49852 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[SUCCESS] Comparative results saved for 6 models.
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53286 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51760 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49028 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43362 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35286 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43164 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37384 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51458 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60872 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49572 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49578 - "GET /api/comparative HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'run_metrics.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [41145]
+INFO:     Started server process [44960]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:43316 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43316 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43342 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41566 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52476 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33590 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48652 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36452 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53556 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57448 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48822 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47508 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34102 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58630 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57928 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47690 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44206 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49070 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58252 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41586 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55728 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/settings/generation_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49446 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43324 - "GET /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42892 - "GET /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42904 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42904 - "OPTIONS /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:43332 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:43332 - "POST /api/settings/embedding_model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42904 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42904 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42904 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42904 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55204 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44140 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44132 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44120 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53296 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45090 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45090 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45090 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54622 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45090 - "GET /api/comparative HTTP/1.1" 200 OK

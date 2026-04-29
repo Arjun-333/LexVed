@@ -25,6 +25,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   const [activeTab, setActiveTab] = useState<"single" | "comparative">("single");
   const [comparative, setComparative] = useState<any>(null);
   const [isStartingComparative, setIsStartingComparative] = useState(false);
+  const [smoothPct, setSmoothPct] = useState(5);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
@@ -75,6 +76,46 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (comparative?.status !== "processing") {
+      setSmoothPct(5);
+      return;
+    }
+
+    let targetPct = 5;
+    if (comparative?.progress) {
+      const modelMatch = comparative.progress.match(/model\s+(\d+)\s*\/\s*(\d+)/i);
+      const queryMatch = comparative.progress.match(/(\d+)\s*\/\s*(\d+)\s+queries/i);
+
+      if (modelMatch) {
+        const currModel = parseInt(modelMatch[1]);
+        const totalModels = parseInt(modelMatch[2]);
+        let subProgress = 0;
+        if (queryMatch) {
+          const currQuery = parseInt(queryMatch[1]);
+          const totalQueries = parseInt(queryMatch[2]);
+          subProgress = currQuery / totalQueries;
+        }
+        targetPct = Math.round(((currModel - 1 + subProgress) / totalModels) * 100);
+      }
+    }
+
+    targetPct = Math.max(5, Math.min(targetPct, 98));
+
+    const interval = setInterval(() => {
+      setSmoothPct(prev => {
+        if (prev < targetPct) {
+          return Math.min(prev + 1, targetPct);
+        } else if (prev >= targetPct && prev < targetPct + 5 && prev < 98) {
+          return Math.random() > 0.6 ? prev + 1 : prev;
+        }
+        return prev;
+      });
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, [comparative?.progress, comparative?.status]);
 
   const handleModelChange = async (modelId: string) => {
     setSelectedModel(modelId);
@@ -464,26 +505,6 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                           </table>
                         </div>
                       ) : comparative?.status === "processing" ? (() => {
-                        let pct = 10;
-                        if (comparative?.progress) {
-                          const modelMatch = comparative.progress.match(/model\s+(\d+)\s*\/\s*(\d+)/i);
-                          const queryMatch = comparative.progress.match(/(\d+)\s*\/\s*(\d+)\s+queries/i);
-
-                          if (modelMatch) {
-                            const currModel = parseInt(modelMatch[1]);
-                            const totalModels = parseInt(modelMatch[2]);
-                            
-                            let subProgress = 0;
-                            if (queryMatch) {
-                              const currQuery = parseInt(queryMatch[1]);
-                              const totalQueries = parseInt(queryMatch[2]);
-                              subProgress = currQuery / totalQueries;
-                            }
-                            
-                            pct = Math.round(((currModel - 1 + subProgress) / totalModels) * 100);
-                          }
-                        }
-                        pct = Math.max(5, Math.min(pct, 99)); // Keep bounded 5-99%
                         return (
                           <div className="flex flex-col items-center justify-center py-16 px-8 gap-4">
                             <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
@@ -492,11 +513,11 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                               <motion.div 
                                 className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full"
                                 initial={{ width: 0 }}
-                                animate={{ width: `${pct}%` }}
+                                animate={{ width: `${smoothPct}%` }}
                                 transition={{ duration: 0.5 }}
                               />
                             </div>
-                            <span className="text-[10px] font-mono text-white/40 mb-4">{pct}% Overall Benchmark Complete</span>
+                            <span className="text-[10px] font-mono text-white/40 mb-4">{smoothPct}% Overall Benchmark Complete</span>
 
                             {/* Sequential Model Checklist */}
                             <div className="w-full max-w-md bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">

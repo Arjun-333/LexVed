@@ -228,13 +228,17 @@ def retrieve(query_text, category=None, subcategory=None, top_k=5):
     t1 = time.time()
     
     # 1. Dense Retrieval
-    if active_db == "qdrant":
-        dense_results = retrieve_qdrant(q_emb, category, subcategory, top_k=20)
-    else:
-        dense_results = retrieve_pinecone(q_emb, category, subcategory, top_k=20)
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        if active_db == "qdrant":
+            dense_future = executor.submit(retrieve_qdrant, q_emb, category, subcategory, 20)
+        else:
+            dense_future = executor.submit(retrieve_pinecone, q_emb, category, subcategory, 20)
+            
+        sparse_future = executor.submit(get_bm25_top_k, query_text, 20, category, subcategory)
         
-    # 2. Sparse Retrieval (BM25)
-    sparse_results = get_bm25_top_k(query_text, top_k=20, category=category, subcategory=subcategory)
+        dense_results = dense_future.result()
+        sparse_results = sparse_future.result()
     
     # 3. Reciprocal Rank Fusion
     fused_results = reciprocal_rank_fusion(dense_results, sparse_results)

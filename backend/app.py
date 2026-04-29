@@ -419,24 +419,47 @@ async def trigger_evaluation():
     return {"status": "processing", "message": "Evaluation initiated"}
 
 @app.post("/api/workflow/comparative")
-async def trigger_comparative():
+async def trigger_comparative(request: Request):
     """Triggers comparative benchmarking across all embedding models."""
-    def run_comparative():
+    body = await request.json()
+    resume = body.get("resume", False)
+    
+    def run_comparative_thread():
         try:
-            proc = subprocess.Popen(["./venv/bin/python3", "run_comparative.py"])
-            with open("comparative_results.json", "w") as f:
-                json.dump({
-                    "status": "processing",
-                    "progress": "Starting comparative benchmark...",
-                    "completed_models": [],
-                    "current_model": "",
-                    "pid": proc.pid
-                }, f)
+            cmd = ["./venv/bin/python3", "run_comparative.py"]
+            if resume:
+                cmd.append("--resume")
+                
+            proc = subprocess.Popen(cmd)
+            
+            if not resume:
+                if os.path.exists("intermediate_results.json"):
+                    try: os.remove("intermediate_results.json")
+                    except: pass
+
+                with open("comparative_results.json", "w") as f:
+                    json.dump({
+                        "status": "processing",
+                        "progress": "Starting comparative benchmark...",
+                        "completed_models": [],
+                        "current_model": "",
+                        "pid": proc.pid
+                    }, f)
+            else:
+                if os.path.exists("comparative_results.json"):
+                    try:
+                        with open("comparative_results.json", "r") as f:
+                            old_data = json.load(f)
+                        old_data["status"] = "processing"
+                        old_data["pid"] = proc.pid
+                        with open("comparative_results.json", "w") as f:
+                            json.dump(old_data, f, indent=2)
+                    except: pass
         except Exception as e:
             with open("comparative_results.json", "w") as f:
                 json.dump({"status": "error", "message": str(e)}, f)
 
-    executor.submit(run_comparative)
+    executor.submit(run_comparative_thread)
     return {"status": "processing", "message": "Comparative benchmark initiated"}
 
 @app.get("/api/comparative")

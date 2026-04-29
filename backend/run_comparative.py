@@ -13,7 +13,18 @@ def run_comparative():
     all_models = list(config.get("models", {}).keys())
     original_model = get_active_model_name()
     
+    import sys
+    resume_flag = "--resume" in sys.argv
+    
     results = {}
+    if resume_flag and os.path.exists("intermediate_results.json"):
+        try:
+            with open("intermediate_results.json", "r") as f:
+                results = json.load(f)
+            print(f"[LexVed] Resuming from previously saved results for models: {list(results.keys())}")
+        except Exception as e:
+            print(f"[LexVed] Could not resume intermediate results: {e}")
+
     total = len(all_models)
     
     print(f"\n{'='*80}")
@@ -21,6 +32,10 @@ def run_comparative():
     print(f"{'='*80}")
     
     for idx, model_name in enumerate(all_models):
+        if resume_flag and model_name in results and "error" not in results[model_name]:
+            print(f"[{idx+1}/{total}] Skipping already completed model: {model_name}")
+            continue
+            
         print(f"\n[{idx+1}/{total}] Benchmarking: {model_name}")
         
         # Update progress file
@@ -48,6 +63,8 @@ def run_comparative():
                     "details": eval_data.get("details", []),
                     "system_info": eval_data.get("system_info", {})
                 }
+                with open("intermediate_results.json", "w") as f:
+                    json.dump(results, f, indent=4)
             else:
                 results[model_name] = {"error": "No evaluation results generated"}
                 

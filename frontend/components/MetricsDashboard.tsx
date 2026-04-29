@@ -162,9 +162,20 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   const isProcessing = metrics?.status === "processing";
 
   const handleStartComparative = async () => {
+    const hasPrevious = comparative?.completed_models?.length > 0 && comparative?.status !== "complete";
+    let resume = false;
+    
+    if (hasPrevious) {
+      resume = window.confirm("A previously interrupted benchmark session was found. Would you like to CONTINUE from where you left off?");
+    }
+    
     setIsStartingComparative(true);
     try {
-      await fetch(`${API_URL}/api/workflow/comparative`, { method: "POST" });
+      await fetch(`${API_URL}/api/workflow/comparative`, { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume })
+      });
       setActiveTab("comparative");
     } catch (err) { console.error(err); }
     finally { setIsStartingComparative(false); }

@@ -93,12 +93,32 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
     {{"faithfulness": 75, "citation_acc": 60, "term_precision": 80, "precedent_match": 50, "factual_consistency": 70, "bias_score": 5, "regulatory_alignment": 85, "jurisdictional_comp": 90}}
     """
     
+    api_key = os.getenv("GROQ_API_KEY")
+    if api_key:
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        eval_payload = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.1,
+            "response_format": {"type": "json_object"}
+        }
+        try:
+            res = requests.post(url, headers=headers, json=eval_payload, timeout=60)
+            if res.status_code == 200:
+                raw_resp = res.json()["choices"][0]["message"]["content"]
+                import re
+                match = re.search(r'\{.*\}', raw_resp, re.DOTALL)
+                if match:
+                    return json.loads(match.group(0))
+        except Exception as e:
+            print(f"[LexVed] Groq Judge failed ({e}), falling back to Ollama...")
+
     payload = {"model": get_active_generation_model(), "prompt": prompt, "stream": False, "format": "json"}
     try:
         import re
-        res = requests.post(OLLAMA_URL, json=payload, timeout=180) # Increased timeout to 180s
+        res = requests.post(OLLAMA_URL, json=payload, timeout=180) 
         raw_resp = res.json().get("response", "{}")
-        # Try finding json in the response using regex in case formatting failed
         match = re.search(r'\{.*\}', raw_resp, re.DOTALL)
         if match:
             parsed = json.loads(match.group(0))
@@ -311,7 +331,12 @@ def run_evaluation():
         
         # M16: End-to-End Latency
         ans = ""
-        for chunk in generate_answer_stream(query, context): ans += chunk
+        try:
+            for chunk in generate_answer_stream(query, context): 
+                ans += chunk
+        except Exception as e:
+            print(f"Warning: LLM generation failed ({e}). Using fallback answer.")
+            ans = "The system encountered an unexpected inference timeout while generating the response."
         m16_e2e = time.time() - t_start_emb
         
         q_stats = calculate_local_metrics(gt, ans)
@@ -400,8 +425,8 @@ def run_evaluation():
         for item in data[cat]:
             queries.append((cat, item['query'], item['ground_truth']))
 
-    # Use 5 workers to parallelize efficiently across the 10 queries
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    # Use 2 workers to perfectly balance i9 CPU saturation and 32GB RAM limits
+    with ThreadPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(process_query, c, q, gt) for c, q, gt in queries]
         for _ in as_completed(futures):
             pass

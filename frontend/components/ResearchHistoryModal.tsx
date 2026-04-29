@@ -48,10 +48,10 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
           exit={{ opacity: 0, scale: 0.9, y: 30 }}
           className="w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
         >
-          <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-purple-500/5 to-transparent">
+          <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-[#D4AF37]/10 to-transparent">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                <History className="text-purple-400 w-5 h-5" />
+                <History className="text-[#D4AF37] w-5 h-5" />
                 Research History
               </h2>
               <p className="text-white/40 text-xs mt-1">Audit log of institutional queries</p>
@@ -64,7 +64,7 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="w-8 h-8 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
                 <p className="text-white/30 text-sm animate-pulse uppercase tracking-widest">Retrieving Logs...</p>
               </div>
             ) : history.length === 0 ? (
@@ -80,7 +80,7 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group flex flex-col gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-purple-500/30 transition-all cursor-pointer"
+                    className="group flex flex-col gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-[#D4AF37]/30 transition-all cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-[10px] text-white/40 uppercase tracking-widest">
@@ -88,7 +88,7 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
                         {item.date}
                       </div>
                       <div className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-tighter ${
-                        item.status === 'verified' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
+                        item.status === 'verified' ? 'bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20' : 'bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20'
                       }`}>
                         {item.status}
                       </div>

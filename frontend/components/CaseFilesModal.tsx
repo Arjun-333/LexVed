@@ -50,15 +50,41 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
               </h2>
               <p className="text-white/40 text-xs mt-1">Authorized LexVed document repository</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
-              <X className="text-white/40 hover:text-white" />
-            </button>
+            <div className="flex items-center gap-3">
+              <label className="cursor-pointer bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500 hover:text-black transition-all px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <FileText size={14} />
+                Upload PDF
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept=".pdf" 
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setLoading(true);
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    try {
+                      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+                      await fetch(`${API_URL}/api/ingest`, { method: "POST", body: formData });
+                      // Refresh files
+                      const res = await fetch(`${API_URL}/api/files`);
+                      setFiles(await res.json());
+                    } catch (err) { console.error(err); }
+                    setLoading(false);
+                  }} 
+                />
+              </label>
+              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+                <X className="text-white/40 hover:text-white" />
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
                 <p className="text-white/30 text-sm animate-pulse uppercase tracking-widest">Scanning Repository...</p>
               </div>
             ) : (
@@ -69,9 +95,9 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-blue-500/30 transition-all cursor-default"
+                    className="group flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-[#D4AF37]/30 transition-all cursor-default"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] group-hover:scale-110 transition-transform">
                       {file.type === "Knowledge Base" ? <Database size={18} /> : (file.type === "Evaluation Suite" ? <Shield size={18} /> : <FileText size={18} />)}
                     </div>
                     <div className="flex-1 min-w-0">

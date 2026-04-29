@@ -32,13 +32,17 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
 
   const fetchMetrics = () => {
     fetch(`${API_URL}/api/metrics`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("API Offline");
+        return res.json();
+      })
       .then((data) => {
         setMetrics(data);
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        setMetrics((prev: any) => prev?.status === "processing" ? { status: "error", message: "API Disconnected" } : prev);
         setLoading(false);
       });
   };
@@ -61,9 +65,15 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
 
       const fetchComp = () => {
         fetch(`${API_URL}/api/comparative`)
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) throw new Error("API Offline");
+            return res.json();
+          })
           .then(data => setComparative(data))
-          .catch(console.error);
+          .catch(err => {
+            console.error(err);
+            setComparative((prev: any) => prev?.status === "processing" ? { status: "error", message: "API Disconnected" } : prev);
+          });
       };
 
       fetchComp();
@@ -295,11 +305,11 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
           {/* Header */}
           <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-[#d4af37]/5 to-transparent">
             <div>
-              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <h2 className="font-display text-2xl text-[#d4af37] tracking-[0.2em] flex items-center gap-3">
                 <ShieldCheck className="text-[#d4af37] w-6 h-6" />
                 LexVed Performance Audit
               </h2>
-              <p className="text-white/50 text-sm mt-1">Institutional RAG Benchmarking — Mission-Critical (M1-M24)</p>
+              <p className="text-white/40 text-[10px] uppercase font-mono tracking-widest mt-2">Institutional RAG Benchmarking — Mission-Critical (M1-M24)</p>
             </div>
             <div className="flex items-center gap-4">
               <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
@@ -378,36 +388,38 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                      onSelect={handleModelChange} 
                    />
                    
-                   <motion.button
-                     whileHover={{ scale: 1.02 }}
-                     whileTap={{ scale: 0.98 }}
-                     onClick={handleStartEvaluation}
-                     disabled={isProcessing || isStartingEval}
-                     className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs transition-all
-                       ${isProcessing || isStartingEval 
-                         ? 'bg-white/5 text-white/20 border border-white/5' 
-                         : 'bg-[var(--accent)] text-black border border-[var(--accent-glow)] shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]'}`}
-                   >
-                     {isStartingEval ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-                     {isProcessing ? "Benchmarking..." : "Start Evaluation"}
-                   </motion.button>
+                   {activeTab === "single" && (
+                     <motion.button
+                       whileHover={{ scale: 1.02 }}
+                       whileTap={{ scale: 0.98 }}
+                       onClick={handleStartEvaluation}
+                       disabled={isProcessing || isStartingEval}
+                       className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs transition-all
+                         ${isProcessing || isStartingEval 
+                           ? 'bg-white/5 text-white/20 border border-white/5' 
+                           : 'bg-[var(--accent)] text-black border border-[var(--accent-glow)] shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]'}`}
+                     >
+                       {isStartingEval ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
+                       {isProcessing ? "Benchmarking..." : "Start Evaluation"}
+                     </motion.button>
+                   )}
 
                    <div className="grid grid-cols-3 gap-2">
-                       <button onClick={handleExportCSV} className="py-3 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg text-[10px] font-bold hover:bg-green-500 hover:text-black transition-all">
+                       <button onClick={handleExportCSV} className="py-3 bg-[#111] border border-[#D4AF37]/30 text-white/70 rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all">
                          CSV
                        </button>
-                       <button onClick={handleExportPDF} className="py-3 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-[10px] font-bold hover:bg-[#d4af37] hover:text-black transition-all">
+                       <button onClick={handleExportPDF} className="py-3 bg-[#111] border border-[#D4AF37]/30 text-white/70 rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all">
                          PDF
                        </button>
-                       <button onClick={handleExportDOCX} className="py-3 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-lg text-[10px] font-bold hover:bg-blue-500 hover:text-black transition-all">
+                       <button onClick={handleExportDOCX} className="py-3 bg-[#111] border border-[#D4AF37]/30 text-white/70 rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all">
                          DOCX
                        </button>
                     </div>
 
                     {/* Tab Switcher */}
-                    <div className="flex gap-1 bg-white/5 p-1 rounded-lg">
-                      <button onClick={() => setActiveTab("single")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "single" ? "bg-[#d4af37] text-black" : "text-white/40 hover:text-white"}`}>Single</button>
-                      <button onClick={() => setActiveTab("comparative")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "comparative" ? "bg-[#d4af37] text-black" : "text-white/40 hover:text-white"}`}>Compare</button>
+                    <div className="flex gap-1 bg-[#0a0a0a] border border-white/5 p-1 rounded-lg">
+                      <button onClick={() => setActiveTab("single")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "single" ? "bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]" : "text-white/40 hover:text-[#d4af37]"}`}>Single</button>
+                      <button onClick={() => setActiveTab("comparative")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "comparative" ? "bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]" : "text-white/40 hover:text-[#d4af37]"}`}>Compare</button>
                     </div>
 
                     {activeTab === "comparative" && (
@@ -416,9 +428,9 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                         whileTap={{ scale: 0.98 }}
                         onClick={handleStartComparative}
                         disabled={isStartingComparative || comparative?.status === "processing"}
-                        className="w-full py-3 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500 hover:text-black transition-all disabled:opacity-30"
+                        className="w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs border transition-all disabled:opacity-30 bg-transparent text-[#d4af37] border-[#d4af37] shadow-[inset_0_0_15px_rgba(212,175,55,0.1)] hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]"
                       >
-                        {isStartingComparative ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3 fill-current" />}
+                        {isStartingComparative ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
                         Benchmark All 6 Models
                       </motion.button>
                     )}
@@ -449,7 +461,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                               <td className="px-6 py-3 text-white/80 text-xs font-medium">{row.label}</td>
                               <td className="px-6 py-3 font-mono text-xs">
                                 {row.value !== null ? (
-                                  <span className="text-green-400">{row.value.toFixed(row.decimals)}</span>
+                                  <span className="text-[#D4AF37]">{row.value.toFixed(row.decimals)}</span>
                                 ) : (
                                   <span className="text-white/10">PENDING</span>
                                 )}
@@ -480,10 +492,10 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                     </>
                   ) : (
                     /* Comparative Tab */
-                    <div className="overflow-hidden border border-purple-500/20 rounded-xl bg-white/[0.02]">
-                      <div className="px-6 py-4 border-b border-purple-500/20 bg-purple-500/5 flex justify-between items-center">
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-purple-300">Comparative Benchmark</span>
-                        <span className="text-[10px] text-purple-400 font-mono">{comparative?.status === "complete" ? `${comparative.models_benchmarked?.length || 0} MODELS` : comparative?.status?.toUpperCase() || "NO DATA"}</span>
+                    <div className="overflow-hidden border border-[#D4AF37]/20 rounded-xl bg-white/[0.02]">
+                      <div className="px-6 py-4 border-b border-[#D4AF37]/20 bg-[#D4AF37]/10 flex justify-between items-center">
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37]">Comparative Benchmark</span>
+                        <span className="text-[10px] text-[#D4AF37] font-mono">{comparative?.status === "complete" ? `${comparative.models_benchmarked?.length || 0} MODELS` : comparative?.status?.toUpperCase() || "NO DATA"}</span>
                       </div>
                       {comparative?.status === "complete" && comparative.comparison_table ? (
                         <div className="overflow-x-auto">
@@ -504,7 +516,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                                     const v = vals[m];
                                     const isBest = comparative.best_per_metric?.[mk] === m;
                                     return (
-                                      <td key={m} className={`px-3 py-2 font-mono text-[10px] text-center ${isBest ? 'text-green-400 font-bold' : 'text-white/50'}`}>
+                                      <td key={m} className={`px-3 py-2 font-mono text-[10px] text-center ${isBest ? 'text-[#D4AF37] font-bold' : 'text-white/50'}`}>
                                         {v !== null && v !== undefined ? Number(v).toFixed(2) : '—'}
                                         {isBest && <span className="ml-1 text-[8px]">★</span>}
                                       </td>
@@ -518,33 +530,33 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                       ) : comparative?.status === "processing" ? (() => {
                         return (
                           <div className="flex flex-col items-center justify-center py-16 px-8 gap-4">
-                            <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
-                            <p className="text-purple-300 text-xs uppercase font-bold tracking-widest">{comparative.progress}</p>
-                            <div className="w-full max-w-md bg-white/5 rounded-full h-2 overflow-hidden border border-white/10 mt-2">
+                            <Loader2 className="w-10 h-10 text-[#D4AF37] animate-spin" />
+                            <h2 className="text-[#D4AF37] text-lg font-serif uppercase tracking-[0.2em]">{comparative.progress}</h2>
+                            <div className="w-full max-w-md bg-white/5 rounded-full h-1.5 overflow-hidden border border-white/10 mt-2">
                               <motion.div 
-                                className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full"
+                                className="bg-gradient-to-r from-[#D4AF37]/40 to-[#D4AF37] h-full rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)]"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${smoothPct}%` }}
                                 transition={{ duration: 0.5 }}
                               />
                             </div>
-                            <span className="text-[10px] font-mono text-white/40 mb-4">{smoothPct}% Overall Benchmark Complete</span>
+                            <span className="text-[11px] font-mono tracking-widest text-[#D4AF37]/60 mb-6 uppercase">{smoothPct}% Complete</span>
 
                             {/* Sequential Model Checklist */}
-                            <div className="w-full max-w-md bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">
-                              <div className="text-[8px] uppercase tracking-wider font-bold text-white/40 border-b border-white/5 pb-2 mb-2">Model Execution Sequence</div>
+                            <div className="w-full max-w-md bg-black/40 border border-[#D4AF37]/20 rounded-xl p-5 space-y-3">
+                              <div className="text-[9px] uppercase tracking-[0.3em] font-bold text-[#D4AF37]/50 border-b border-[#D4AF37]/10 pb-3 mb-3">Model Execution Sequence</div>
                               {comparative?.completed_models?.map((m: string) => (
-                                <div key={m} className="flex items-center justify-between text-xs py-1">
-                                  <span className="text-white/60 font-mono">{m.split('/').pop()}</span>
-                                  <span className="text-green-400 font-bold text-[10px] bg-green-500/10 px-2 py-0.5 rounded">PASSED</span>
+                                <div key={m} className="flex items-center justify-between text-xs py-1.5">
+                                  <span className="text-white/40 font-mono text-[11px] line-through decoration-[#D4AF37]/30">{m.split('/').pop()}</span>
+                                  <span className="text-black font-bold text-[9px] bg-[#D4AF37] px-2 py-0.5 rounded shadow-[0_0_10px_rgba(212,175,55,0.3)] tracking-widest">PASSED</span>
                                 </div>
                               ))}
                               {comparative?.current_model && (
-                                <div className="flex items-center justify-between text-xs py-1 bg-purple-500/5 px-2 rounded border border-purple-500/20 animate-pulse">
-                                  <span className="text-purple-300 font-bold font-mono">{comparative.current_model.split('/').pop()}</span>
+                                <div className="flex items-center justify-between text-xs py-2 bg-[#D4AF37]/5 px-3 rounded border border-[#D4AF37]/30">
+                                  <span className="text-[#D4AF37] font-bold font-mono text-[11px]">{comparative.current_model.split('/').pop()}</span>
                                   <div className="flex items-center gap-2">
-                                    <Loader2 className="w-3 h-3 text-purple-400 animate-spin" />
-                                    <span className="text-purple-300 text-[10px] font-bold">RUNNING</span>
+                                    <Loader2 className="w-3.5 h-3.5 text-[#D4AF37] animate-spin" />
+                                    <span className="text-[#D4AF37] text-[10px] font-bold tracking-widest">ANALYZING</span>
                                   </div>
                                 </div>
                               )}
@@ -553,8 +565,8 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                         );
                       })() : (
                         <div className="flex flex-col items-center justify-center py-16 gap-3 text-white/20">
-                          <Database className="w-8 h-8" />
-                          <p className="text-xs uppercase tracking-widest">No comparative data. Run a benchmark.</p>
+                          <Database className="w-8 h-8 opacity-50" />
+                          <p className="text-xs uppercase tracking-[0.2em] font-serif">No comparative data.</p>
                         </div>
                       )}
                     </div>

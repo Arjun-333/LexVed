@@ -38,13 +38,22 @@ def run_comparative():
             
         print(f"\n[{idx+1}/{total}] Benchmarking: {model_name}")
         
-        # Update progress file
+        # Update progress file (preserve PID)
+        pid = None
+        if os.path.exists("comparative_results.json"):
+            try:
+                with open("comparative_results.json", "r") as f:
+                    old = json.load(f)
+                    pid = old.get("pid")
+            except: pass
+
         with open("comparative_results.json", "w") as f:
             json.dump({
                 "status": "processing",
                 "progress": f"Benchmarking model {idx+1}/{total}: {model_name}",
                 "completed_models": list(results.keys()),
-                "current_model": model_name
+                "current_model": model_name,
+                "pid": pid
             }, f, indent=2)
         
         # Switch to this model

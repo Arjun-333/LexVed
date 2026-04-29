@@ -19,14 +19,14 @@ const features = [
     title: "Civil Litigation",
     desc: "Analyze property disputes, contract breaches, and civil procedure from indexed documents.",
     query: "Abhishek Banerjee Case summary",
-    color: "#4B6CB7",
+    color: "var(--accent)",
   },
   {
     icon: "verified_user",
     title: "Statutory Compliance",
     desc: "Cross-reference statutes and automated domain detection for high-fidelity citations.",
     query: "Bail Grounds 2024",
-    color: "#10B981",
+    color: "var(--accent)",
   },
 ];
 

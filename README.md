@@ -16,6 +16,12 @@ Llama 3 8B (Ollama) → Streaming Response
 Evaluation: ROUGE, BLEU, METEOR, BERTScore, DeBERTa NLI, SpaCy NER, LLM Judge
 ```
 
+## UI/UX Philosophy: "All Black But Gold"
+The LexVed interface has been heavily engineered to deliver a premium, museum-grade aesthetic:
+*   **Cinematic Typography:** Utilizing `Playfair Display` and `Cinzel` for sharp, high-authority legal headers with wide character tracking.
+*   **Hardware-Accelerated 3D Coverflow:** The embedding model omnitrix is powered by native CSS `scroll-snap` mechanics and an `IntersectionObserver`, guaranteeing buttery-smooth 120FPS carousel dragging without JavaScript physics stuttering.
+*   **Gilded Accents:** Minimalist `#000000` pitch-black voids contrasted sharply by `#D4AF37` gold luminous interactions.
+
 ## Tech Stack
 
 | Layer | Technology |

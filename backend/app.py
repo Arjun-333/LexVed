@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
@@ -468,10 +468,23 @@ async def get_comparative():
     path = "comparative_results.json"
     if os.path.exists(path):
         try:
+            import psutil
             with open(path, "r") as f:
-                return json.load(f)
-        except:
-            return {"status": "error", "message": "Failed to read comparative results"}
+                report = json.load(f)
+            if report.get("status") == "processing":
+                pid = report.get("pid")
+                if pid:
+                    try:
+                        p = psutil.Process(pid)
+                        if not p.is_running():
+                            report["status"] = "error"
+                            report["message"] = "Process died unexpectedly."
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        report["status"] = "error"
+                        report["message"] = "Process no longer active."
+            return report
+        except Exception as e:
+            return {"status": "error", "message": f"Failed to read comparative results: {e}"}
     return {"status": "error", "message": "No comparative results found. Run a comparative benchmark first."}
 
 # ─── Server Entry ─────────────────────────────────────────────────

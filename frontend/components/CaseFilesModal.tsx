@@ -42,16 +42,16 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
           exit={{ opacity: 0, scale: 0.9, y: 30 }}
           className="w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
         >
-          <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-blue-500/5 to-transparent">
+          <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-[#D4AF37]/5 to-transparent">
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                <Folder className="text-blue-400 w-5 h-5" />
+              <h2 className="font-display text-xl text-[#D4AF37] tracking-[0.15em] flex items-center gap-3">
+                <Folder className="text-[#D4AF37] w-5 h-5" />
                 Case Files & Legal Corpus
               </h2>
-              <p className="text-white/40 text-xs mt-1">Authorized LexVed document repository</p>
+              <p className="text-white/40 text-[10px] uppercase font-mono tracking-widest mt-2">Authorized LexVed document repository</p>
             </div>
             <div className="flex items-center gap-3">
-              <label className="cursor-pointer bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500 hover:text-black transition-all px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+              <label className="cursor-pointer bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2">
                 <FileText size={14} />
                 Upload PDF
                 <input 
@@ -114,7 +114,7 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
                             body: JSON.stringify({ file: file.name })
                           }).then(() => alert("Mission-Critical Performance Audit Initiated. Check the Dashboard for live results."));
                         }}
-                        className="text-[10px] font-bold text-blue-400 hover:text-white uppercase tracking-widest bg-blue-500/10 px-3 py-1.5 rounded-md border border-blue-500/20"
+                        className="text-[10px] font-bold text-[#D4AF37] hover:text-white uppercase tracking-widest bg-[#D4AF37]/10 px-3 py-1.5 rounded-md border border-[#D4AF37]/20"
                       >
                         Analyze
                       </button>
@@ -127,7 +127,7 @@ export default function CaseFilesModal({ isOpen, onClose }: { isOpen: boolean; o
 
           <div className="p-4 bg-black/40 border-t border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase tracking-widest">
-              <Shield className="w-3 h-3 text-green-500/50" />
+              <Shield className="w-3 h-3 text-[#D4AF37]/50" />
               AES-256 Vaulted Storage
             </div>
             <div className="text-[10px] text-white/20 italic">

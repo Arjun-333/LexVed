@@ -79,7 +79,7 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, dis
       </div>
 
       <div className="flex items-center justify-center gap-3 mt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">
-         <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+         <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
          <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
            Encrypted Local Inference · Multi-Turn Context
          </p>

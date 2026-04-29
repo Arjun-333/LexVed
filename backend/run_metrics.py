@@ -21,7 +21,24 @@ scorer_rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stem
 metric_bleu = evaluate.load("bleu")
 metric_meteor = evaluate.load("meteor")
 metric_bertscore = evaluate.load("bertscore")
-model_st = SentenceTransformer(get_active_model_name())
+_model_st = None
+_model_st_name = None
+
+def get_model_st():
+    """Lazily load the SentenceTransformer model, refreshing if the active model changed."""
+    global _model_st, _model_st_name
+    active = get_active_model_name()
+    # Cohere uses API-based embeddings, fall back to a lightweight local model for cosine sim calculations
+    if "embed-english" in active or "cohere" in active.lower():
+        if _model_st_name != "multi-qa-mpnet-base-cos-v1":
+            _model_st = SentenceTransformer("multi-qa-mpnet-base-cos-v1")
+            _model_st_name = "multi-qa-mpnet-base-cos-v1"
+        return _model_st
+    if _model_st is None or _model_st_name != active:
+        print(f"[LexVed] Loading SentenceTransformer for metrics: {active}")
+        _model_st = SentenceTransformer(active)
+        _model_st_name = active
+    return _model_st
 
 def check_hallucination_nli(context, answer):
     try:
@@ -156,17 +173,46 @@ def calculate_recall_at_k(docs, query_category):
 def ensure_data_ingested():
     active_db = get_active_db_name()
     vector_count = 0
+    dimension_ok = True
+    expected_dim = get_active_model_params = None
+    
+    try:
+        from src.utils.config_manager import get_active_model_params as _get_params
+        expected_dim = _get_params()["dimension"]
+    except:
+        pass
+    
     try:
         if active_db == "pinecone":
             from src.utils.pinecone_client import index
-            vector_count = index.describe_index_stats()['total_vector_count']
+            stats = index.describe_index_stats()
+            vector_count = stats['total_vector_count']
         else:
             from src.utils.qdrant_provider import client, COLLECTION_NAME
-            vector_count = client.get_collection(COLLECTION_NAME).vectors_count
-    except:
+            try:
+                col_info = client.get_collection(COLLECTION_NAME)
+                vector_count = col_info.vectors_count
+                # Check if collection dimensions match the current model
+                if expected_dim and hasattr(col_info.config, 'params') and hasattr(col_info.config.params, 'vectors'):
+                    col_dim = col_info.config.params.vectors.size if hasattr(col_info.config.params.vectors, 'size') else None
+                    if col_dim and col_dim != expected_dim:
+                        print(f"[LexVed] Dimension mismatch! Collection has {col_dim}d vectors, model needs {expected_dim}d. Re-ingesting...")
+                        dimension_ok = False
+                elif expected_dim and hasattr(col_info.config, 'params'):
+                    # Try alternative attribute path
+                    try:
+                        col_dim = col_info.config.params.vectors_config.size if hasattr(col_info.config.params, 'vectors_config') else None
+                    except:
+                        pass
+            except Exception as e:
+                # Collection doesn't exist yet
+                print(f"[LexVed] Qdrant collection check failed: {e}")
+                vector_count = 0
+    except Exception as e:
+        print(f"[LexVed] DB check error: {e}")
         pass
         
-    if vector_count > 0:
+    if vector_count > 0 and dimension_ok:
         return
         
     print(f"[LexVed] No data found in {active_db.upper()}. Auto-ingesting evaluation documents...")
@@ -312,7 +358,7 @@ def run_evaluation():
         
         # M1: Embedding Time
         t_start_emb = time.time()
-        query_emb = model_st.encode([query])[0]
+        query_emb = get_model_st().encode([query])[0]
         m1_emb_time = time.time() - t_start_emb
         
         # M3: Retrieval Latency
@@ -323,7 +369,7 @@ def run_evaluation():
             return
             
         # M4: Cosine Similarity
-        doc_embs = model_st.encode([d.payload['text'] for d in docs])
+        doc_embs = get_model_st().encode([d.payload['text'] for d in docs])
         cos_sims = util.cos_sim(query_emb, doc_embs)[0]
         m4_cos_sim = cos_sims.mean().item()
         
@@ -346,8 +392,8 @@ def run_evaluation():
         
         m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
         
-        gt_emb = model_st.encode([gt])[0]
-        ans_emb = model_st.encode([ans])[0]
+        gt_emb = get_model_st().encode([gt])[0]
+        ans_emb = get_model_st().encode([ans])[0]
         m11_sem_score = util.cos_sim(gt_emb, ans_emb)[0].item()
         
         total_tokens = max(len(ans.split()), 1)

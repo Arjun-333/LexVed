@@ -50,11 +50,11 @@ export default function ResearchHistoryModal({ isOpen, onClose }: { isOpen: bool
         >
           <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-[#D4AF37]/10 to-transparent">
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+              <h2 className="font-display text-xl text-[#D4AF37] tracking-[0.15em] flex items-center gap-3">
                 <History className="text-[#D4AF37] w-5 h-5" />
                 Research History
               </h2>
-              <p className="text-white/40 text-xs mt-1">Audit log of institutional queries</p>
+              <p className="text-white/40 text-[10px] uppercase font-mono tracking-widest mt-2">Audit log of institutional queries</p>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
               <X className="text-white/40 hover:text-white" />

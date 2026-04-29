@@ -157,7 +157,7 @@ function Dashboard() {
   // Dynamic status bar values
   const modelName = health?.active_generation_model || "Connecting...";
   const ollamaStatus = health?.ollama === "connected" ? "OPTIMAL" : health?.ollama === "offline" ? "OFFLINE" : "CONNECTING";
-  const statusColor = health?.ollama === "connected" ? "bg-green-500" : health?.ollama === "offline" ? "bg-red-500" : "bg-yellow-500";
+  const statusColor = health?.ollama === "connected" ? "bg-[#D4AF37]" : health?.ollama === "offline" ? "bg-[#AA8C2C]/50" : "bg-[#D4AF37]/50";
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>

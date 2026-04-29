@@ -11,7 +11,7 @@ def get_model():
     active_name = get_active_model_name()
     if _model is None or _current_model_name != active_name:
         # Cohere models require the Cohere SDK, not SentenceTransformer
-        if "Cohere" in active_name or "cohere" in active_name:
+        if "Cohere" in active_name or "cohere" in active_name or "embed-english" in active_name:
             print(f"[LexVed] Loading Cohere Embedding Model: {active_name}")
             _model = "cohere"
         else:

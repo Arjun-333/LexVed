@@ -4,12 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const modelsList = [
-  { id: "llama3", name: "LLaMA-3 8B (Instruct)",   icon: "security",      color: "#D4A017" },
-  { id: "llama3:70b", name: "LLaMA-3 70B (Instruct)",   icon: "all_inclusive", color: "#8B5CF6" },
-  { id: "qwen2.5:70b", name: "Qwen2.5-70B (Instruct)",   icon: "auto_awesome", color: "#EF4444" },
-  { id: "qwen2.5:7b", name: "Qwen2.5-7B (Instruct)",    icon: "star",         color: "#F59E0B" },
-  { id: "mistral", name: "Mistral 7B (Instruct)",    icon: "bolt",         color: "#10B981" },
-  { id: "phi3", name: "Phi-3",                    icon: "memory",       color: "#06B6D4" },
+  { id: "llama3", name: "LLaMA-3 8B (Instruct)",   icon: "security",      color: "#D4AF37" },
+  { id: "llama3:70b", name: "LLaMA-3 70B (Instruct)",   icon: "all_inclusive", color: "#D4AF37" },
+  { id: "qwen2.5:70b", name: "Qwen2.5-70B (Instruct)",   icon: "auto_awesome", color: "#D4AF37" },
+  { id: "qwen2.5:7b", name: "Qwen2.5-7B (Instruct)",    icon: "star",         color: "#AA8C2C" },
+  { id: "mistral", name: "Mistral 7B (Instruct)",    icon: "bolt",         color: "#D4AF37" },
+  { id: "phi3", name: "Phi-3",                    icon: "memory",       color: "#AA8C2C" },
 ];
 
 const DEG = 360 / modelsList.length;
@@ -67,7 +67,7 @@ export default function ModelWheel() {
           Intelligence Engine
         </h3>
         <p className="text-[0.55rem] font-bold uppercase tracking-[0.1em] opacity-40 transition-colors duration-300" style={{ color: "var(--text)" }}>
-          LOCAL CLUSTER STATUS: <span className="text-green-500">OPTIMAL</span>
+          LOCAL CLUSTER STATUS: <span style={{ color: "var(--accent)" }}>OPTIMAL</span>
         </p>
       </div>
 

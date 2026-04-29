@@ -7090,3 +7090,1573 @@ INFO:     127.0.0.1:42678 - "GET /api/metrics HTTP/1.1" 200 OK
 INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
 INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
 INFO:     127.0.0.1:42678 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42678 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42678 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42678 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46920 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46920 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46920 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46920 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46920 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46920 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59730 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59730 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37100 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37496 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37510 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37514 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38800 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38800 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38800 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38800 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38800 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42818 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42818 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42818 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42818 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42818 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42818 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57414 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57414 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57414 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57414 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57414 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57414 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44340 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44340 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44340 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44340 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44340 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44340 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49966 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49966 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38804 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57738 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57750 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57756 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58898 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58898 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58906 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56520 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56522 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56520 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56528 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53668 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53680 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42898 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42898 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42898 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42898 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42898 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42906 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42906 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42906 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42906 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42906 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42906 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58670 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58670 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58670 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58670 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58670 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58670 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37564 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37564 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37564 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37564 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37564 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37564 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41042 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41042 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41042 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41042 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41042 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41042 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42882 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58884 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58884 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58884 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58884 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58884 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58884 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34706 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34706 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34706 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34706 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34706 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34706 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59322 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59322 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59322 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59322 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59322 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59322 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60214 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60214 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60214 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60214 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60214 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60214 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44820 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44820 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44820 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44820 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44820 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44820 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46680 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46680 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46680 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46680 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46680 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46680 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36926 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36926 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36926 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36926 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36926 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36926 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50236 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50236 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50236 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50236 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50236 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50236 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46402 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46402 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46402 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46402 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46402 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46402 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35620 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35620 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35620 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35620 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35620 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35620 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37854 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37854 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37854 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37854 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37854 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37854 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57476 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57476 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57476 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57476 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57476 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57476 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53344 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53344 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53344 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53344 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53344 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53344 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36954 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36954 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36954 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36954 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36954 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36954 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53784 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47772 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47772 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47772 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47772 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47772 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47772 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40384 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40384 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40384 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40384 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40384 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40384 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35406 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35406 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35406 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35406 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35406 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35406 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33534 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33534 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33534 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33534 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33534 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33534 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37736 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37736 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37736 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37736 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37736 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37736 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35042 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35042 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35042 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35042 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35042 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35042 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50708 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50708 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50708 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50708 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50708 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50708 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39116 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39116 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39116 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39116 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39116 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39116 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43462 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43462 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43462 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43462 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43462 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43462 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46966 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46966 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46966 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46966 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46966 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46966 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52196 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52196 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52196 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52196 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52196 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52196 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53420 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53420 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53420 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53420 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53420 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53420 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38318 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51646 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51646 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51646 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51646 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51646 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51646 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42128 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42128 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42128 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42128 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42128 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[3/10] Completed evaluation for query.
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[4/10] Completed evaluation for query.
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[4/6] Benchmarking: BAAI/bge-m3
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: BAAI/bge-m3
+[LexVed] Loading Embedding Model: BAAI/bge-m3
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 17513.97it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 18244.42it/s]
+INFO:     127.0.0.1:42128 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47660 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58930 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48796 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48796 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48796 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48796 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[5/6] Benchmarking: intfloat/multilingual-e5-large-instruct
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: intfloat/multilingual-e5-large-instruct
+[LexVed] Loading Embedding Model: intfloat/multilingual-e5-large-instruct
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 4050.75it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48796 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:  89%|████████▉ | 349/391 [00:00<00:00, 3405.51it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 3409.98it/s]
+INFO:     127.0.0.1:48796 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59378 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59378 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59378 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59378 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59378 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59378 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50714 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50714 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50714 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50714 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50714 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[6/6] Benchmarking: embed-english-v3.0
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[SUCCESS] Comparative results saved for 6 models.
+INFO:     127.0.0.1:50714 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43776 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43776 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43776 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43776 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[4/10] Completed evaluation for query.
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[5/10] Completed evaluation for query.
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[6/10] Completed evaluation for query.
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[7/10] Completed evaluation for query.
+[LexVed] Ollama connection failed (attempt 1/3), retrying in 1s...
+Exception during Llama 3 Judge Evaluation: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=180)
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[LexVed] Ollama connection failed (attempt 2/3), retrying in 2s...
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[4/6] Benchmarking: BAAI/bge-m3
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: BAAI/bge-m3
+[LexVed] Loading Embedding Model: BAAI/bge-m3
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 15698.03it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 12455.93it/s]
+INFO:     127.0.0.1:43776 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43776 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40416 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40416 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44814 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40422 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40418 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50288 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58796 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58796 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58796 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58796 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58796 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58796 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53640 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[5/6] Benchmarking: intfloat/multilingual-e5-large-instruct
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: intfloat/multilingual-e5-large-instruct
+[LexVed] Loading Embedding Model: intfloat/multilingual-e5-large-instruct
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s][ALoading weights: 100%|██████████| 391/391 [00:00<00:00, 14316.78it/s]
+Loading weights: 100%|██████████| 391/391 [00:00<00:00, 7073.30it/s]
+INFO:     127.0.0.1:53640 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53640 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53640 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53640 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53640 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33844 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33844 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33844 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33844 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33844 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33844 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39642 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[6/6] Benchmarking: embed-english-v3.0
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[LexVed] Loading Embedding Model: embed-english-v3.0
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[SUCCESS] Comparative results saved for 6 models.
+INFO:     127.0.0.1:39642 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39642 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39642 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39642 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39642 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46498 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46498 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46498 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46498 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46498 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46498 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "OPTIONS /api/workflow/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "POST /api/workflow/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53460 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59048 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59048 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+[nltk_data] Downloading package wordnet to /home/arjun/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt_tab to /home/arjun/nltk_data...
+[nltk_data]   Package punkt_tab is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/arjun/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59048 - "GET /api/comparative HTTP/1.1" 200 OK
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:     127.0.0.1:59048 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3249.64it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59048 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59048 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /api/comparative HTTP/1.1" 200 OK
+
+================================================================================
+ LEXVED COMPARATIVE BENCHMARK — 6 Models
+================================================================================
+
+[1/6] Benchmarking: multi-qa-MiniLM-L6-cos-v1
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: multi-qa-MiniLM-L6-cos-v1
+[LexVed] Loading Embedding Model: multi-qa-MiniLM-L6-cos-v1
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6462.62it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6475.50it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:50892 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34064 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34064 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:51 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '1', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:51 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '3', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '5', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:51 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:52 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '2', 'x-pinecone-response-duration-ms': '7', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:53 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '1', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:53 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '4', 'x-pinecone-response-duration-ms': '22', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:53 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:53 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:54 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+BM25 Build Error: (400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Date': 'Wed, 29 Apr 2026 21:27:54 GMT', 'Content-Type': 'application/json', 'Content-Length': '102', 'Connection': 'keep-alive', 'x-pinecone-request-latency-ms': '0', 'x-envoy-upstream-service-time': '0', 'x-pinecone-response-duration-ms': '2', 'server': 'envoy'})
+HTTP response body: {"code":3,"message":"Vector dimension 384 does not match the dimension of the index 768","details":[]}
+
+[Warning] No queries processed successfully.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[2/6] Benchmarking: multi-qa-mpnet-base-cos-v1
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[LexVed] Loading Embedding Model: multi-qa-mpnet-base-cos-v1
+[LexVed] Loading Embedding Model: multi-qa-mpnet-base-cos-v1
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6433.23it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7360.18it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34064 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34064 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34064 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 5960.48it/s]
+[1mBertForSequenceClassification LOAD REPORT[0m from: cross-encoder/ms-marco-MiniLM-L-6-v2
+Key                          | Status     |  | 
+-----------------------------+------------+--+-
+bert.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 6637.56it/s]
+[1mBertForSequenceClassification LOAD REPORT[0m from: cross-encoder/ms-marco-MiniLM-L-6-v2
+Key                          | Status     |  | 
+-----------------------------+------------+--+-
+bert.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     127.0.0.1:34064 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 7292.62it/s]
+[1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                             | Status     | 
+--------------------------------+------------+-
+lm_head.dense.weight            | UNEXPECTED | 
+roberta.embeddings.position_ids | UNEXPECTED | 
+lm_head.layer_norm.weight       | UNEXPECTED | 
+lm_head.dense.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias         | UNEXPECTED | 
+lm_head.bias                    | UNEXPECTED | 
+pooler.dense.bias               | MISSING    | 
+pooler.dense.weight             | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+INFO:     127.0.0.1:39590 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40782 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/comparative HTTP/1.1" 200 OK
+Loading weights:   0%|          | 0/106 [00:00<?, ?it/s]Loading weights: 100%|██████████| 106/106 [00:00<00:00, 5760.44it/s]
+[1mDebertaV2ForSequenceClassification LOAD REPORT[0m from: cross-encoder/nli-deberta-v3-small
+Key                             | Status     |  | 
+--------------------------------+------------+--+-
+deberta.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 8249.87it/s]
+[1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                             | Status     | 
+--------------------------------+------------+-
+lm_head.dense.weight            | UNEXPECTED | 
+roberta.embeddings.position_ids | UNEXPECTED | 
+lm_head.layer_norm.weight       | UNEXPECTED | 
+lm_head.dense.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias         | UNEXPECTED | 
+lm_head.bias                    | UNEXPECTED | 
+pooler.dense.bias               | MISSING    | 
+pooler.dense.weight             | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+INFO:     127.0.0.1:38194 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/comparative HTTP/1.1" 200 OK
+Token indices sequence length is longer than the specified maximum sequence length for this model (516 > 512). Running this sequence through the model will result in indexing errors
+INFO:     127.0.0.1:38194 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53130 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38194 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53140 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53140 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53140 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[3/6] Benchmarking: multi-qa-distilbert-cos-v1
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[4/6] Benchmarking: BAAI/bge-m3
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[5/6] Benchmarking: intfloat/multilingual-e5-large-instruct
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[6/6] Benchmarking: embed-english-v3.0
+
+================================================================================
+                          LEXVED BENCHMARK - PINECONE                           
+================================================================================
+[1/10] Completed evaluation for query.
+[2/10] Completed evaluation for query.
+[3/10] Completed evaluation for query.
+[4/10] Completed evaluation for query.
+[5/10] Completed evaluation for query.
+[6/10] Completed evaluation for query.
+[7/10] Completed evaluation for query.
+[8/10] Completed evaluation for query.
+[9/10] Completed evaluation for query.
+[10/10] Completed evaluation for query.
+
+[SUCCESS] Metrics saved for PINECONE
+
+[SUCCESS] Comparative results saved for 6 models.
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53140 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53140 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53140 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58602 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58602 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58602 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58602 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58602 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58602 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45742 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45742 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45742 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45742 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45742 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45742 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56886 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56886 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56886 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56886 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56886 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56886 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39318 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39318 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39318 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34004 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34004 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34004 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34004 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34004 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34004 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40996 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40996 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40996 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40996 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40996 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40996 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40888 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40888 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40888 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40888 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40888 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40888 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37020 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59426 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "OPTIONS /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59450 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "OPTIONS /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59426 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59450 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59426 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59450 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:46590 - "POST /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+[LexVed] BM25 index and caches invalidated.
+INFO:     127.0.0.1:59426 - "POST /api/settings/vector_db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59450 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59426 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59450 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59426 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53142 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59450 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49758 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49758 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49758 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46590 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45726 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41860 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45738 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42324 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42324 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59440 - "GET /api/comparative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32970 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36138 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36138 - "GET /api/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60720 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52924 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51766 - "GET /api/health HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'src/ingestion/embedder.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [36281]
+INFO:     Started server process [41072]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:57546 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44012 - "GET /api/health HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'run_metrics.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [41072]
+INFO:     Started server process [41145]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:59476 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40764 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44822 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59466 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39342 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42480 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43144 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59546 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59546 - "GET /api/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41392 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38758 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53300 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47886 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51250 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38518 - "GET /api/health HTTP/1.1" 200 OK

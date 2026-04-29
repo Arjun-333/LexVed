@@ -9,7 +9,7 @@ const embeddingModels = [
   { id: "multi-qa-distilbert-cos-v1", name: "DistilBERT", desc: "768 DIM • BALANCED", icon: "psychology" },
   { id: "BAAI/bge-m3", name: "BGE-M3", desc: "1024 DIM • MULTILINGUAL", icon: "language" },
   { id: "intfloat/multilingual-e5-large-instruct", name: "E5-Mistral", desc: "4096 DIM • INSTRUCT", icon: "auto_awesome" },
-  { id: "Cohere/Cohere-embed-english-v3.0", name: "Cohere", desc: "1024 DIM • API", icon: "cloud" },
+  { id: "embed-english-v3.0", name: "Cohere", desc: "1024 DIM • API", icon: "cloud" },
 ];
 
 interface Props {

@@ -496,7 +496,27 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                                 transition={{ duration: 0.5 }}
                               />
                             </div>
-                            <span className="text-[10px] font-mono text-white/40">{pct}% Complete</span>
+                            <span className="text-[10px] font-mono text-white/40 mb-4">{pct}% Overall Benchmark Complete</span>
+
+                            {/* Sequential Model Checklist */}
+                            <div className="w-full max-w-md bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">
+                              <div className="text-[8px] uppercase tracking-wider font-bold text-white/40 border-b border-white/5 pb-2 mb-2">Model Execution Sequence</div>
+                              {comparative?.completed_models?.map((m: string) => (
+                                <div key={m} className="flex items-center justify-between text-xs py-1">
+                                  <span className="text-white/60 font-mono">{m.split('/').pop()}</span>
+                                  <span className="text-green-400 font-bold text-[10px] bg-green-500/10 px-2 py-0.5 rounded">PASSED</span>
+                                </div>
+                              ))}
+                              {comparative?.current_model && (
+                                <div className="flex items-center justify-between text-xs py-1 bg-purple-500/5 px-2 rounded border border-purple-500/20 animate-pulse">
+                                  <span className="text-purple-300 font-bold font-mono">{comparative.current_model.split('/').pop()}</span>
+                                  <div className="flex items-center gap-2">
+                                    <Loader2 className="w-3 h-3 text-purple-400 animate-spin" />
+                                    <span className="text-purple-300 text-[10px] font-bold">RUNNING</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         );
                       })() : (

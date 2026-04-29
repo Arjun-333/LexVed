@@ -428,6 +428,8 @@ async def trigger_comparative():
                 json.dump({
                     "status": "processing",
                     "progress": "Starting comparative benchmark...",
+                    "completed_models": [],
+                    "current_model": "",
                     "pid": proc.pid
                 }, f)
         except Exception as e:

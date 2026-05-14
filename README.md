@@ -19,7 +19,8 @@ The platform utilizes a multi-tiered retrieval strategy to guarantee maximum rec
 ### 3. Dynamic Model Routing
 LexVed intelligently routes workloads across a curated suite of models via Groq and Ollama:
 * **Fast Mode:** Utilizes `llama-3.1-8b-instant` for rapid, low-latency inference on straightforward queries.
-* **Agentic Mode:** Escalates to `llama-3.3-70b-versatile` for deep, multi-faceted analysis requiring extensive logical deduction.
+* **Agentic Mode:** Escalates to `llama-3.3-70b-versatile` or `mixtral-8x7b-32768` for deep, multi-faceted analysis requiring extensive logical deduction.
+* **Evaluation Node:** Employs `llama-3.1-8b-instant` on Groq for high-performance KPI judging.
 
 ### 4. Enterprise Interface
 The frontend is built on Next.js 14 and Framer Motion, delivering a premium, glassmorphic UI ("All Black But Gold" aesthetic). It features:
@@ -31,8 +32,8 @@ The frontend is built on Next.js 14 and Framer Motion, delivering a premium, gla
 
 | Layer | Technology |
 |-------|-----------|
-| **Language Models** | Llama 3.1 8B, Llama 3.3 70B (via Groq & Ollama) |
-| **Embeddings** | SentenceTransformers, Cohere API |
+| **Language Models** | Llama 3.1 8B, Llama 3.3 70B, Mixtral 8x7B (via Groq & Ollama) |
+| **Embeddings** | MPNet, MiniLM, DistilBERT, E5-Mistral, BGE-M3, Cohere Embed v3 |
 | **Vector Databases** | Qdrant (Self-Hosted), Pinecone (Serverless) |
 | **Retrieval Engine** | BM25, Reciprocal Rank Fusion, CrossEncoder |
 | **Backend Framework** | FastAPI (Python 3.10) |

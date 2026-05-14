@@ -23,8 +23,8 @@ graph TD
     D --> E[(Pinecone / Qdrant)]
     
     F[User Query] --> G{Dynamic Router Agent}
-    G -->|Simple| H[Fast LLM Inference]
-    G -->|Complex| I[Reasoning Agent]
+    G -->|Universal| H[Universal Mode Inference]
+    G -->|Agentic| I[Reasoning Agent]
     
     I --> J[Hybrid Retrieval Engine]
     E --> J
@@ -68,7 +68,7 @@ The Enhanced Pipeline addresses every limitation of the Primitive Pipeline throu
 graph TD
     subgraph "Phase 1: Dynamic Routing"
         Q[User Query] --> R[Router Agent]
-        R -->|Classification| D{Simple or Complex?}
+        R -->|Classification| D{Universal or Agentic?}
     end
     
     subgraph "Phase 2: Advanced Retrieval"
@@ -98,10 +98,11 @@ Instead of generating an answer in a single pass, the Enhanced Pipeline splits t
 2. **Reasoning Agent:** Mandated to read the retrieved context and "think aloud." It drafts a step-by-step logical chain, actively searching for contradictions, precedents, and facts. It is strictly constrained from utilizing outside knowledge.
 3. **Synthesis Agent:** Acts as the Senior Legal Counsel. It takes the raw logical chain from the Reasoning Agent and drafts a cohesive, professional, and authoritative final response, embedding exact citations.
 
-### B. Dynamic Model Routing
-To optimize both speed and intelligence, LexVed utilizes a multi-model orchestration strategy:
-* **Simple Queries:** Routed to `llama-3.1-8b-instant` via Groq for ultra-fast, low-latency inference.
-* **Complex Queries:** Escalated to `llama-3.3-70b-versatile` for deep, multi-faceted analytical reasoning.
+### B. Dynamic Model Orchestration
+LexVed utilizes a sophisticated multi-model orchestration strategy to balance speed, reasoning depth, and operational efficiency:
+* **Universal Mode:** Leverages `llama-3.1-8b-instant` or `mixtral-8x7b-32768` for rapid, low-latency responses. This mode provides a hybrid knowledge experience, blending the institutional document repository with the model's internal legal expertise.
+* **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile` for multi-agent reasoning chains and deep, logical deduction.
+* **Infrastructure Parity:** Supports cross-infrastructure benchmarking across six distinct embedding models (MPNet, MiniLM, DistilBERT, E5-Mistral, BGE-M3, and Cohere) on both Pinecone and Qdrant.
 
 ### C. Hybrid Retrieval and Reranking
 Dense vector search excels at understanding semantic intent, while sparse search (BM25) excels at exact keyword matching. LexVed executes both simultaneously, merges the results using Reciprocal Rank Fusion (RRF), and then passes the fused list through a CrossEncoder to re-score the chunks based on deep contextual relevance, guaranteeing that the most accurate legal precedent is fed to the LLM.

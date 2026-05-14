@@ -4,10 +4,11 @@ import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "re
 
 interface InputBarProps {
   onSend: (text: string, agentic: boolean) => void;
+  onStop: () => void;
   disabled?: boolean;
 }
 
-const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, disabled }, ref) => {
+const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, onStop, disabled }, ref) => {
   const [text, setText] = useState("");
   const [focused, setFocused] = useState(false);
   const [agentic, setAgentic] = useState(false);
@@ -73,20 +74,31 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, dis
           {agentic ? "Agentic" : "Universal"}
         </button>
 
-        <button
-          onClick={handleSubmit}
-          disabled={disabled || !text.trim()}
-          className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer
-            transition-all duration-400 hover:scale-110 active:scale-95
-            disabled:opacity-20 disabled:cursor-not-allowed"
-          style={{
-            background: text.trim() ? "var(--accent)" : "var(--surface-active)",
-            color: text.trim() ? "white" : "var(--text-muted)",
-            boxShadow: text.trim() ? "var(--shadow-gold)" : "none",
-          }}
-        >
-          <span className="material-icons-round text-[18px]">arrow_upward</span>
-        </button>
+        {disabled ? (
+          <button
+            onClick={onStop}
+            className="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer
+              transition-all duration-400 bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-dim)]
+              hover:bg-[var(--accent)] hover:text-white"
+          >
+            <span className="material-icons-round text-[18px]">stop</span>
+          </button>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            disabled={!text.trim()}
+            className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer
+              transition-all duration-400 hover:scale-110 active:scale-95
+              disabled:opacity-20 disabled:cursor-not-allowed"
+            style={{
+              background: text.trim() ? "var(--accent)" : "var(--surface-active)",
+              color: text.trim() ? "white" : "var(--text-muted)",
+              boxShadow: text.trim() ? "var(--shadow-gold)" : "none",
+            }}
+          >
+            <span className="material-icons-round text-[18px]">arrow_upward</span>
+          </button>
+        )}
       </div>
 
       <div className="flex items-center justify-center gap-3 mt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">

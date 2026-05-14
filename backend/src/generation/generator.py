@@ -15,7 +15,7 @@ def generate_with_ollama_stream(prompt, model=None):
         yield from generate_with_groq_stream(prompt, model)
         return
 
-    url = "http://localhost:11434/api/generate"
+    url = "http://127.0.0.1:11434/api/generate"
     payload = {
         "model": model,
         "prompt": prompt,
@@ -87,8 +87,10 @@ def generate_with_groq_stream(prompt, model):
                 yield f"\n\n[Error: Groq API unreachable after {max_retries} attempts.]"
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
-                yield "\n\n[Rate limit reached on Groq. Falling back to local inference...]\n\n"
-                yield from generate_with_ollama_stream(prompt, model="llama3")
+                yield "\n\n[Rate limit reached on Groq. Falling back to local Llama 3 infrastructure...]\n\n"
+                import time
+                time.sleep(1) # Brief pause before fallback
+                yield from generate_with_ollama_stream(prompt, model="llama3:8b")
             else:
                 yield f"\n\n[Error: Groq returned HTTP {e.response.status_code}.]"
             return
@@ -108,7 +110,7 @@ def generate_utility(prompt: str, model: str = "llama-3.1-8b-instant") -> str:
         
     # Fallback to Local Ollama
     ans = ""
-    for chunk in generate_with_ollama_stream(prompt, model="llama3"):
+    for chunk in generate_with_ollama_stream(prompt, model="llama3:8b"):
         ans += chunk
     return ans.strip()
 

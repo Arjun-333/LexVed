@@ -1,5 +1,5 @@
 {
   "status": "processing",
-  "progress": "Embedding & upserting 19793 chunks to Qdrant...",
+  "progress": "Running 10 queries via Groq + evaluating metrics...",
   "embedding": "multi-qa-mpnet-base-cos-v1"
 }

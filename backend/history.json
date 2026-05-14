@@ -1,5 +1,33 @@
 [
     {
+        "id": 40,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:27",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 27.57469606399536,
+            "e2e_lat": 40.32807183265686,
+            "ans_length": 326
+        },
+        "username": "user"
+    },
+    {
+        "id": 39,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:23",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 21.97418475151062,
+            "e2e_lat": 44.45176720619202,
+            "ans_length": 592
+        },
+        "username": "user"
+    },
+    {
         "id": 38,
         "query": "Abhishek Banerjee Case summary",
         "category": "Uncategorized",

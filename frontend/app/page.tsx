@@ -80,8 +80,25 @@ function Dashboard() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const abortController = useRef<AbortController | null>(null);
+
+  async function handleStop() {
+    if (abortController.current) {
+      abortController.current.abort();
+      abortController.current = null;
+      setLoading(false);
+      setIsTyping(false);
+    }
+  }
+
   async function handleSend(text: string, agentic: boolean = false) {
     if (!hasStarted) setHasStarted(true);
+
+    // Cancel any existing request
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+    abortController.current = new AbortController();
 
     const userMsg: Message = { id: `u-${Date.now()}`, text, isUser: true };
     setMessages((prev) => [...prev, userMsg]);
@@ -94,6 +111,7 @@ function Dashboard() {
       const res = await authFetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: abortController.current.signal,
         body: JSON.stringify({ 
           message: text,
           history: conversationHistory.current.slice(-3),
@@ -240,7 +258,7 @@ function Dashboard() {
         </div>
 
         <div className="shrink-0 z-20">
-           <InputBar onSend={handleSend} disabled={loading} ref={inputRef} />
+           <InputBar onSend={handleSend} onStop={handleStop} disabled={loading} ref={inputRef} />
         </div>
       </main>
       <ModelWheel />

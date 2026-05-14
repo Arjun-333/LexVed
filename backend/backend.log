@@ -1,9 +1,67 @@
 INFO:     Will watch for changes in these directories: ['/home/arjun/Desktop/LexVed/backend']
 INFO:     Uvicorn running on http://0.0.0.0:5000 (Press CTRL+C to quit)
-INFO:     Started reloader process [81996] using WatchFiles
-INFO:     Started server process [82067]
+INFO:     Started reloader process [84009] using WatchFiles
+INFO:     Started server process [84112]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     127.0.0.1:41086 - "GET /api/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41098 - "OPTIONS /api/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41100 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38946 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51368 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51370 - "OPTIONS /api/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51376 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51376 - "GET /api/settings/generation_model HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51370 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51376 - "GET /api/settings/generation_model HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51376 - "GET /api/health HTTP/1.1" 200 OK
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[LexVed] Query: Abhishek Banerjee Case summary | Mode: Universal | DB: pinecone
+[LexVed] Augmented Query: Abhishek Banerjee Case summary
+[LexVed] Loading Embedding Model: multi-qa-mpnet-base-cos-v1
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6043.67it/s]
+[1mMPNetModel LOAD REPORT[0m from: sentence-transformers/multi-qa-mpnet-base-cos-v1
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 6551.26it/s]
+[1mBertForSequenceClassification LOAD REPORT[0m from: cross-encoder/ms-marco-MiniLM-L-6-v2
+Key                          | Status     |  | 
+-----------------------------+------------+--+-
+bert.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[LexVed] Retrieved 10 chunks. Time: 27.57s
+INFO:     127.0.0.1:51376 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51370 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53348 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51370 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53348 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53348 - "OPTIONS /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44872 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51376 - "GET /api/health HTTP/1.1" 200 OK
+[LexVed] Query: account_balance  chat_bubble New Brief  history Research History (Ctrl+H)  folder Case Files  light_mode Light Mode  tune System Settings person Legal Researcher @user · user  logout Sign Out LexVed System Status llama-3.1-8b-instant · OPTIMAL Abhishek Banerjee Case summary psychology Based on the provided context, the case summary of Abhishek Banerjee vs Directorate Of Enforcement on 9 September, 2024 is as follows:  **Case Summary:**  Abhishek Banerjee and his wife Rujira Banerjee filed a writ petition (Crl.) No. 1808 of 2021 and Crl. M.C. No. 2442 of 2021, respectively, against the Directorate of Enforcement (ED) seeking quashing of the summons issued to them under Section 50 of the Prevention of Money Laundering Act, 2002 (PMLA). The ED had issued the summons in connection with an FIR registered by the CBI, ACB, Kolkata, for alleged illegal excavation and theft of coal.  **Key Points:**  1. The ED had issued summons to Abhishek Banerjee and Rujira Banerjee to appear in New Delhi, despite Abhishek Banerjee being a permanent resident of Kolkata and having a residence in Delhi. 2. The Appellants argued that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, where the ED has a Zonal Office. 3. The Department of Revenue, Ministry of Finance, has issued administrative instructions consistent with Section 51 of PMLA, demarcating the specific territorial jurisdiction of various Zonal Offices of the ED. 4. The Appellants argued that the summons issued to Abhishek Banerjee under PMLA were for personal appearance before the Respondent at New Delhi, which is an abuse of process of law. 5. The Supreme Court held that the ED must strictly comply with the administrative instructions issued by the Department of Revenue, Ministry of Finance, and that the summons issued to Abhishek Banerjee were an abuse of process of law.  **Judgment:**  The Supreme Court allowed the appeals and quashed the summons issued to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA. The Court held that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.  **Relevant Sections:**  * Section 50 of the Prevention of Money Laundering Act, 2002 (PMLA) * Section 51 of the Prevention of Money Laundering Act, 2002 (PMLA) * Section 174 of the Indian Penal Code (IPC) * Section 91 of the Code of Criminal Procedure, 1973 (CrPC)  **Cited Judgments:**  * Deepak Bajaj vs State Of Maharashtra & Anr on 12 November, 2008 (Indian Kanoon)  **General Knowledge:**  While the provided context is sufficient to answer the question, I would like to supplement my answer with general knowledge on the topic. The Prevention of Money Laundering Act, 2002 (PMLA) is a law enacted to prevent and control money laundering in India. The Act provides for the attachment and confiscation of property involved in money laundering, as well as the prosecution of individuals involved in such activities.  The PMLA also provides for the establishment of the Financial Intelligence Unit (FIU) to collect and analyze information on suspicious transactions. The FIU is responsible for providing intelligence to law enforcement agencies to help them investigate and prosecute money laundering cases.  In this case, the ED had issued summons to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA, which requires individuals to appear before the ED for questioning. The Appellants argued that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.  The Supreme Court's judgment in this case highlights the importance of following administrative instructions and the need to demonstrate prejudice before issuing summons under the PMLA.  psychology LexVed Intelligence Engine bolt Generation: 44.45s Uncategorized • General menu_book Case References  open_in_new Abhishek Banerjee vs Directorate Of Enfo... p.1  open_in_new Deepak Bajaj vs State Of Maharashtra Anr... p.1  open_in_new Amritlal vs Shantilal Soni on 28 Februar... p.1  open_in_new Anokhilal vs The State Of Madhya Pradesh... p.1  open_in_new Bhadresh Bipinbhai Sheth vs State Of Guj... p.1  open_in_new Devender Pal Singh Bhullar Anr vs State ... p.1  open_in_new Ajay Kumar Choudhary vs Union Of India T... p.1 Abhishek Banerjee Case summary psychology psychology Agentic Reasoning Chain Determining query complexity and routing to optimal model...Query routed to llama-3.1-8b-instantReasoning Agent analyzing context and drafting logical chain...**Structured Logical Reasoning Chain:**  1. **Premise 1:** Abhishek Banerjee and his wife Rujira Banerjee filed a writ petition (Crl.) No. 1808 of 2021 and Crl. M.C. No. 2442 of 2021, respectively, against the Directorate of Enforcement (ED) seeking quashing of the summons issued to them under Section 50 of the Prevention of Money Laundering Act, 2002 (PMLA).  2. **Premise 2:** The ED had issued the summons in connection with an FIR registered by the CBI, ACB, Kolkata, for alleged illegal excavation and theft of coal.  3. **Premise 3:** The Appellants argued that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, where the ED has a Zonal Office.  4. **Premise 4:** The Department of Revenue, Ministry of Finance, has issued administrative instructions consistent with Section 51 of PMLA, demarcating the specific territorial jurisdiction of various Zonal Offices of the ED.  5. **Premise 5:** The Appellants argued that the summons issued to Abhishek Banerjee under PMLA were for personal appearance before the Respondent at New Delhi, which is an abuse of process of law.  6. **Inference 1:** The ED must strictly comply with the administrative instructions issued by the Department of Revenue, Ministry of Finance.  7. **Inference 2:** The summons issued to Abhishek Banerjee were an abuse of process of law, as the ED had not demonstrated how it could be prejudiced by calling him to its office in Kolkata.  8. **Conclusion 1:** The Supreme Court allowed the appeals and quashed the summons issued to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA.  9. **Conclusion 2:** The Court held that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.  **Logical Reasoning Chain:**  1. Premise 1 → Premise 2 → Premise 3 → Inference 1 2. Premise 4 → Premise 5 → Inference 2 3. Inference 1 → Inference 2 → Conclusion 1 4. Conclusion 1 → Conclusion 2  **Final Conclusion:** The Supreme Court allowed the appeals and quashed the summons issued to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA, holding that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.--- Reasoning Complete ---   [Rate limit reached on Groq. Falling back to local Llama 3 infrastructure...]   psychology LexVed Intelligence Engine bolt Generation: 0.00s Uncategorized • General menu_book Case References  open_in_new Abhishek Banerjee vs Directorate Of Enfo... p.1  open_in_new Aloke Nath Dutta Ors vs State Of West Be... p.1  open_in_new Centrum Financial Services Limited vs St... p.1  open_in_new Dataram Singh vs The State Of Uttar Prad... p.1  open_in_new Devender Pal Singh Bhullar Anr vs State ... p.1  open_in_new Ajay Kumar Choudhary vs Union Of India T... p.1  open_in_new G Reddeiah vs Govt Of A P Anr on 9 Septe... p.1 search Ask a legal question...  psychology Agentic  arrow_upward Encrypted Local Inference · Multi-Turn Context | Mode: Agentic | DB: pinecone
+[LexVed] Augmented Query: What are the implications of the Supreme Court's judgment in Abhishek Banerjee vs Directorate Of Enforcement on the issuance of summons under the Prevention of Money Laundering Act, 2002 (PMLA)?
+[LexVed] Retrieved 10 chunks. Time: 1.24s
+INFO:     127.0.0.1:56344 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43668 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43674 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51514 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51522 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45962 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45970 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48258 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48264 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34122 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34138 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49894 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49902 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52122 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52126 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44270 - "GET /api/settings/generation_model HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:44284 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44292 - "GET /api/settings/generation_model HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:44294 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54634 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /api/health HTTP/1.1" 200 OK

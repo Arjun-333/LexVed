@@ -79,31 +79,32 @@ def get_or_create_index(name: str, dim: int):
 
 # ── PDF chunking ──────────────────────────────────────────────────────
 def extract_chunks(pdf_path: Path, chunk_size=200):
+    chunks = []
     try:
         import fitz
-        doc  = fitz.open(str(pdf_path))
-        text = "\n".join([p.get_text("text") for p in doc])
+        doc = fitz.open(str(pdf_path))
+        for page_num, page in enumerate(doc):
+            text = page.get_text("text")
+            text = re.sub(r"[*_]", "", text)
+            text = re.sub(r"\s+", " ", text).strip()
+            
+            # Simple sentence splitting
+            sentences = re.split(r'(?<=[.?!]) +|\n+', text)
+            buf = ""
+            for sent in sentences:
+                seg = sent.strip()
+                if not seg: continue
+                if len(buf.split()) + len(seg.split()) < chunk_size:
+                    buf += " " + seg
+                else:
+                    if buf.strip(): 
+                        chunks.append({"text": buf.strip(), "source": str(pdf_path), "page": page_num + 1})
+                    buf = seg
+            if buf.strip():
+                chunks.append({"text": buf.strip(), "source": str(pdf_path), "page": page_num + 1})
         doc.close()
     except Exception as e:
-        print(f"[Primitive] Skipping {pdf_path.name}: {e}")
-        return []
-
-    text = re.sub(r"[*_]", "", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    citation = re.compile(r"(Section\s\d+[A-Za-z]*|Sec\.\s\d+[A-Za-z]*|\d+\s?Cr\.?\s?\d+)", re.IGNORECASE)
-    sentences = re.split(r'(?<=[.?!]) +|\n+', text)
-
-    chunks, buf = [], ""
-    for sent in sentences:
-        for part in citation.split(sent):
-            seg = part.strip()
-            if not seg: continue
-            if len(buf.split()) + len(seg.split()) < chunk_size:
-                buf += " " + seg
-            else:
-                if buf.strip(): chunks.append({"text": buf.strip(), "source": str(pdf_path)})
-                buf = seg
-    if buf.strip(): chunks.append({"text": buf.strip(), "source": str(pdf_path)})
+        print(f"[Primitive] Error parsing {pdf_path.name}: {e}")
     return chunks
 
 def load_all_chunks() -> list:
@@ -164,7 +165,11 @@ def embed_and_upsert(chunks, embedder, model_name, collection_name, batch_size=9
             PointStruct(
                 id=i,
                 vector=vec.tolist(),
-                payload={"text": chunks[i]["text"], "source": chunks[i]["source"]}
+                payload={
+                    "text": chunks[i]["text"], 
+                    "source": chunks[i]["source"],
+                    "page": chunks[i].get("page", 1)
+                }
             )
         )
         if len(batch) >= batch_size:

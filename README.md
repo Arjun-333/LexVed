@@ -10,16 +10,20 @@ LexVed abandons the traditional single-pass LLM generation in favor of a special
 * **Reasoning Agent:** Analyzes the retrieved legal context and drafts a step-by-step logical deduction chain. It is strictly constrained by anti-hallucination prompts to prevent the fabrication of case law.
 * **Synthesis Agent:** Acts as the Senior Legal Counsel, transforming the raw logical chain into a highly cohesive, authoritative, and properly cited final legal opinion.
 
-### 2. Advanced Hybrid Retrieval
+### 2. Intelligent Context Memory
+LexVed maintains conversation continuity across multi-turn interactions:
+* **Query Condensation Engine:** Automatically rephrases follow-up questions into standalone queries to maintain retrieval accuracy.
+* **Contextual Persistence:** Pass-through memory ensures the reasoning and synthesis agents stay locked onto the case subject established in previous messages.
+
+### 3. Advanced Hybrid Retrieval
 The platform utilizes a multi-tiered retrieval strategy to guarantee maximum recall and precision:
+* **Production Hybrid Index:** Active connection to the 19,483-vector production repository (MPNet-based).
 * **Dense Vector Search:** Understands the semantic intent of complex legal queries using high-dimensional embeddings (Pinecone/Qdrant).
 * **Sparse Search (BM25):** Ensures critical exact-keyword matches, such as specific statute sections or docket numbers, are never missed.
 * **Reciprocal Rank Fusion (RRF) & CrossEncoder Reranking:** Merges dense and sparse results and re-scores the combined list based on deep contextual relevance before feeding the context to the LLMs.
 
-### 3. Dynamic Model Routing
-LexVed intelligently routes workloads across a curated suite of models via Groq and Ollama:
-* **Fast Mode:** Utilizes `llama-3.1-8b-instant` for rapid, low-latency inference on straightforward queries.
-* **Agentic Mode:** Escalates to `llama-3.3-70b-versatile` or `mixtral-8x7b-32768` for deep, multi-faceted analysis requiring extensive logical deduction.
+* **Universal Mode:** Utilizes `llama-3.1-8b-instant`, `mixtral-8x7b-32768`, or `qwen-2.5-32b` for rapid, low-latency inference. This mode is not restricted to ingested documents and can draw from the model's vast pre-trained legal knowledge when needed.
+* **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile`, `qwen2.5:70b`, or `llama3:70b` for deep, multi-faceted analysis requiring extensive logical deduction. Strictly constrained to provided context.
 * **Evaluation Node:** Employs `llama-3.1-8b-instant` on Groq for high-performance KPI judging.
 
 ### 4. Enterprise Interface
@@ -32,8 +36,8 @@ The frontend is built on Next.js 14 and Framer Motion, delivering a premium, gla
 
 | Layer | Technology |
 |-------|-----------|
-| **Language Models** | Llama 3.1 8B, Llama 3.3 70B, Mixtral 8x7B (via Groq & Ollama) |
-| **Embeddings** | MPNet, MiniLM, DistilBERT, E5-Mistral, BGE-M3, Cohere Embed v3 |
+| **Language Models** | Llama 3.1 8B, Llama 3.3 70B, Mixtral 8x7B, Qwen 2.5 (70B/32B), Llama 3 70B, Mistral, Phi-3 |
+| **Embeddings** | MPNet, MiniLM, DistilBERT, E5-Large-Instruct, BGE-M3, Cohere Embed v3 |
 | **Vector Databases** | Qdrant (Self-Hosted), Pinecone (Serverless) |
 | **Retrieval Engine** | BM25, Reciprocal Rank Fusion, CrossEncoder |
 | **Backend Framework** | FastAPI (Python 3.10) |

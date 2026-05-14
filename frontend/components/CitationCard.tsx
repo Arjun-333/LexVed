@@ -34,18 +34,24 @@ function openPdf(filename: string, page: number) {
   // Open PDF in a new tab via the backend API with page fragment
   const token = typeof window !== "undefined" ? localStorage.getItem("lexved_token") : null;
   // Use a direct window.open with the PDF URL — the browser will handle PDF viewing
-  const url = `${API_URL}/api/pdf/${encodeURIComponent(filename)}#page=${page + 1}`;
-  
-  // For authenticated PDF access, we need to fetch and create a blob URL
   if (token) {
-    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    const finalFilename = filename.toLowerCase().endsWith(".pdf") ? filename : `${filename}.pdf`;
+    const finalUrl = `${API_URL}/api/pdf/${encodeURIComponent(finalFilename)}#page=${page + 1}`;
+
+    fetch(finalUrl, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         if (!res.ok) throw new Error("PDF not found");
         return res.blob();
       })
       .then(blob => {
         const blobUrl = URL.createObjectURL(blob);
-        window.open(`${blobUrl}#page=${page + 1}`, "_blank");
+        // Create a temporary link to trigger download/view in a new tab
+        const link = document.createElement("a");
+        link.href = `${blobUrl}#page=${page + 1}`;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       })
       .catch(() => {
         // Fallback: copy citation
@@ -64,7 +70,13 @@ export default function CitationCard({ citations, sources }: CitationCardProps) 
     ? uniqueSources.map(s => ({ file: s.file, page: s.page, hasLink: true }))
     : citations.map(c => {
         const { file, page } = parseCitation(c);
-        return { file, page: page ? parseInt(page) : 0, hasLink: false };
+        // Try to find a matching source from the search results to get the path
+        const match = uniqueSources.find(s => s.file.toLowerCase().includes(file.toLowerCase()));
+        return { 
+          file: match ? match.file : file, 
+          page: match ? match.page : (page ? parseInt(page) : 0), 
+          hasLink: !!match || file.toLowerCase().endsWith(".pdf") 
+        };
       });
 
   if (!displayItems.length) return null;

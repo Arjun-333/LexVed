@@ -136,7 +136,7 @@ function Dashboard() {
             } else if (data.type === "agent_thought") {
               setMessages((prev) => prev.map(m => m.id === botMsgId ? {
                 ...m,
-                agentThoughts: [...(m.agentThoughts || []), data.text]
+                agentThoughts: (m.agentThoughts || "") + data.text
               } : m));
             } else if (data.type === "content") {
               fullText += data.text;

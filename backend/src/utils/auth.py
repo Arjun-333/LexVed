@@ -49,6 +49,7 @@ def create_token(username: str, role: str) -> str:
     payload_data = {
         "sub": username,
         "role": role,
+        "display_name": next((u.get("display_name", username) for u in _load_users() if u["username"] == username), username),
         "exp": int(time.time()) + TOKEN_EXPIRY,
         "iat": int(time.time())
     }
@@ -168,7 +169,11 @@ async def get_current_user(request: Request) -> dict:
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    return {"username": payload["sub"], "role": payload["role"]}
+    return {
+        "username": payload["sub"], 
+        "role": payload["role"], 
+        "display_name": payload.get("display_name", payload["sub"])
+    }
 
 async def require_admin(request: Request) -> dict:
     """FastAPI dependency: Require admin role."""

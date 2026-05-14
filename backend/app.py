@@ -126,18 +126,52 @@ from src.generation.agents import determine_query_complexity, execute_reasoning_
 
 # ─── Chat Endpoint (Multi-Turn) — Authenticated ──────────────────
 
+def condense_query(query: str, history: list) -> str:
+    """Uses a fast model to turn a follow-up question into a standalone query."""
+    if not history:
+        return query
+    
+    history_str = ""
+    for m in history[-5:]:
+        q = m.get("question") or m.get("text", "")
+        a = m.get("answer") or ""
+        if q: history_str += f"User: {q}\n"
+        if a: history_str += f"Assistant: {a}\n"
+        
+    prompt = (
+        "Given the following conversation history and a follow-up question, "
+        "rephrase the follow-up question to be a standalone question that can be used for search.\n"
+        "If the question is already standalone, return it as is.\n\n"
+        f"History:\n{history_str}\n"
+        f"Follow-up: {query}\n"
+        "Standalone Question:"
+    )
+    from src.generation.generator import generate_utility
+    return generate_utility(prompt, model="llama-3.1-8b-instant")
+
 @app.post("/api/chat")
 async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
     """Main chat endpoint with SSE-style streaming and multi-turn memory."""
     t_start = time_module.time()
     category, subcategory = categorize_text(req.message)
     
+    # Higher recall for Agentic mode to ensure the Reasoning Agent has enough depth
+    top_k = 15 if req.agentic else 10
+    
+    print(f"[LexVed] Query: {req.message} | Mode: {'Agentic' if req.agentic else 'Universal'} | DB: {get_active_db_name()}")
+    
+    # 1. Intelligent Query Condensation
+    augmented_query = condense_query(req.message, req.history)
+    print(f"[LexVed] Augmented Query: {augmented_query}")
+    
     res, retrieval_time = retrieve(
-        req.message,
-        top_k=10, # Increased recall to ensure relevant legal segments are captured
+        augmented_query,
+        top_k=top_k,
         category=None,
         subcategory=None
     )
+    
+    print(f"[LexVed] Retrieved {len(res)} chunks. Time: {retrieval_time:.2f}s")
 
     context = ""
     for m in res:
@@ -173,21 +207,22 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
             # 2. Reasoning Agent
             yield json.dumps({"type": "agent_thought", "text": "Reasoning Agent analyzing context and drafting logical chain..."}) + "\n"
             reasoning_chain = ""
-            for chunk in execute_reasoning_agent(req.message, context, target_model):
+            for chunk in execute_reasoning_agent(req.message, context, target_model, history=req.history):
                 reasoning_chain += chunk
-                # We could stream thoughts here, but let's just stream them when complete or slowly
-                # For now, we wait for reasoning to finish so we can pass it to synthesis
+                # Stream the reasoning process as it happens
+                yield json.dumps({"type": "agent_thought", "text": chunk}) + "\n"
             
-            yield json.dumps({"type": "agent_thought", "text": f"Reasoning Complete. Handing off to Synthesis Agent."}) + "\n"
+            yield json.dumps({"type": "agent_thought", "text": "--- Reasoning Complete ---"}) + "\n"
             
             # 3. Synthesis Agent
+            display_name = user.get("display_name", user.get("username", "Counsel"))
             if target_model == "ensemble":
                 yield json.dumps({"type": "agent_thought", "text": "Reasoning Complete. Handing off to Multi-Model Ensemble Synthesis (6 models)..."}) + "\n"
-                for chunk in execute_multi_model_synthesis(req.message, reasoning_chain, username=user.get("username", "User")):
+                for chunk in execute_multi_model_synthesis(req.message, reasoning_chain, username=display_name):
                     full_answer += chunk
                     yield json.dumps({"type": "content", "text": chunk}) + "\n"
             else:
-                for chunk in execute_synthesis_agent(req.message, reasoning_chain, target_model, username=user.get("username", "User")):
+                for chunk in execute_synthesis_agent(req.message, reasoning_chain, target_model, username=display_name, history=req.history):
                     full_answer += chunk
                     yield json.dumps({"type": "content", "text": chunk}) + "\n"
         else:
@@ -213,12 +248,15 @@ async def serve_pdf(filename: str, user: dict = Depends(get_current_user)):
     from fastapi.responses import FileResponse
     # Search for the file in the data directory
     pdf_dir = "data/PDF"
+    filename_lower = filename.lower()
     for root, dirs, files in os.walk(pdf_dir):
         for f in files:
-            if f == filename:
+            f_lower = f.lower()
+            # Direct match or match without extension
+            if f_lower == filename_lower or f_lower.replace(".pdf", "") == filename_lower:
                 full_path = os.path.join(root, f)
                 return FileResponse(full_path, media_type="application/pdf", filename=f)
-    raise HTTPException(status_code=404, detail="PDF not found")
+    raise HTTPException(status_code=404, detail=f"PDF not found: {filename}")
 
 # ─── Health Check — Authenticated ─────────────────────────────────
 

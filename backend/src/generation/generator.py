@@ -86,8 +86,31 @@ def generate_with_groq_stream(prompt, model):
             else:
                 yield f"\n\n[Error: Groq API unreachable after {max_retries} attempts.]"
         except requests.exceptions.HTTPError as e:
-            yield f"\n\n[Error: Groq returned HTTP {e.response.status_code}.]"
+            if e.response.status_code == 429:
+                yield "\n\n[Rate limit reached on Groq. Falling back to local inference...]\n\n"
+                yield from generate_with_ollama_stream(prompt, model="llama3")
+            else:
+                yield f"\n\n[Error: Groq returned HTTP {e.response.status_code}.]"
             return
+
+def generate_utility(prompt: str, model: str = "llama-3.1-8b-instant") -> str:
+    """Fast, non-streaming generation for internal logic (routing, condensation)."""
+    ans = ""
+    # Try Groq first for speed
+    try:
+        for chunk in generate_with_groq_stream(prompt, model):
+            if "[Rate limit reached" in chunk: break # Stop if fallback triggered
+            ans += chunk
+        
+        if ans.strip(): return ans.strip()
+    except:
+        pass
+        
+    # Fallback to Local Ollama
+    ans = ""
+    for chunk in generate_with_ollama_stream(prompt, model="llama3"):
+        ans += chunk
+    return ans.strip()
 
 def generate_answer_stream(question, context, model=None, history=None):
     """
@@ -109,14 +132,17 @@ def generate_answer_stream(question, context, model=None, history=None):
         history_prefix += "Now answer the following new question based on the context and previous conversation.\n\n"
 
     prompt = (
-        "You are a professional legal assistant. "
-        "Answer the question using ONLY the provided context. "
-        "Cite the source and page number(s) (e.g., [Source: file.pdf, Page: 4]).\n\n"
+        "You are the LexVed Universal Intelligence Agent. "
+        "Answer the question primarily using the provided legal context. "
+        "CRITICAL: If the context is insufficient, you may supplement with your internal pre-trained legal expertise, "
+        "but you MUST clearly state when you are using general knowledge versus context-specific data.\n\n"
+        "CITATIONS: For context-specific data, you MUST cite the exact [Source: filename.pdf, Page: X] "
+        "found in the context headers. Do NOT use legal citations like 'AIR 1989' for the [Source] tag; "
+        "use the literal filename provided in the context.\n\n"
         f"{history_prefix}"
         f"Context:\n{trimmed_context}\n\n"
         f"Q: {question}\nA:"
     )
-    
     return generate_with_ollama_stream(prompt, model=model)
 
 def generate_answer(question, context, model=None, history=None):

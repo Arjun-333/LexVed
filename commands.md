@@ -103,3 +103,24 @@ cd backend
 rm *.csv *.json report_*.json
 ```
 **Description:** Removes previous evaluation artifacts and cached results to ensure a clean state for new institutional audits.
+
+---
+
+## Service Termination
+
+### 13. Stop All Services (Port Release)
+```bash
+# Terminate Backend (Port 5000)
+fuser -k 5000/tcp
+
+# Terminate Frontend (Port 3000)
+fuser -k 3000/tcp
+
+### 14. Kill All LexVed Services (One-Liner)
+```bash
+fuser -k 5000/tcp && fuser -k 3000/tcp
+```
+**Description:** Forcefully terminates both the backend and frontend services in a single command. Recommended for rapid environment resets.
+```
+**Description:** Forcefully terminates any processes listening on the backend or frontend ports. Use this if you encounter "Address already in use" errors during startup.
+

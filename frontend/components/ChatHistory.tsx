@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import CitationCard from "./CitationCard";
 
 export interface Message {
@@ -14,7 +15,7 @@ export interface Message {
     subcategory?: string;
   };
   sources?: { file: string; page: number; path: string }[];
-  agentThoughts?: string[];
+  agentThoughts?: string;
 }
 
 function extractCitations(text: string): string[] {
@@ -32,8 +33,20 @@ interface ChatHistoryProps {
 }
 
 export default function ChatHistory({ messages }: ChatHistoryProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  }, [messages]);
+
   return (
     <div
+      ref={scrollRef}
       className="flex-1 overflow-y-auto"
       style={{ maskImage: "linear-gradient(to bottom, transparent, black 1.5%, black 97%, transparent)" }}
     >
@@ -69,13 +82,14 @@ export default function ChatHistory({ messages }: ChatHistoryProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     {msg.agentThoughts && msg.agentThoughts.length > 0 && (
-                      <div className="mb-4 flex flex-col gap-2">
-                        {msg.agentThoughts.map((thought, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-[0.8rem] text-[var(--text-muted)] p-3 bg-[var(--accent-bg)] border border-[var(--accent-dim)] rounded-lg font-mono">
-                            <span className="material-icons-round text-[14px] text-[var(--accent)] mt-0.5">psychology</span>
-                            <span>{thought}</span>
+                      <div className="mb-4">
+                        <div className="flex items-start gap-2 text-[0.8rem] text-[var(--text-muted)] p-4 bg-[var(--accent-bg)] border border-[var(--accent-dim)] rounded-xl font-mono leading-relaxed whitespace-pre-wrap max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--accent-dim)]">
+                          <span className="material-icons-round text-[16px] text-[var(--accent)] mt-0.5 shrink-0">psychology</span>
+                          <div className="flex-1">
+                            <span className="block text-[0.6rem] font-bold uppercase tracking-widest opacity-40 mb-2 border-b border-[var(--accent-dim)] pb-1">Agentic Reasoning Chain</span>
+                            {msg.agentThoughts}
                           </div>
-                        ))}
+                        </div>
                       </div>
                     )}
 

@@ -1,5 +1,383 @@
 [
     {
+        "id": 38,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:15",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 28.45832896232605,
+            "e2e_lat": 42.877570152282715,
+            "ans_length": 518
+        },
+        "username": "user"
+    },
+    {
+        "id": 37,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:12",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 3.716606616973877,
+            "e2e_lat": 8.033300876617432,
+            "ans_length": 5
+        },
+        "username": "user"
+    },
+    {
+        "id": 36,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:11",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 39.93854093551636,
+            "e2e_lat": 61.059998989105225,
+            "ans_length": 455
+        },
+        "username": "user"
+    },
+    {
+        "id": 35,
+        "query": "can you tell me more about this case",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:07",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.931675672531128,
+            "e2e_lat": 5.251848459243774,
+            "ans_length": 5
+        },
+        "username": "user"
+    },
+    {
+        "id": 34,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:07",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.408076524734497,
+            "e2e_lat": 4.641731262207031,
+            "ans_length": 187
+        },
+        "username": "user"
+    },
+    {
+        "id": 33,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:06",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 32.30264592170715,
+            "e2e_lat": 45.22407293319702,
+            "ans_length": 440
+        },
+        "username": "user"
+    },
+    {
+        "id": 32,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:58",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.6024610996246338,
+            "e2e_lat": 4.116070508956909,
+            "ans_length": 394
+        },
+        "username": "admin"
+    },
+    {
+        "id": 31,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:56",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 25.97052812576294,
+            "e2e_lat": 38.30846190452576,
+            "ans_length": 431
+        },
+        "username": "user"
+    },
+    {
+        "id": 30,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:54",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 23.602339267730713,
+            "e2e_lat": 35.925734519958496,
+            "ans_length": 374
+        },
+        "username": "user"
+    },
+    {
+        "id": 29,
+        "query": "can you tell me more about this case",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:52",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.924867868423462,
+            "e2e_lat": 5.320380449295044,
+            "ans_length": 207
+        },
+        "username": "user"
+    },
+    {
+        "id": 28,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:51",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 32.31093764305115,
+            "e2e_lat": 47.265135765075684,
+            "ans_length": 437
+        },
+        "username": "user"
+    },
+    {
+        "id": 27,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:48",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 23.356087923049927,
+            "e2e_lat": 36.733081340789795,
+            "ans_length": 387
+        },
+        "username": "user"
+    },
+    {
+        "id": 26,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:45",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 26.890764713287354,
+            "e2e_lat": 39.40014934539795,
+            "ans_length": 413
+        },
+        "username": "user"
+    },
+    {
+        "id": 25,
+        "query": "which case are we speaking about right now?",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:43",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.3137614727020264,
+            "e2e_lat": 3.9148545265197754,
+            "ans_length": 82
+        },
+        "username": "user"
+    },
+    {
+        "id": 24,
+        "query": "can you explain me more about this case?",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:42",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 26.004981756210327,
+            "e2e_lat": 41.106099367141724,
+            "ans_length": 384
+        },
+        "username": "user"
+    },
+    {
+        "id": 23,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:37",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.6953024864196777,
+            "e2e_lat": 4.447070598602295,
+            "ans_length": 346
+        },
+        "username": "user"
+    },
+    {
+        "id": 22,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:37",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 27.309788703918457,
+            "e2e_lat": 39.304779052734375,
+            "ans_length": 425
+        },
+        "username": "user"
+    },
+    {
+        "id": 21,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:32",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.7505497932434082,
+            "e2e_lat": 4.304116487503052,
+            "ans_length": 325
+        },
+        "username": "user"
+    },
+    {
+        "id": 20,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:31",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 24.718546390533447,
+            "e2e_lat": 39.30239486694336,
+            "ans_length": 427
+        },
+        "username": "user"
+    },
+    {
+        "id": 19,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:23",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.5556974411010742,
+            "e2e_lat": 2.826624631881714,
+            "ans_length": 317
+        },
+        "username": "user"
+    },
+    {
+        "id": 18,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:22",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.760789155960083,
+            "e2e_lat": 1.4991281032562256,
+            "ans_length": 140
+        },
+        "username": "user"
+    },
+    {
+        "id": 17,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:22",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.5556974411010742,
+            "e2e_lat": 16.413891077041626,
+            "ans_length": 544
+        },
+        "username": "user"
+    },
+    {
+        "id": 16,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 00:21",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.2917490005493164,
+            "e2e_lat": 10.843671321868896,
+            "ans_length": 94
+        },
+        "username": "user"
+    },
+    {
+        "id": 15,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-15 00:20",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.5334663391113281,
+            "e2e_lat": 8.281145572662354,
+            "ans_length": 516
+        },
+        "username": "user"
+    },
+    {
+        "id": 14,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-15 00:18",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.2479209899902344,
+            "e2e_lat": 13.563329696655273,
+            "ans_length": 284
+        },
+        "username": "user"
+    },
+    {
+        "id": 13,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-15 00:15",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.4679677486419678,
+            "e2e_lat": 15.269179105758667,
+            "ans_length": 329
+        },
+        "username": "user"
+    },
+    {
+        "id": 12,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-15 00:14",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.722839117050171,
+            "e2e_lat": 13.82119631767273,
+            "ans_length": 300
+        },
+        "username": "user"
+    },
+    {
         "id": 11,
         "query": "\"What did the Supreme Court decide regarding the minority status of Aligarh Muslim University in the 2024 judgement?\"",
         "category": "Uncategorized",

@@ -70,7 +70,7 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, dis
           className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest ${agentic ? "bg-[var(--accent-bg)] border-[var(--accent-dim)] text-[var(--accent)]" : "bg-[var(--surface-active)] border-transparent text-[var(--text-muted)] hover:text-[var(--text)]"} border`}
         >
           <span className="material-icons-round text-[14px]">psychology</span>
-          {agentic ? "Agentic" : "Fast"}
+          {agentic ? "Agentic" : "Universal"}
         </button>
 
         <button

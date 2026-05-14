@@ -20,31 +20,34 @@ def determine_query_complexity(query: str) -> str:
         f"Query: {query}"
     )
     
-    # Try using Groq for ultra-fast routing
-    ans = ""
-    for chunk in generate_with_groq_stream(prompt, routing_model):
-        ans += chunk
-    
-    ans = ans.strip().upper()
+    from src.generation.generator import generate_utility
+    ans = generate_utility(prompt, model=routing_model).upper()
     
     if "COMPLEX" in ans:
         return heavy_model
     else:
         return routing_model
 
-def execute_reasoning_agent(query: str, context: str, model: str):
+def execute_reasoning_agent(query: str, context: str, model: str, history: list = None):
     """
-    The Reasoning Agent analyzes the context against the query and drafts a logical chain.
+    The Reasoning Agent analyzes the context and conversation history against the query.
     """
+    history_str = ""
+    if history:
+        for m in history[-5:]: # Use last 5 messages for context
+            q = m.get("question") or m.get("text", "")
+            a = m.get("answer") or ""
+            if q: history_str += f"User: {q}\n"
+            if a: history_str += f"Assistant: {a}\n"
+
     prompt = (
         "You are the LexVed Reasoning Agent. Your task is to analyze the provided legal context "
-        "and draft a structured logical reasoning chain to answer the query.\n"
-        "CRITICAL INSTRUCTION: You MUST rely ONLY on the provided context. Do NOT use outside knowledge. "
-        "If the context does not contain sufficient information to answer the query, state explicitly: "
-        "'The provided context does not contain information to answer this query.'\n"
-        "Do NOT write the final answer. Just write the analytical steps, noting key facts, precedents, "
-        "and any contradictions found ONLY in the text below.\n\n"
-        f"Context:\n{context[:6000]}\n\n"
+        "and conversation history to draft a structured logical reasoning chain.\n"
+        "STRICT INSTRUCTION: Only answer about the specific case currently being discussed in the history. "
+        "If the context contains multiple 'Abhishek' cases or other irrelevant files, IGNORE THEM. "
+        "Maintain absolute continuity with the established subject.\n\n"
+        f"Conversation History:\n{history_str}\n"
+        f"Context:\n{context[:8000]}\n\n"
         f"Query: {query}\n\n"
         "Reasoning Chain:"
     )
@@ -54,21 +57,29 @@ def execute_reasoning_agent(query: str, context: str, model: str):
     else:
         return generate_with_ollama_stream(prompt, model)
 
-def execute_synthesis_agent(query: str, reasoning_chain: str, model: str, username: str = "User"):
+def execute_synthesis_agent(query: str, reasoning_chain: str, model: str, username: str = "User", history: list = None):
     """
-    The Synthesis Agent takes the reasoning chain and writes the final cohesive answer.
+    The Synthesis Agent takes the reasoning chain and history to write the final cohesive answer.
     """
+    history_str = ""
+    if history:
+        for m in history[-3:]:
+            q = m.get("question") or m.get("text", "")
+            a = m.get("answer") or ""
+            if q: history_str += f"User: {q}\n"
+            if a: history_str += f"Assistant: {a}\n"
+
     prompt = (
-        "You are the LexVed Senior Legal Synthesis Counsel. Your goal is to take the provided reasoning "
-        "and craft a premium, authoritative, and human-like legal response addressed to Dear {username}. Avoid robotic structures, "
-        "numbered premise lists, or 'Subject:' lines. Instead, write a cohesive narrative that flows logically.\n\n"
-        "STYLE GUIDELINES:\n"
-        "- Use a professional, sophisticated tone (Senior Counsel level).\n"
-        "- Integrate facts and citations naturally into your prose.\n"
-        "- If the reasoning indicates insufficient context, do not just give a flat refusal. "
-        "Politely explain that after auditing the institutional repository, the specific factual basis "
-        "required for a definitive answer was not found, and suggest where to look next.\n\n"
-        "CRITICAL: DO NOT HALLUCINATE. Only use facts from the reasoning chain.\n\n"
+        f"You are the LexVed Senior Legal Synthesis Counsel. Address the user directly as {username}.\n\n"
+        "MANDATORY STYLE RULES:\n"
+        "- Maintain continuity with the conversation history.\n"
+        "- Do NOT write like a formal letter. No 'Dear', no 'Sincerely', no 'Honorable Court'.\n"
+        "- Do NOT use placeholders like '[Recipient]' or '[Your Name]'.\n"
+        "- Write a high-level executive legal summary that flows naturally.\n"
+        "- Every single factual claim or case mention MUST be followed by its source: [Source: filename.pdf, Page: X].\n"
+        "- Integrate citations seamlessly at the end of relevant sentences.\n\n"
+        "CRITICAL: NO HALLUCINATION. NO CITATION = NO MENTION.\n\n"
+        f"Conversation History:\n{history_str}\n"
         f"Reasoning Chain:\n{reasoning_chain}\n\n"
         f"Query: {query}\n\n"
         "Final Counsel Response:"

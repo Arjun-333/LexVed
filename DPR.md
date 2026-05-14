@@ -100,9 +100,10 @@ Instead of generating an answer in a single pass, the Enhanced Pipeline splits t
 
 ### B. Dynamic Model Orchestration
 LexVed utilizes a sophisticated multi-model orchestration strategy to balance speed, reasoning depth, and operational efficiency:
-* **Universal Mode:** Leverages `llama-3.1-8b-instant` or `mixtral-8x7b-32768` for rapid, low-latency responses. This mode provides a hybrid knowledge experience, blending the institutional document repository with the model's internal legal expertise.
-* **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile` for multi-agent reasoning chains and deep, logical deduction.
-* **Infrastructure Parity:** Supports cross-infrastructure benchmarking across six distinct embedding models (MPNet, MiniLM, DistilBERT, E5-Mistral, BGE-M3, and Cohere) on both Pinecone and Qdrant.
+* **Universal Mode:** Leverages `llama-3.1-8b-instant`, `mixtral-8x7b-32768`, or `qwen-2.5-32b` for rapid, low-latency responses. This mode provides a hybrid knowledge experience, blending the institutional document repository with the model's internal legal expertise.
+* **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile`, `qwen2.5:70b`, or `llama3:70b` for multi-agent reasoning chains and deep, logical deduction.
+* **Inference Versatility:** Supports local deployment via Ollama (Mistral, Phi-3, Qwen) and high-speed cloud inference via Groq.
+* **Infrastructure Parity:** Supports cross-infrastructure benchmarking across six distinct embedding models (MPNet, MiniLM, DistilBERT, E5-Large, BGE-M3, and Cohere) on both Pinecone and Qdrant.
 
 ### C. Hybrid Retrieval and Reranking
 Dense vector search excels at understanding semantic intent, while sparse search (BM25) excels at exact keyword matching. LexVed executes both simultaneously, merges the results using Reciprocal Rank Fusion (RRF), and then passes the fused list through a CrossEncoder to re-score the chunks based on deep contextual relevance, guaranteeing that the most accurate legal precedent is fed to the LLM.
@@ -113,5 +114,19 @@ During ingestion, documents are categorically tagged (e.g., Civil, Criminal, Con
 ### E. Evaluation Fingerprinting and Caching
 The platform features an automated 24-KPI benchmark suite. To preserve computational resources, LexVed fingerprints the dataset corpus. If an evaluation is triggered without any new PDFs having been ingested, the system bypasses the redundant LLM execution and instantly serves the cached benchmark results.
 
-### F. Strict Anti-Hallucination Protocols
-If the retrieval engine returns zero results, or if the retrieved results do not contain the answer, the Reasoning Agent is explicitly instructed to halt. The Synthesis Agent will then inform the user that the institutional repository lacks the required information, completely neutralizing the risk of the LLM inventing fabricated case law.
+### G. Agentic Hardening & Context Continuity
+In the latest version, LexVed has been hardened for institutional audit readiness with three key memory and persona features:
+* **Intelligent Query Condensation:** A specialized "Condensation Engine" rephrases multi-turn follow-up questions into standalone, context-aware queries. This prevents the "Context Drift" typical in RAG systems when users ask vague questions like "tell me more."
+* **Strict Topic Locking:** The Reasoning Agent is now strictly constrained to the subject matter established in the conversation history, preventing name-collision hallucinations (e.g., confusing two different cases with the same first name).
+* **Persona Refinement:** The "Synthesis Counsel" has been stripped of generic AI placeholders and formal letter templates, providing a more natural, human-expert-like interaction.
+
+---
+
+## 5. Development Timeline & Session Logs
+
+### Session: Institutional RAG Pipeline Hardening (May 14, 2026)
+* **Vector DB Restoration:** Successfully re-connected the production "Hybrid Index" (19,483 vectors) after identifying it as the gold-standard repository.
+* **UI/UX Premium Polish:** Implemented automatic scrolling for streaming and premium glassmorphic scrollbars for reasoning chains.
+* **Authentication Sync:** Synchronized JWT display names to enable personalized AI greetings ("Counsel Arjun").
+* **Ingestion Integrity:** Patched the PDF processing pipeline to extract and persist physical page numbers across both Pinecone and Qdrant.
+

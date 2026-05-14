@@ -4,7 +4,7 @@ from qdrant_client.models import VectorParams, Distance, PayloadSchemaType
 from src.utils.config_manager import get_active_model_params
 
 client = QdrantClient(host="localhost", port=6333)
-COLLECTION_NAME = "lexved_chunks"
+COLLECTION_NAME = "qdrant-mpnet"
 
 def init_collection():
     params = get_active_model_params()

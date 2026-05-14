@@ -12,8 +12,8 @@ def upload_to_pinecone(chunks, embeddings, category="Uncategorized", subcategory
             "values": emb.tolist(),
             "metadata": {
                 **chunks[i],
-                "category": category,
-                "subcategory": subcategory
+                "category": chunks[i].get("category", category),
+                "subcategory": chunks[i].get("subcategory", subcategory)
             }
         })
 
@@ -36,8 +36,8 @@ def upload_to_qdrant(chunks, embeddings, category="Uncategorized", subcategory="
             vector=emb.tolist(),
             payload={
                 **chunks[i],
-                "category": category,
-                "subcategory": subcategory
+                "category": chunks[i].get("category", category),
+                "subcategory": chunks[i].get("subcategory", subcategory)
             }
         ))
 

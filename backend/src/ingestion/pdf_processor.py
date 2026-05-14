@@ -136,24 +136,22 @@ def process_chunks_batch(chunks, batch_size=32):
     texts = [c["text"] for c in chunks]
     processed_texts = []
     
-    # SpaCy pipe is much faster than individual calls
-    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=1):
+    # SpaCy pipe is much faster with multi-processing
+    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=-1):
         text = doc.text
+        # NER for names is now disabled (Keep names visible as per user request)
+        # However, we still redact other sensitive info below
         redacted_text = text
-        for ent in doc.ents:
-            if ent.label_ == "PERSON":
-                redacted_text = re.sub(
-                    r'\b{}\b'.format(re.escape(ent.text)),
-                    "[REDACTED_NAME]",
-                    redacted_text
-                )
-        # Regex cleanup
+        # Regex cleanup for phone, aadhaar, pan, email
         redacted_text = redact_sensitive_info(redacted_text)
         processed_texts.append(redacted_text)
             
     # Update chunks in place
     for i, chunk in enumerate(chunks):
         chunk["text"] = processed_texts[i]
+        cat, sub = categorize_text(processed_texts[i])
+        chunk["category"] = cat
+        chunk["subcategory"] = sub
         
     return chunks
 

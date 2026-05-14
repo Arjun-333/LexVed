@@ -181,19 +181,12 @@ def embed_and_upsert(chunks, embedder, model_name, collection_name, batch_size=9
     return emb_time, len(vecs)
 
 # ── Groq generation ───────────────────────────────────────────────────
-def generate_with_groq(prompt: str, model="llama-3.1-8b-instant") -> str:
-    if not GROQ_API_KEY:
-        return "[Error: No GROQ_API_KEY]"
-    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
-    payload = {"model": model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.2}
-    for attempt in range(3):
-        try:
-            r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=60)
-            r.raise_for_status()
-            return r.json()["choices"][0]["message"]["content"].strip()
-        except Exception as e:
-            if attempt < 2: time.sleep(2**attempt)
-            else: return f"[Groq Error: {e}]"
+def generate_with_groq(prompt: str):
+    """Reliable generation with local fallback for institutional auditing."""
+    sys.path.append(str(BACKEND_DIR))
+    from src.generation.generator import generate_utility
+    # generate_utility already handles Groq -> Ollama fallback internally
+    return generate_utility(prompt)
 
 # ── Groq LLM judge (M14, M15, M20-M24) ───────────────────────────────
 def judge_with_groq(query, ground_truth, model_answer, context) -> dict:
@@ -241,11 +234,11 @@ def run_evaluation(model_name, embedder, index, chunks, queries, gts, emb_time, 
 
         # Retrieve from Qdrant
         t0 = time.time()
-        res = qc.search(
+        res = qc.query_points(
             collection_name=index,
-            query_vector=q_vec.tolist(),
+            query=q_vec.tolist(),
             limit=5
-        )
+        ).points
         ret = [hit.payload.get("text", "") for hit in res]
         rt = time.time() - t0
 
@@ -449,4 +442,8 @@ def run_primitive_pipeline(model_choice="1", api_key=None):
     return df
 
 if __name__ == "__main__":
-    run_primitive_pipeline(model_choice=input("Model choice (1/2/4/6): ").strip())
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, default="1", help="Model choice (1: MPNet, 2: MiniLM, 4: DistilBERT, 6: BGE-M3)")
+    args = parser.parse_args()
+    run_primitive_pipeline(model_choice=args.model)

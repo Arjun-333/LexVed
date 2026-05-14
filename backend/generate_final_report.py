@@ -171,4 +171,4 @@ def generate_comparative_pdf(pinecone_json, qdrant_json, out_name="Comparative_D
     print(f"[SUCCESS] Combined Comparative PDF generated: {out_name}")
 
 if __name__ == "__main__":
-    generate_comparative_pdf("pinecone_results.json", "qdrant_results.json")
+    generate_comparative_pdf("primitive_evaluation_results.json", "qdrant_evaluation_results.json")

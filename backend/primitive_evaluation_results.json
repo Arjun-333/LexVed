@@ -1,0 +1,5 @@
+{
+  "status": "processing",
+  "progress": "Embedding & upserting 19793 chunks to Qdrant...",
+  "embedding": "multi-qa-mpnet-base-cos-v1"
+}

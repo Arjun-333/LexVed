@@ -16,7 +16,7 @@ DEFAULT_CONFIG = {
         "Cohere/Cohere-embed-english-v3.0": {"dimension": 1024}
     },
     "generation_models": ["llama3", "llama3:70b", "qwen2.5:70b", "qwen2.5:7b", "mistral", "phi3", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
-    "groq_models": ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
+    "groq_models": ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "llama-3.1-8b-instant"],
     "providers": ["qdrant", "pinecone"]
 }
 

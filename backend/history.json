@@ -1,1 +1,156 @@
-[]
+[
+    {
+        "id": 11,
+        "query": "\"What did the Supreme Court decide regarding the minority status of Aligarh Muslim University in the 2024 judgement?\"",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-14 17:22",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 37.140681982040405,
+            "e2e_lat": 43.71767807006836,
+            "ans_length": 215
+        },
+        "username": "admin"
+    },
+    {
+        "id": 10,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 17:19",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.3925034999847412,
+            "e2e_lat": 6.197567939758301,
+            "ans_length": 161
+        },
+        "username": "admin"
+    },
+    {
+        "id": 9,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 17:19",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.3925034999847412,
+            "e2e_lat": 1.1852736473083496,
+            "ans_length": 17
+        },
+        "username": "admin"
+    },
+    {
+        "id": 8,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 17:16",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.3925034999847412,
+            "e2e_lat": 6.316994667053223,
+            "ans_length": 244
+        },
+        "username": "admin"
+    },
+    {
+        "id": 7,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 17:11",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.3925034999847412,
+            "e2e_lat": 16.305529594421387,
+            "ans_length": 295
+        },
+        "username": "admin"
+    },
+    {
+        "id": 6,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 17:10",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.3925034999847412,
+            "e2e_lat": 2.118453025817871,
+            "ans_length": 14
+        },
+        "username": "admin"
+    },
+    {
+        "id": 5,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 17:02",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 7.919261693954468,
+            "e2e_lat": 2.435642957687378,
+            "ans_length": 200
+        },
+        "username": "admin"
+    },
+    {
+        "id": 4,
+        "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-05-14 16:55",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 7.919261693954468,
+            "e2e_lat": 11.764270544052124,
+            "ans_length": 236
+        },
+        "username": "admin"
+    },
+    {
+        "id": 3,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-14 16:35",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.2819054126739502,
+            "e2e_lat": 3.270131826400757,
+            "ans_length": 92
+        },
+        "username": "admin"
+    },
+    {
+        "id": 2,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-14 16:34",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.2819054126739502,
+            "e2e_lat": 4.718062162399292,
+            "ans_length": 62
+        },
+        "username": "admin"
+    },
+    {
+        "id": 1,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-05-14 16:32",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.2819054126739502,
+            "e2e_lat": 2.6538405418395996,
+            "ans_length": 145
+        },
+        "username": "admin"
+    }
+]

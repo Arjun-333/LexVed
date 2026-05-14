@@ -13,6 +13,8 @@ export interface Message {
     category?: string;
     subcategory?: string;
   };
+  sources?: { file: string; page: number; path: string }[];
+  agentThoughts?: string[];
 }
 
 function extractCitations(text: string): string[] {
@@ -66,6 +68,17 @@ export default function ChatHistory({ messages }: ChatHistoryProps) {
                     <span className="material-icons-round text-[18px]">psychology</span>
                   </div>
                   <div className="flex-1 min-w-0">
+                    {msg.agentThoughts && msg.agentThoughts.length > 0 && (
+                      <div className="mb-4 flex flex-col gap-2">
+                        {msg.agentThoughts.map((thought, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-[0.8rem] text-[var(--text-muted)] p-3 bg-[var(--accent-bg)] border border-[var(--accent-dim)] rounded-lg font-mono">
+                            <span className="material-icons-round text-[14px] text-[var(--accent)] mt-0.5">psychology</span>
+                            <span>{thought}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <p
                       className="text-[0.9rem] leading-[1.8] whitespace-pre-wrap transition-colors duration-300"
                       style={{ color: "var(--text)" }}
@@ -100,7 +113,9 @@ export default function ChatHistory({ messages }: ChatHistoryProps) {
                       </div>
                     )}
 
-                    {citations.length > 0 && <CitationCard citations={citations} />}
+                    {(citations.length > 0 || (msg.sources && msg.sources.length > 0)) && 
+                      <CitationCard citations={citations} sources={msg.sources} />
+                    }
                   </div>
                 </div>
               )}

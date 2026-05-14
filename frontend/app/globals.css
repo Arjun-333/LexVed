@@ -41,39 +41,64 @@
 }
 
 [data-theme="light"] {
-  --bg: #FCFBF8 !important;
-  --bg-secondary: #F5F4EE;
+  --bg: #F8F6F0 !important;
+  --bg-secondary: #EDE9DD;
   --bg-elevated: #FFFFFF;
   --surface: rgba(255, 255, 255, 0.95);
-  --surface-hover: rgba(250, 249, 245, 1);
-  --surface-active: rgba(240, 238, 230, 1);
+  --surface-hover: rgba(245, 242, 235, 1);
+  --surface-active: rgba(235, 230, 218, 1);
 
-  --accent: #B8972E;
-  --accent-dim: #8F7523;
-  --accent-glow: rgba(184, 151, 46, 0.15);
-  --accent-bg: rgba(184, 151, 46, 0.05);
+  --accent: #9A7B1F;
+  --accent-dim: #7A6118;
+  --accent-glow: rgba(154, 123, 31, 0.2);
+  --accent-bg: rgba(154, 123, 31, 0.08);
 
-  --text: #111111;
-  --text-secondary: #555555;
-  --text-muted: #888888;
+  --text: #1A1A1A;
+  --text-secondary: #3D3D3D;
+  --text-muted: #6B6B6B;
 
-  --border: rgba(184, 151, 46, 0.2);
-  --border-hover: rgba(184, 151, 46, 0.4);
+  --border: rgba(154, 123, 31, 0.25);
+  --border-hover: rgba(154, 123, 31, 0.45);
 
-  --shadow-prestige: 0 4px 20px rgba(184, 151, 46, 0.05), 0 0 0 1px rgba(184, 151, 46, 0.1);
-  --shadow-gold: 0 0 20px rgba(184, 151, 46, 0.1);
+  --shadow-prestige: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(154, 123, 31, 0.15);
+  --shadow-gold: 0 0 20px rgba(154, 123, 31, 0.12);
 
-  --user-bubble: rgba(184, 151, 46, 0.05);
-  --user-bubble-border: rgba(184, 151, 46, 0.15);
+  --user-bubble: rgba(154, 123, 31, 0.08);
+  --user-bubble-border: rgba(154, 123, 31, 0.2);
 
   color-scheme: light;
 }
 
 ::selection { background: var(--accent); color: #000; }
 
+/* Scrollbar — Gold Accent */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.5); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(154, 123, 31, 0.25); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(154, 123, 31, 0.45); }
+* { scrollbar-width: thin; scrollbar-color: rgba(212, 175, 55, 0.3) transparent; }
+
+/* Themed Select Dropdowns */
+select, select option {
+  background: #0a0a0a !important;
+  color: #D4AF37 !important;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+}
+[data-theme="light"] select, [data-theme="light"] select option {
+  background: #FFFFFF !important;
+  color: #1A1A1A !important;
+  border-color: rgba(154, 123, 31, 0.3) !important;
+}
+
 html, body {
   background: #000000 !important;
   background-image: none !important;
+}
+
+[data-theme="light"] html, [data-theme="light"] body {
+  background: #F8F6F0 !important;
 }
 
 body {

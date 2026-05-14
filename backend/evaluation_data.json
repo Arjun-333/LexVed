@@ -1,46 +1,46 @@
 {
   "civil": [
     {
-      "query": "Can a person convicted of a criminal offence whose conviction has not been suspended be appointed as Chief Minister?",
-      "ground_truth": "No, a person convicted of a criminal offence whose conviction has not been suspended is disqualified and cannot be appointed or continue as Chief Minister."
+      "query": "Does the introduction of a Family Benefit Scheme by an employer completely extinguish a dependent's right to claim compassionate appointment?",
+      "ground_truth": "No. The Supreme Court held that a Family Benefit Scheme (which provides a monthly deposit) cannot be equated with or replace the constitutional philosophy of social justice underlying compassionate appointments. The employer must still consider the dependent's application for compassionate employment."
     },
     {
-      "query": "What was the main legal issue regarding the promotion of Sub-Inspectors to Inspectors in Uttar Pradesh?",
-      "ground_truth": "The main issue was whether promotions should be based on merit under the 1965 government order or on seniority subject to rejection of the unfit under the 1994 rules."
+      "query": "Can a person who has been convicted of a criminal offence and sentenced to imprisonment for more than two years be appointed as the Chief Minister of a State if their conviction has not been suspended?",
+      "ground_truth": "No. The Supreme Court ruled that a person disqualified from being a member of the legislature under Article 191(1)(e) read with Section 8(3) of the Representation of the People Act, 1951, due to a criminal conviction, cannot be legally appointed as Chief Minister, even if they enjoy the majority support of the legislative assembly."
     },
     {
-      "query": "What dispute arose regarding the Floor Area Ratio (FAR) in the auctioned property case?",
-      "ground_truth": "The dispute arose because the auction and sale deed allowed a FAR of 2.0, but later building regulations reduced it to 1.75, leading to conflict over applicable development rights."
+      "query": "What was the Supreme Court's directive regarding the methods of recruitment for the Higher Judicial Service (District Judges) to ensure merit and efficiency?",
+      "ground_truth": "The Supreme Court directed that recruitment to the Higher Judicial Service should be divided into three avenues: 50% by promotion based on merit-cum-seniority, 25% by promotion strictly on merit through a limited departmental competitive examination, and 25% by direct recruitment from eligible advocates."
     },
     {
-      "query": "On what ground was the election of the returned candidate challenged?",
-      "ground_truth": "The election was challenged on the ground that the returned candidate was disqualified for holding an office of profit under the Government."
+      "query": "Do candidates placed on a waiting list have an absolute legal right to be appointed if the initially selected candidates fail to join the service?",
+      "ground_truth": "No. The Supreme Court held that the existence of a waiting list does not create an indefeasible right to appointment. The employer has the discretion to carry forward unfilled vacancies to the next year, provided the decision is not arbitrary or mala fide."
     },
     {
-      "query": "What was the central issue regarding the Income Tax Settlement Commission’s order?",
-      "ground_truth": "The issue was whether the settlement order could be declared void under Section 245D(6) on the ground that it was obtained by fraud or misrepresentation of facts."
+      "query": "Are teachers employed in schools considered \"employees\" eligible for gratuity under Section 2(e) of the Payment of Gratuity Act, 1972?",
+      "ground_truth": "No. The Supreme Court held that teachers do not fall within the definition of \"employee\" under the Act because imparting education is a noble vocation and cannot be classified as skilled, unskilled, manual, supervisory, or clerical work."
     }
   ],
   "criminal": [
     {
-      "query": "What is the legal principle governing the plea of alibi in criminal cases?",
-      "ground_truth": "The plea of alibi requires proving that the accused was at a place so far away at the relevant time that it was physically impossible for them to be present at the scene of the crime."
+      "query": "Under Section 319 of the Cr.P.C., can a trial court add new individuals as accused persons based merely on suspicion arising during the examination of witnesses?",
+      "ground_truth": "No. The Supreme Court held that the power under Section 319 is an extraordinary power that must be used sparingly. It requires a reasonable prospect of conviction and compelling reasons; mere suspicion is insufficient to subject a person to the agony of a criminal trial."
     },
     {
-      "query": "Can prosecution continue after the omission of Section 276DD of the Income Tax Act?",
-      "ground_truth": "No, prosecution cannot continue after omission of Section 276DD because omission is treated as obliteration of the provision and Section 6 of the General Clauses Act does not apply to omissions."
+      "query": "What procedure did the Supreme Court mandate for trial courts when objections are raised regarding the admissibility of documents during the evidence-recording stage?",
+      "ground_truth": "To prevent unnecessary delays, the Supreme Court directed trial courts to tentatively mark the objected documents as exhibits and defer the final decision on their admissibility until the final judgment stage, rather than halting the trial to pass interlocutory orders."
     },
     {
-      "query": "Can a conviction be based solely on a dying declaration?",
-      "ground_truth": "Yes, a conviction can be based solely on a dying declaration if it is found to be true, voluntary, and inspires confidence, even without corroboration."
+      "query": "Can a criminal complaint under Section 138 of the Negotiable Instruments Act be maintained against a guarantor who issues a cheque solely to secure the debt of the principal debtor?",
+      "ground_truth": "Yes. The Supreme Court ruled that the words \"any cheque\" and \"other liability\" in Section 138 are broad enough to cover cheques issued by a guarantor. The liability cannot be avoided merely because the cheque was issued as security for someone else's debt."
     },
     {
-      "query": "Does a Labour Court have jurisdiction to set aside an ex parte award after 30 days of its publication?",
-      "ground_truth": "No, once 30 days have passed after publication of the award and it becomes enforceable, the Labour Court becomes functus officio and has no jurisdiction to set aside the ex parte award."
+      "query": "Can criminal proceedings for cheating under Section 420/120B IPC continue against an assessee if their civil tax liability has already been fully settled under the Kar Vivad Samadhan Scheme, 1998?",
+      "ground_truth": "No. The Supreme Court held that once the civil dispute is resolved and the authorities grant immunity under the Scheme, continuing the criminal prosecution lacks the requisite fraudulent intention and constitutes an abuse of the judicial process."
     },
     {
-      "query": "What was the key evidence supporting the conviction under Section 307 IPC?",
-      "ground_truth": "The conviction was supported by the testimony of injured eyewitnesses and recovery of the knife with human blood matching the victim's blood group."
+      "query": "What degree of negligence is required to hold a medical professional criminally liable for the death of a patient under Section 304A of the IPC?",
+      "ground_truth": "The Supreme Court held that to secure a criminal conviction under Section 304A, the doctor's negligence must be \"gross\" or \"reckless.\" A mere lack of necessary care or an error of judgment, which might create civil liability in tort, is not sufficient for criminal punishment."
     }
   ]
 }

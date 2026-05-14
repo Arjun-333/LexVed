@@ -3,13 +3,14 @@
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 
 interface InputBarProps {
-  onSend: (text: string) => void;
+  onSend: (text: string, agentic: boolean) => void;
   disabled?: boolean;
 }
 
 const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, disabled }, ref) => {
   const [text, setText] = useState("");
   const [focused, setFocused] = useState(false);
+  const [agentic, setAgentic] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -21,7 +22,7 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, dis
   function handleSubmit() {
     const trimmed = text.trim();
     if (!trimmed || disabled) return;
-    onSend(trimmed);
+    onSend(trimmed, agentic);
     setText("");
   }
 
@@ -61,6 +62,16 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, dis
             </kbd>
           </div>
         )}
+
+        <button 
+          onClick={() => setAgentic(!agentic)}
+          disabled={disabled}
+          title="Toggle Multi-Agent Reasoning"
+          className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest ${agentic ? "bg-[var(--accent-bg)] border-[var(--accent-dim)] text-[var(--accent)]" : "bg-[var(--surface-active)] border-transparent text-[var(--text-muted)] hover:text-[var(--text)]"} border`}
+        >
+          <span className="material-icons-round text-[14px]">psychology</span>
+          {agentic ? "Agentic" : "Fast"}
+        </button>
 
         <button
           onClick={handleSubmit}

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Request
+from fastapi import FastAPI, UploadFile, File, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
@@ -20,8 +20,15 @@ from src.utils.config_manager import (
 from src.retrieval.retriever import retrieve, invalidate_bm25
 from src.generation.generator import generate_answer_stream, generate_answer
 from src.ingestion.pdf_processor import categorize_text
+from src.utils.auth import (
+    get_current_user, require_admin, authenticate_user,
+    create_token, initialize_users, get_all_users
+)
 
 load_dotenv()
+
+# Initialize default users on startup
+initialize_users()
 
 app = FastAPI(title="LexVed API", version="3.0")
 
@@ -44,7 +51,8 @@ _server_start_time = time_module.time()
 
 class ChatRequest(BaseModel):
     message: str
-    history: Optional[List[dict]] = None  # Multi-turn conversation memory
+    history: Optional[List[dict]] = None
+    agentic: Optional[bool] = False
 
 class ModelSettings(BaseModel):
     model: str
@@ -52,17 +60,51 @@ class ModelSettings(BaseModel):
 class DBSettings(BaseModel):
     db: str
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+# ─── Authentication Endpoints ────────────────────────────────────
+
+@app.post("/api/auth/login")
+async def login(req: LoginRequest):
+    """Authenticate user and return JWT token."""
+    user = authenticate_user(req.username, req.password)
+    if not user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    token = create_token(user["username"], user["role"])
+    return {
+        "token": token,
+        "username": user["username"],
+        "role": user["role"],
+        "display_name": user["display_name"]
+    }
+
+@app.get("/api/auth/me")
+async def get_me(user: dict = Depends(get_current_user)):
+    """Return current authenticated user info."""
+    users = get_all_users()
+    for u in users:
+        if u["username"] == user["username"]:
+            return {
+                "username": u["username"],
+                "role": u["role"],
+                "display_name": u["display_name"]
+            }
+    return user
+
 # ─── Utility ──────────────────────────────────────────────────────
 
-def save_to_history(query, category, subcategory, metrics):
-    """Saves a query and its metrics to history.json."""
+def save_to_history(query, category, subcategory, metrics, username="unknown"):
+    """Saves a query and its metrics to history.json, tagged with the user."""
     history_path = "history.json"
     history = []
     if os.path.exists(history_path):
         try:
             with open(history_path, "r") as f:
                 history = json.load(f)
-        except:
+        except Exception:
             history = []
     
     import datetime
@@ -73,25 +115,28 @@ def save_to_history(query, category, subcategory, metrics):
         "subcategory": subcategory,
         "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
         "status": "verified",
-        "metrics": metrics
+        "metrics": metrics,
+        "username": username
     }
     history.insert(0, new_entry)
     with open(history_path, "w") as f:
-        json.dump(history[:50], f, indent=4)
+        json.dump(history[:100], f, indent=4)
 
-# ─── Chat Endpoint (Multi-Turn) ──────────────────────────────────
+from src.generation.agents import determine_query_complexity, execute_reasoning_agent, execute_synthesis_agent, execute_multi_model_synthesis
+
+# ─── Chat Endpoint (Multi-Turn) — Authenticated ──────────────────
 
 @app.post("/api/chat")
-async def chat(req: ChatRequest):
+async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
     """Main chat endpoint with SSE-style streaming and multi-turn memory."""
     t_start = time_module.time()
     category, subcategory = categorize_text(req.message)
     
     res, retrieval_time = retrieve(
         req.message,
-        top_k=5,
-        category=category if category != "Uncategorized" else None,
-        subcategory=subcategory if subcategory != "General" else None
+        top_k=10, # Increased recall to ensure relevant legal segments are captured
+        category=None,
+        subcategory=None
     )
 
     context = ""
@@ -101,6 +146,14 @@ async def chat(req: ChatRequest):
         context += f"\n[Source: {source}, Page: {page}]\n{m.payload['text']}\n"
 
     full_answer = ""
+    # Collect source references for citation linking
+    sources = []
+    for m in res:
+        src = os.path.basename(m.payload.get("source", "Unknown"))
+        pg = m.payload.get("page", 0)
+        full_path = m.payload.get("source", "")
+        sources.append({"file": src, "page": pg, "path": full_path})
+
     def stream_response():
         nonlocal full_answer
         yield json.dumps({
@@ -108,26 +161,69 @@ async def chat(req: ChatRequest):
             "retrieval_time": retrieval_time,
             "category": category,
             "subcategory": subcategory,
-            "vector_db": get_active_db_name()
+            "vector_db": get_active_db_name(),
+            "sources": sources
         }) + "\n"
-        
-        for chunk in generate_answer_stream(req.message, context, history=req.history):
-            full_answer += chunk
-            yield json.dumps({"type": "content", "text": chunk}) + "\n"
+        if req.agentic:
+            # 1. Dynamic Routing
+            yield json.dumps({"type": "agent_thought", "text": "Determining query complexity and routing to optimal model..."}) + "\n"
+            target_model = determine_query_complexity(req.message)
+            yield json.dumps({"type": "agent_thought", "text": f"Query routed to {target_model}"}) + "\n"
+            
+            # 2. Reasoning Agent
+            yield json.dumps({"type": "agent_thought", "text": "Reasoning Agent analyzing context and drafting logical chain..."}) + "\n"
+            reasoning_chain = ""
+            for chunk in execute_reasoning_agent(req.message, context, target_model):
+                reasoning_chain += chunk
+                # We could stream thoughts here, but let's just stream them when complete or slowly
+                # For now, we wait for reasoning to finish so we can pass it to synthesis
+            
+            yield json.dumps({"type": "agent_thought", "text": f"Reasoning Complete. Handing off to Synthesis Agent."}) + "\n"
+            
+            # 3. Synthesis Agent
+            if target_model == "ensemble":
+                yield json.dumps({"type": "agent_thought", "text": "Reasoning Complete. Handing off to Multi-Model Ensemble Synthesis (6 models)..."}) + "\n"
+                for chunk in execute_multi_model_synthesis(req.message, reasoning_chain, username=user.get("username", "User")):
+                    full_answer += chunk
+                    yield json.dumps({"type": "content", "text": chunk}) + "\n"
+            else:
+                for chunk in execute_synthesis_agent(req.message, reasoning_chain, target_model, username=user.get("username", "User")):
+                    full_answer += chunk
+                    yield json.dumps({"type": "content", "text": chunk}) + "\n"
+        else:
+            for chunk in generate_answer_stream(req.message, context, history=req.history):
+                full_answer += chunk
+                yield json.dumps({"type": "content", "text": chunk}) + "\n"
         
         total_time = time_module.time() - t_start
         save_to_history(req.message, category, subcategory, {
             "retrieval_lat": retrieval_time,
             "e2e_lat": total_time,
             "ans_length": len(full_answer.split())
-        })
+        }, username=user.get("username", "unknown"))
+        yield json.dumps({"type": "done", "generation_time": total_time}) + "\n"
 
     return StreamingResponse(stream_response(), media_type="application/x-ndjson")
 
-# ─── Health Check ─────────────────────────────────────────────────
+# ─── PDF File Serving — Authenticated ─────────────────────────────
+
+@app.get("/api/pdf/{filename:path}")
+async def serve_pdf(filename: str, user: dict = Depends(get_current_user)):
+    """Serve a PDF from the data directory for citation viewing."""
+    from fastapi.responses import FileResponse
+    # Search for the file in the data directory
+    pdf_dir = "data/PDF"
+    for root, dirs, files in os.walk(pdf_dir):
+        for f in files:
+            if f == filename:
+                full_path = os.path.join(root, f)
+                return FileResponse(full_path, media_type="application/pdf", filename=f)
+    raise HTTPException(status_code=404, detail="PDF not found")
+
+# ─── Health Check — Authenticated ─────────────────────────────────
 
 @app.get("/api/health")
-async def health_check():
+async def health_check(user: dict = Depends(get_current_user)):
     """Returns system health: Ollama, Qdrant, active model, uptime."""
     import requests
     health = {
@@ -140,7 +236,6 @@ async def health_check():
         "vector_db": "unknown"
     }
     
-    # Check Ollama
     try:
         r = requests.get("http://localhost:11434/api/tags", timeout=3)
         if r.status_code == 200:
@@ -149,10 +244,9 @@ async def health_check():
             health["ollama_models"] = models
         else:
             health["ollama"] = "error"
-    except:
+    except Exception:
         health["ollama"] = "offline"
 
-    # Check vector DB
     active_db = get_active_db_name()
     if active_db == "qdrant":
         try:
@@ -161,7 +255,7 @@ async def health_check():
             cols = [col.name for col in c.get_collections().collections]
             health["vector_db"] = "connected"
             health["collections"] = cols
-        except:
+        except Exception:
             health["vector_db"] = "offline"
     else:
         try:
@@ -169,15 +263,16 @@ async def health_check():
             stats = index.describe_index_stats()
             health["vector_db"] = "connected"
             health["vector_count"] = stats.get('total_vector_count', 0)
-        except:
+        except Exception:
             health["vector_db"] = "offline"
 
     return health
 
-# ─── Metrics & History ────────────────────────────────────────────
+# ─── Metrics & History — Authenticated ────────────────────────────
 
 @app.get("/api/metrics")
-async def get_metrics():
+async def get_metrics(user: dict = Depends(require_admin)):
+    """Returns evaluation metrics — Admin only."""
     import psutil
     metric_path = "evaluation_results.json"
     if os.path.exists(metric_path):
@@ -185,7 +280,6 @@ async def get_metrics():
             with open(metric_path, "r") as f:
                 report = json.load(f)
             
-            # Check if process is stuck
             if report.get("status") == "processing":
                 pid = report.get("pid")
                 if pid:
@@ -197,34 +291,42 @@ async def get_metrics():
                     except (psutil.NoSuchProcess, psutil.AccessDenied):
                         report["status"] = "error"
                         report["message"] = "Process no longer active."
+            # Auto-stamp completed results for cache validation
+            if report.get("status") == "done" and not report.get("corpus_fingerprint"):
+                stamp_results(metric_path)
             return report
         except Exception as e:
             return {"status": "error", "message": f"Read error: {e}"}
     return {"status": "error", "message": "No audit report found."}
 
 @app.get("/api/history")
-async def get_history():
+async def get_history(user: dict = Depends(get_current_user)):
+    """Returns query history — filtered by user. Admin sees all."""
     history_path = "history.json"
     if os.path.exists(history_path):
         try:
             with open(history_path, "r") as f:
-                return json.load(f)
-        except:
+                all_history = json.load(f)
+            # Admin sees everything, regular users see only their own
+            if user.get("role") == "admin":
+                return all_history
+            return [h for h in all_history if h.get("username") == user.get("username")]
+        except Exception:
             return []
     return []
 
 @app.delete("/api/history")
-async def clear_history():
+async def clear_history(user: dict = Depends(get_current_user)):
     """Clears the query history log."""
     history_path = "history.json"
     with open(history_path, "w") as f:
         json.dump([], f)
     return {"status": "success", "message": "History cleared."}
 
-# ─── File Management & Ingestion ──────────────────────────────────
+# ─── File Management & Ingestion — Authenticated ─────────────────
 
 @app.get("/api/files")
-async def list_files():
+async def list_files(user: dict = Depends(get_current_user)):
     """Lists all PDF files in the data directory."""
     pdf_dir = "data/PDF"
     files = []
@@ -243,7 +345,6 @@ async def list_files():
                     "type": "Legal Document"
                 })
     
-    # Also list evaluation data and knowledge base files
     if os.path.exists("evaluation_data.json"):
         files.append({"name": "evaluation_data.json", "size": f"{os.path.getsize('evaluation_data.json') / 1024:.1f} KB", "type": "Evaluation Suite"})
     if os.path.exists("evaluation_results.json"):
@@ -252,15 +353,11 @@ async def list_files():
     return files
 
 @app.post("/api/ingest")
-async def ingest_pdf(file: UploadFile = File(...)):
-    """
-    Upload and ingest a PDF into the vector database.
-    Returns progress via streaming response.
-    """
+async def ingest_pdf(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
+    """Upload and ingest a PDF into the vector database."""
     pdf_dir = "data/PDF"
     os.makedirs(pdf_dir, exist_ok=True)
     
-    # Save uploaded file
     file_path = os.path.join(pdf_dir, file.filename)
     contents = await file.read()
     with open(file_path, "wb") as f:
@@ -278,7 +375,6 @@ async def ingest_pdf(file: UploadFile = File(...)):
             chunks = process_chunks_batch(chunks)
             yield json.dumps({"status": "processing", "step": f"Cleaned {len(chunks)} chunks. Generating embeddings..."}) + "\n"
             
-            # Categorize and embed in batches
             texts = [c["text"] for c in chunks]
             embeddings = get_embeddings(texts)
             yield json.dumps({"status": "processing", "step": f"Generated {len(embeddings)} embeddings. Upserting to {get_active_db_name()}..."}) + "\n"
@@ -306,7 +402,6 @@ async def ingest_pdf(file: UploadFile = File(...)):
                         }
                     ))
                 
-                # Batch upsert (100 at a time)
                 batch_size = 100
                 for i in range(0, len(points), batch_size):
                     batch = points[i:i+batch_size]
@@ -336,7 +431,6 @@ async def ingest_pdf(file: UploadFile = File(...)):
                     index.upsert(vectors=batch)
                     yield json.dumps({"status": "processing", "step": f"Upserted {min(i+batch_size, len(vectors))}/{len(vectors)} vectors..."}) + "\n"
             
-            # Invalidate BM25 so it rebuilds with new data
             invalidate_bm25()
             
             yield json.dumps({
@@ -350,42 +444,42 @@ async def ingest_pdf(file: UploadFile = File(...)):
 
     return StreamingResponse(ingest_stream(), media_type="application/x-ndjson")
 
-# ─── Settings ─────────────────────────────────────────────────────
+# ─── Settings — Authenticated ─────────────────────────────────────
 
 @app.get("/api/settings/embedding_model")
-async def get_model_setting():
+async def get_model_setting(user: dict = Depends(get_current_user)):
     return {"model": get_active_model_name()}
 
 @app.post("/api/settings/embedding_model")
-async def set_model_setting(settings: ModelSettings):
+async def set_model_setting(settings: ModelSettings, user: dict = Depends(get_current_user)):
     if set_active_model(settings.model):
-        invalidate_bm25()  # Invalidate caches on model switch
+        invalidate_bm25()
         return {"status": "success", "model": settings.model}
     return {"status": "error", "message": "Invalid model"}
 
 @app.get("/api/settings/vector_db")
-async def get_db_setting():
+async def get_db_setting(user: dict = Depends(get_current_user)):
     return {"db": get_active_db_name()}
 
 @app.post("/api/settings/vector_db")
-async def set_db_setting(settings: DBSettings):
+async def set_db_setting(settings: DBSettings, user: dict = Depends(get_current_user)):
     if set_active_db(settings.db):
-        invalidate_bm25()  # Invalidate caches on DB switch
+        invalidate_bm25()
         return {"status": "success", "db": settings.db}
     return {"status": "error", "message": "Invalid database"}
 
 @app.get("/api/settings/generation_model")
-async def get_gen_model_setting():
+async def get_gen_model_setting(user: dict = Depends(get_current_user)):
     return {"model": get_active_generation_model()}
 
 @app.post("/api/settings/generation_model")
-async def set_gen_model_setting(settings: ModelSettings):
+async def set_gen_model_setting(settings: ModelSettings, user: dict = Depends(get_current_user)):
     if set_active_generation_model(settings.model):
         return {"status": "success", "model": settings.model}
     return {"status": "error", "message": "Invalid generation model"}
 
 @app.get("/api/settings/config")
-async def get_full_config():
+async def get_full_config(user: dict = Depends(get_current_user)):
     """Returns the full config for frontend consumption."""
     config = load_config()
     return {
@@ -394,15 +488,64 @@ async def get_full_config():
         "providers": config.get("providers", [])
     }
 
-# ─── Evaluation Workflows ────────────────────────────────────────
+# ─── Evaluation Caching ──────────────────────────────────────────
+
+def get_corpus_fingerprint():
+    """Returns a fingerprint of the PDF corpus (file count + total size).
+    If this hasn't changed, evaluation results are still valid."""
+    pdf_dir = "data/PDF"
+    total_files = 0
+    total_size = 0
+    if os.path.exists(pdf_dir):
+        for root, dirs, files in os.walk(pdf_dir):
+            for f in files:
+                if f.lower().endswith(".pdf"):
+                    total_files += 1
+                    total_size += os.path.getsize(os.path.join(root, f))
+    return f"{total_files}:{total_size}"
+
+def is_cache_valid(results_path):
+    """Check if cached evaluation results are still valid (corpus unchanged)."""
+    if not os.path.exists(results_path):
+        return False
+    try:
+        with open(results_path, "r") as f:
+            data = json.load(f)
+        if data.get("status") != "done":
+            return False
+        return data.get("corpus_fingerprint") == get_corpus_fingerprint()
+    except Exception:
+        return False
+
+def stamp_results(results_path):
+    """Stamp completed results with the current corpus fingerprint."""
+    try:
+        with open(results_path, "r") as f:
+            data = json.load(f)
+        if data.get("status") == "done":
+            data["corpus_fingerprint"] = get_corpus_fingerprint()
+            with open(results_path, "w") as f:
+                json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
+# ─── Evaluation Workflows — Admin Only ───────────────────────────
 
 @app.post("/api/workflow/evaluate")
-async def trigger_evaluation():
+async def trigger_evaluation(request: Request, user: dict = Depends(require_admin)):
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    force = body.get("force", False)
+
+    # Check cache first
+    if not force and is_cache_valid("evaluation_results.json"):
+        return {"status": "cached", "message": "Results are up to date. No new PDFs detected."}
+
     def run_eval():
         print(f"[LexVed] Starting Evaluation Workflow on {get_active_db_name()}...")
-        # Run Metrics
-
-        # Run Metrics
         try:
             proc = subprocess.Popen(["./venv/bin/python3", "run_metrics.py"])
             with open("evaluation_results.json", "w") as f:
@@ -419,11 +562,16 @@ async def trigger_evaluation():
     return {"status": "processing", "message": "Evaluation initiated"}
 
 @app.post("/api/workflow/comparative")
-async def trigger_comparative(request: Request):
-    """Triggers comparative benchmarking across all embedding models."""
+async def trigger_comparative(request: Request, user: dict = Depends(require_admin)):
+    """Triggers comparative benchmarking across all embedding models — Admin only."""
     body = await request.json()
     resume = body.get("resume", False)
-    
+    force = body.get("force", False)
+
+    # Check cache first (only if not resuming)
+    if not force and not resume and is_cache_valid("comparative_results.json"):
+        return {"status": "cached", "message": "Comparative results are up to date. No new PDFs detected."}
+
     def run_comparative_thread():
         try:
             cmd = ["./venv/bin/python3", "run_comparative.py"]
@@ -435,7 +583,7 @@ async def trigger_comparative(request: Request):
             if not resume:
                 if os.path.exists("intermediate_results.json"):
                     try: os.remove("intermediate_results.json")
-                    except: pass
+                    except Exception: pass
 
                 with open("comparative_results.json", "w") as f:
                     json.dump({
@@ -454,7 +602,7 @@ async def trigger_comparative(request: Request):
                         old_data["pid"] = proc.pid
                         with open("comparative_results.json", "w") as f:
                             json.dump(old_data, f, indent=2)
-                    except: pass
+                    except Exception: pass
         except Exception as e:
             with open("comparative_results.json", "w") as f:
                 json.dump({"status": "error", "message": str(e)}, f)
@@ -463,8 +611,8 @@ async def trigger_comparative(request: Request):
     return {"status": "processing", "message": "Comparative benchmark initiated"}
 
 @app.get("/api/comparative")
-async def get_comparative():
-    """Returns comparative benchmarking results."""
+async def get_comparative(user: dict = Depends(require_admin)):
+    """Returns comparative benchmarking results — Admin only."""
     path = "comparative_results.json"
     if os.path.exists(path):
         try:
@@ -486,6 +634,141 @@ async def get_comparative():
         except Exception as e:
             return {"status": "error", "message": f"Failed to read comparative results: {e}"}
     return {"status": "error", "message": "No comparative results found. Run a comparative benchmark first."}
+
+@app.post("/api/workflow/compare_pipelines")
+async def trigger_pipeline_comparison(user: dict = Depends(require_admin)):
+    """Admin only."""
+    def run_compare():
+        try:
+            proc = subprocess.Popen(["./venv/bin/python3", "run_metrics.py", "--pipeline", "both"])
+            with open("pipeline_comparison_results.json", "w") as f:
+                json.dump({
+                    "status": "processing",
+                    "progress": "Comparing Enhanced vs Primitive pipelines...",
+                    "pid": proc.pid
+                }, f)
+        except Exception as e:
+            with open("pipeline_comparison_results.json", "w") as f:
+                json.dump({"status": "error", "message": str(e)}, f)
+
+    executor.submit(run_compare)
+    return {"status": "processing", "message": "Pipeline comparison initiated"}
+
+@app.get("/api/compare_pipelines")
+async def get_pipeline_comparison(user: dict = Depends(require_admin)):
+    """Admin only."""
+    path = "pipeline_comparison_results.json"
+    if os.path.exists(path):
+        try:
+            import psutil
+            with open(path, "r") as f:
+                report = json.load(f)
+            if report.get("status") == "processing":
+                pid = report.get("pid")
+                if pid:
+                    try:
+                        p = psutil.Process(pid)
+                        if not p.is_running():
+                            report["status"] = "error"
+                            report["message"] = "Process died unexpectedly."
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        report["status"] = "error"
+                        report["message"] = "Process no longer active."
+            return report
+        except Exception as e:
+            return {"status": "error", "message": f"Read error: {e}"}
+    return {"status": "error", "message": "No pipeline comparison results found."}
+
+@app.post("/api/workflow/evaluate_primitive")
+async def trigger_primitive_evaluation(request: Request, user: dict = Depends(require_admin)):
+    """Triggers the standalone Primitive Pipeline evaluation — Admin only."""
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    model_choice = body.get("model_choice", "1")
+    force = body.get("force", False)
+
+    # Check cache first
+    if not force and is_cache_valid("primitive_evaluation_results.json"):
+        return {"status": "cached", "message": "Primitive results are up to date. No new PDFs detected."}
+
+    def run_primitive():
+        try:
+            proc = subprocess.Popen(
+                ["./venv/bin/python3", "-c",
+                 f"from primitive_pipeline import run_primitive_pipeline; run_primitive_pipeline(model_choice='{model_choice}')"]
+            )
+            prim_path = "primitive_evaluation_results.json"
+            if not os.path.exists(prim_path):
+                with open(prim_path, "w") as f:
+                    json.dump({
+                        "status": "processing",
+                        "progress": "Initializing Primitive Pipeline...",
+                        "pid": proc.pid
+                    }, f)
+            else:
+                try:
+                    with open(prim_path, "r") as f:
+                        d = json.load(f)
+                    d["pid"] = proc.pid
+                    with open(prim_path, "w") as f:
+                        json.dump(d, f)
+                except Exception:
+                    pass
+        except Exception as e:
+            with open("primitive_evaluation_results.json", "w") as f:
+                json.dump({"status": "error", "message": str(e)}, f)
+
+    executor.submit(run_primitive)
+    return {"status": "processing", "message": "Primitive Pipeline evaluation initiated"}
+
+@app.get("/api/metrics/primitive")
+async def get_primitive_metrics(user: dict = Depends(require_admin)):
+    """Returns the latest Primitive Pipeline evaluation results — Admin only."""
+    path = "primitive_evaluation_results.json"
+    if os.path.exists(path):
+        try:
+            import psutil
+            with open(path, "r") as f:
+                report = json.load(f)
+            if report.get("status") == "processing":
+                pid = report.get("pid")
+                if pid:
+                    try:
+                        p = psutil.Process(pid)
+                        if not p.is_running():
+                            report["status"] = "error"
+                            report["message"] = "Primitive Pipeline process died unexpectedly."
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        report["status"] = "error"
+                        report["message"] = "Process no longer active."
+            return report
+        except Exception as e:
+            return {"status": "error", "message": f"Read error: {e}"}
+    return {"status": "error", "message": "No primitive evaluation results found. Run the Primitive Pipeline evaluation first."}
+
+# ─── Admin-Only Management Endpoints ─────────────────────────────
+
+@app.get("/api/admin/users")
+async def admin_list_users(user: dict = Depends(require_admin)):
+    """List all registered users — Admin only."""
+    return {"users": get_all_users()}
+
+@app.post("/api/admin/clear_eval")
+async def admin_clear_eval(user: dict = Depends(require_admin)):
+    """Clear all evaluation result files — Admin only."""
+    cleared = []
+    for f in ["evaluation_results.json", "comparative_results.json", "pipeline_comparison_results.json", "primitive_evaluation_results.json"]:
+        if os.path.exists(f):
+            try:
+                with open(f, "w") as fh:
+                    json.dump({}, fh)
+                cleared.append(f)
+            except Exception:
+                pass
+    return {"status": "success", "cleared": cleared}
 
 # ─── Server Entry ─────────────────────────────────────────────────
 

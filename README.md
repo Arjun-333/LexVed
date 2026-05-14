@@ -1,38 +1,104 @@
-# LexVed — Legal AI Research Platform
+# LexVed: Advanced Legal Intelligence Platform
 
-Production-grade Retrieval-Augmented Generation (RAG) system for legal document analysis. Built with a hybrid retrieval pipeline, 6 embedding models, and a 24-KPI institutional benchmark suite.
+A production-grade Retrieval-Augmented Generation (RAG) system engineered for institutional legal document analysis. LexVed features a multi-agent cognitive architecture, dynamic model routing, a dual-database hybrid retrieval pipeline, and an integrated 24-KPI automated benchmark suite.
 
-## Architecture
+## Core Features and Capabilities
 
-```
-PDF Upload → SpaCy NER Redaction → Citation-Aware Chunking
-    ↓
-Embedding (6 models) → Vector DB (Qdrant / Pinecone)
-    ↓
-Query → Dense Search + BM25 Sparse Search → RRF Fusion → CrossEncoder Rerank
-    ↓
-Llama 3 8B (Ollama) → Streaming Response
-    ↓
-Evaluation: ROUGE, BLEU, METEOR, BERTScore, DeBERTa NLI, SpaCy NER, LLM Judge
-```
+### 1. Multi-Agent Architecture
+LexVed abandons the traditional single-pass LLM generation in favor of a specialized, multi-agent cognitive workflow:
+* **Routing Agent:** Evaluates query complexity in real-time, routing simple tasks to lightning-fast models and complex analytical tasks to heavy-weight reasoning models.
+* **Reasoning Agent:** Analyzes the retrieved legal context and drafts a step-by-step logical deduction chain. It is strictly constrained by anti-hallucination prompts to prevent the fabrication of case law.
+* **Synthesis Agent:** Acts as the Senior Legal Counsel, transforming the raw logical chain into a highly cohesive, authoritative, and properly cited final legal opinion.
 
-## UI/UX Philosophy: "All Black But Gold"
-The LexVed interface has been heavily engineered to deliver a premium, museum-grade aesthetic:
-*   **Cinematic Typography:** Utilizing `Playfair Display` and `Cinzel` for sharp, high-authority legal headers with wide character tracking.
-*   **Hardware-Accelerated 3D Coverflow:** The embedding model omnitrix is powered by native CSS `scroll-snap` mechanics and an `IntersectionObserver`, guaranteeing buttery-smooth 120FPS carousel dragging without JavaScript physics stuttering.
-*   **Gilded Accents:** Minimalist `#000000` pitch-black voids contrasted sharply by `#D4AF37` gold luminous interactions.
+### 2. Advanced Hybrid Retrieval
+The platform utilizes a multi-tiered retrieval strategy to guarantee maximum recall and precision:
+* **Dense Vector Search:** Understands the semantic intent of complex legal queries using high-dimensional embeddings (Pinecone/Qdrant).
+* **Sparse Search (BM25):** Ensures critical exact-keyword matches, such as specific statute sections or docket numbers, are never missed.
+* **Reciprocal Rank Fusion (RRF) & CrossEncoder Reranking:** Merges dense and sparse results and re-scores the combined list based on deep contextual relevance before feeding the context to the LLMs.
 
-## Tech Stack
+### 3. Dynamic Model Routing
+LexVed intelligently routes workloads across a curated suite of models via Groq and Ollama:
+* **Fast Mode:** Utilizes `llama-3.1-8b-instant` for rapid, low-latency inference on straightforward queries.
+* **Agentic Mode:** Escalates to `llama-3.3-70b-versatile` for deep, multi-faceted analysis requiring extensive logical deduction.
+
+### 4. Enterprise Interface
+The frontend is built on Next.js 14 and Framer Motion, delivering a premium, glassmorphic UI ("All Black But Gold" aesthetic). It features:
+* Real-time streaming of Agentic Reasoning Chains.
+* Dedicated Citation Cards for immediate source verification.
+* A comprehensive Metrics Dashboard for benchmark visualization.
+
+## Technical Stack
 
 | Layer | Technology |
 |-------|-----------|
-| LLM | Llama 3 8B via Ollama (local) |
-| Embeddings | SentenceTransformers, Cohere API |
-| Vector DB | Qdrant (self-hosted), Pinecone (cloud) |
-| Retrieval | Hybrid BM25 + Dense, RRF, CrossEncoder |
-| Backend | FastAPI (Python 3.10) |
-| Frontend | Next.js 14, Framer Motion, TailwindCSS |
-| Evaluation | HuggingFace evaluate, DeBERTa NLI, SpaCy NER |
+| **Language Models** | Llama 3.1 8B, Llama 3.3 70B (via Groq & Ollama) |
+| **Embeddings** | SentenceTransformers, Cohere API |
+| **Vector Databases** | Qdrant (Self-Hosted), Pinecone (Serverless) |
+| **Retrieval Engine** | BM25, Reciprocal Rank Fusion, CrossEncoder |
+| **Backend Framework** | FastAPI (Python 3.10) |
+| **Frontend Framework** | Next.js 14, React, TailwindCSS, Framer Motion |
+| **Evaluation Suite** | HuggingFace evaluate, DeBERTa NLI, SpaCy NER |
+
+## System Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- Docker (for Qdrant deployment)
+- API Keys: Pinecone, Groq, Cohere
+
+## Initialization and Setup
+
+### 1. Vector Database Deployment
+Start the local Qdrant instance:
+```bash
+docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
+```
+
+### 2. Backend Environment
+Navigate to the backend directory, initialize the environment, and start the server:
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r ../requirements.txt
+python3 -m spacy download en_core_web_sm
+
+# Environment Configuration (.env required)
+# PINECONE_API_KEY=your_key
+# PINECONE_INDEX_NAME=lexved-index
+# GROQ_API_KEY=your_key
+# COHERE_API_KEY=your_key
+
+python3 app.py
+```
+The backend initializes at `http://localhost:5000`.
+
+### 3. Frontend Environment
+Navigate to the frontend directory, install dependencies, and launch the application:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+The frontend initializes at `http://localhost:3000`.
+
+## Interactive Operations
+
+### Fast vs. Agentic Mode
+The interface includes a toggle switch allowing users to dictate the execution pipeline:
+* **Fast Mode (Disabled):** Triggers the legacy, single-pass generation pipeline for immediate answers.
+* **Agentic Mode (Enabled):** Activates the Multi-Agent architecture, generating visible reasoning chains and deep contextual synthesis.
+
+### Pipeline Comparisons
+The Metrics Dashboard includes a dedicated "Pipelines" tab, allowing administrators to execute and compare the performance of the Baseline Primitive Pipeline against the Enhanced Multi-Agent Pipeline across a 24-KPI benchmark suite.
+
+## Institutional Audit Metrics (M1-M24)
+
+The platform evaluates system integrity across 24 distinct dimensions, including:
+* **M1 - M3:** Infrastructure Latency (Embedding, Indexing, Retrieval).
+* **M4 - M5:** Retrieval Quality (Cosine Similarity, Recall@K).
+* **M6 - M12:** Lexical and Semantic Precision (ROUGE, BLEU, METEOR, BERTScore).
+* **M20 - M24:** Legal Verification (Citation Accuracy, Precedent Match, Regulatory Alignment).
 
 ## Embedding Models (6)
 
@@ -44,128 +110,6 @@ The LexVed interface has been heavily engineered to deliver a premium, museum-gr
 | BAAI/bge-m3 | 1024 | HuggingFace |
 | intfloat/multilingual-e5-large-instruct | 1024 | HuggingFace |
 | Cohere embed-english-v3.0 | 1024 | Cohere API |
-
-## Prerequisites
-
-- Python 3.10+
-- Node.js 18+
-- Ollama with Llama 3 pulled
-- Qdrant (Docker or local install)
-
----
-
-## How to Run (3 Terminals)
-
-### Terminal 1 — Qdrant Vector Database
-
-```bash
-docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
-```
-
-### Terminal 2 — Backend (FastAPI)
-
-```bash
-cd backend
-
-# First time only: create venv and install deps
-python3 -m venv venv
-source venv/bin/activate
-pip install -r ../requirements.txt
-python3 -m spacy download en_core_web_sm
-
-# Create .env file (first time only)
-cat > .env << 'EOF'
-PINECONE_API_KEY=your_pinecone_key_here
-PINECONE_INDEX_NAME=lexved-index
-GROQ_API_KEY=
-COHERE_API_KEY=
-EOF
-
-# Run the server
-source venv/bin/activate
-python3 app.py
-```
-
-Backend starts at: **http://localhost:5000**
-
-### Terminal 3 — Frontend (Next.js)
-
-```bash
-cd frontend
-
-# First time only: install deps
-npm install
-
-# Run dev server
-npm run dev
-```
-
-Frontend starts at: **http://localhost:3000**
-
-### Terminal 4 (optional) — Ollama
-
-```bash
-# Pull Llama 3 if not already done
-ollama pull llama3
-
-# Ollama runs automatically as a service, but if needed:
-ollama serve
-```
-
----
-
-## Quick Start (After Initial Setup)
-
-Once everything is installed, you only need 3 commands in 3 terminals:
-
-```
-Terminal 1:  docker run -p 6333:6333 qdrant/qdrant
-Terminal 2:  cd backend && source venv/bin/activate && python3 app.py
-Terminal 3:  cd frontend && npm run dev
-```
-
-Then open **http://localhost:3000** in your browser.
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| POST | /api/chat | Streaming legal Q&A (multi-turn) |
-| POST | /api/ingest | Upload PDF for ingestion |
-| GET | /api/files | List indexed documents |
-| GET | /api/health | System health check |
-| GET | /api/metrics | Fetch evaluation results |
-| GET | /api/history | Query history log |
-| DELETE | /api/history | Clear history |
-| GET/POST | /api/settings/embedding_model | Get/Set embedding model |
-| GET/POST | /api/settings/vector_db | Get/Set vector database |
-| GET/POST | /api/settings/generation_model | Get/Set generation model |
-| POST | /api/workflow/evaluate | Trigger 24-KPI benchmark |
-| POST | /api/workflow/comparative | Benchmark all 6 models |
-| GET | /api/comparative | Fetch comparative results |
-
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| Ctrl+K | Focus search input |
-| Ctrl+M | Toggle Metrics Dashboard |
-| Ctrl+H | Toggle Research History |
-| Escape | Close any open modal |
-
-## Docker Compose (Alternative)
-
-Run everything with a single command:
-
-```bash
-docker-compose up --build
-```
-
-This starts Qdrant, Backend, and Frontend automatically.
-
-Note: Ollama must still be running separately on the host machine.
 
 ## Evaluation Metrics (M1-M24)
 

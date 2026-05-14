@@ -12,7 +12,7 @@ from rouge_score import rouge_scorer
 import evaluate
 from src.retrieval.retriever import retrieve
 from src.generation.generator import generate_answer_stream
-from src.utils.config_manager import get_active_model_name, get_active_db_name, get_active_generation_model
+from src.utils.config_manager import get_active_model_name, get_active_db_name, get_active_generation_model, load_config
 
 # Evaluation Config
 EVAL_DATA_PATH = "evaluation_data.json"
@@ -116,8 +116,13 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
     if api_key:
         url = "https://api.groq.com/openai/v1/chat/completions"
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        # Determine which Groq model to use for judging
+        judge_model = get_active_generation_model()
+        if judge_model not in load_config().get("groq_models", []):
+            judge_model = "llama-3.1-8b-instant"
+
         eval_payload = {
-            "model": "llama3-8b-8192",
+            "model": judge_model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.1,
             "response_format": {"type": "json_object"}
@@ -136,7 +141,13 @@ def judge_llm_metrics(query, ground_truth, model_answer, context):
         except Exception as e:
             print(f"[LexVed] Groq Judge failed ({e}), falling back to Ollama...")
 
-    payload = {"model": get_active_generation_model(), "prompt": prompt, "stream": False, "format": "json"}
+    # Fallback to Ollama if Groq fails or is not configured
+    gen_model = get_active_generation_model()
+    # If the active model is a Groq model, Ollama won't recognize it. Use generic llama3 for local judge.
+    if gen_model in load_config().get("groq_models", []):
+        gen_model = "llama3"
+
+    payload = {"model": gen_model, "prompt": prompt, "stream": False, "format": "json"}
     try:
         import re
         res = requests.post(OLLAMA_URL, json=payload, timeout=180) 
@@ -241,11 +252,7 @@ def ensure_data_ingested():
             for f in files:
                 if f.lower().endswith(".pdf"):
                     pdf_paths.append(os.path.join(root, f))
-                    if len(pdf_paths) >= 5: # Max 5 files for a quick but realistic test
-                        break
-            if len(pdf_paths) >= 5:
-                break
-                
+                    
     if not pdf_paths:
         print("[LexVed] No PDFs found in data/PDF/. Cannot evaluate.")
         return
@@ -370,58 +377,78 @@ def run_evaluation():
     lock = threading.Lock()
     
     def process_query(cat, query, gt):
-        ram_before = psutil.virtual_memory().used
+        process = psutil.Process(os.getpid())
+        ram_before = process.memory_info().rss
         
         # M1: Embedding Time
         t_start_emb = time.time()
         query_emb = get_model_st().encode([query])[0]
-        m1_emb_time = time.time() - t_start_emb
+        m1_emb_time = max(0, time.time() - t_start_emb)
         
         # M3: Retrieval Latency
         docs, m3_ret_lat = retrieve(query, top_k=5)
+        m3_ret_lat = max(0, m3_ret_lat)
         
         if not docs:
-            print(f"Warning: No documents found for query: {query}")
-            return
+            print(f"[LexVed] [ERROR] No documents retrieved for query: {query}")
+            # Still record a 0 result so it doesn't break the averages, but log the error
+            docs = []
             
         # M4: Cosine Similarity
-        doc_embs = get_model_st().encode([d.payload['text'] for d in docs])
-        cos_sims = util.cos_sim(query_emb, doc_embs)[0]
-        m4_cos_sim = cos_sims.mean().item()
+        if docs:
+            doc_embs = get_model_st().encode([d.payload['text'] for d in docs])
+            cos_sims = util.cos_sim(query_emb, doc_embs)[0]
+            m4_cos_sim = max(0, cos_sims.mean().item())
+            context = "".join([f"[Source: {d.payload.get('source')}] {d.payload['text']}\n" for d in docs])
+        else:
+            m4_cos_sim = 0
+            context = "No context available."
         
-        context = "".join([f"[Source: {d.payload.get('source')}] {d.payload['text']}\n" for d in docs])
-        
-        # M16: End-to-End Latency
+        # M16: End-to-End Latency & M17: Token Latency
         ans = ""
+        t_gen_start = time.time()
         try:
             for chunk in generate_answer_stream(query, context): 
                 ans += chunk
         except Exception as e:
             print(f"Warning: LLM generation failed ({e}). Using fallback answer.")
             ans = "The system encountered an unexpected inference timeout while generating the response."
-        m16_e2e = time.time() - t_start_emb
+        
+        t_gen_end = time.time()
+        m17_gen_total_time = max(0, t_gen_end - t_gen_start)
+        m16_e2e = max(0, time.time() - t_start_emb)
         
         q_stats = calculate_local_metrics(gt, ans)
         judge_res = judge_llm_metrics(query, gt, ans, context)
         nli_score = check_hallucination_nli(context, ans)
         ner_score = get_ner_precision(gt, ans)
         
-        m19_ram = (psutil.virtual_memory().used - ram_before) / (1024**2)
+        ram_after = process.memory_info().rss
+        m19_ram = max(0, (ram_after - ram_before) / (1024**2))
         
         gt_emb = get_model_st().encode([gt])[0]
         ans_emb = get_model_st().encode([ans])[0]
-        m11_sem_score = util.cos_sim(gt_emb, ans_emb)[0].item()
+        m11_sem_score = max(0, util.cos_sim(gt_emb, ans_emb)[0].item())
         
         total_tokens = max(len(ans.split()), 1)
-        m17_tgl = (m16_e2e - m3_ret_lat - m1_emb_time) / total_tokens
-        m18_cost = (len(context.split()) + len(query.split()) + len(ans.split())) * 0.000002
+        # M17 is Token Generation Latency (seconds per token)
+        m17_tgl = m17_gen_total_time / total_tokens
+        m18_cost = max(0, (len(context.split()) + len(query.split()) + len(ans.split())) * 0.000002)
         
         def to_int(val, default=50):
-            try: return int(str(val).replace("%", ""))
+            if val is None: return default
+            try: 
+                # Handle cases where LLM might return "80/100" or "80%"
+                clean_val = str(val).split('/')[0].replace("%", "").strip()
+                return int(clean_val)
             except: return default
  
         res = {
+            "id": len(all_results) + 1,
             "category": cat,
+            "query": query,
+            "ground_truth": gt,
+            "answer": ans,
             "metrics": {
                 "M1": m1_emb_time, 
                 "M2": vector_count, 
@@ -437,21 +464,20 @@ def run_evaluation():
                 "M12": q_stats['bert_f1'],
                 "M13": 100 - nli_score, 
                 "M14": nli_score, 
-                "M15": to_int(judge_res.get("factual_consistency", 0)),
+                "M15": to_int(judge_res.get("factual_consistency")),
                 "M16": m16_e2e,
                 "M17": m17_tgl,
                 "M18": m18_cost,
                 "M19": m19_ram, 
-                "M20": to_int(judge_res.get("citation_acc", 0)),
+                "M20": to_int(judge_res.get("citation_acc")),
                 "M21": ner_score,
-                "M22": to_int(judge_res.get("precedent_match", 0)),
-                "M23": to_int(judge_res.get("regulatory_alignment", 0)),
-                "M24": to_int(judge_res.get("jurisdictional_comp", 0))
+                "M22": to_int(judge_res.get("precedent_match")),
+                "M23": to_int(judge_res.get("regulatory_alignment")),
+                "M24": to_int(judge_res.get("jurisdictional_comp"))
             }
         }
         
         with lock:
-            res["id"] = len(all_results) + 1
             all_results.append(res)
             
             # Update status
@@ -516,5 +542,67 @@ def run_evaluation():
     with open("evaluation_results.json", "w") as f: json.dump(report, f, indent=4)
     print(f"\n[SUCCESS] Metrics saved for {active_db.upper()}")
 
-if __name__ == "__main__":
+def compare_pipelines():
+    print("\n" + "="*80)
+    print(" COMPARING PRIMITIVE VS ENHANCED PIPELINE ".center(80))
+    print("="*80)
+    
+    # 1. Run Enhanced
+    print("\n--- Running Enhanced Pipeline ---")
     run_evaluation()
+    
+    # 2. Run Primitive
+    print("\n--- Running Primitive Pipeline ---")
+    from primitive_pipeline import run_primitive_pipeline
+    active_model = get_active_model_name()
+    # Map active model to primitive choice
+    choice = "1"
+    if "MiniLM" in active_model: choice = "2"
+    elif "E5" in active_model: choice = "3"
+    elif "distilbert" in active_model.lower(): choice = "4"
+    elif "cohere" in active_model.lower(): choice = "5"
+    elif "bge" in active_model.lower(): choice = "6"
+    
+    api_key = os.getenv("COHERE_API_KEY") if choice == "5" else None
+    
+    run_primitive_pipeline(model_choice=choice, api_key=api_key)
+    
+    # 3. Aggregate results
+    try:
+        with open("evaluation_results.json", "r") as f:
+            enh_res = json.load(f)
+        
+        with open("primitive_evaluation_results.json", "r") as f:
+            prim_res = json.load(f)
+            
+        comparison = {
+            "status": "complete",
+            "timestamp": time.ctime(),
+            "comparison": "Primitive vs Enhanced",
+            "active_model": active_model,
+            "summary_comparison": {
+                "Enhanced": enh_res.get("summary", {}),
+                "Primitive": prim_res.get("summary", {})
+            }
+        }
+        with open("pipeline_comparison_results.json", "w") as f:
+            json.dump(comparison, f, indent=4)
+        print("\n[SUCCESS] Pipeline comparison saved to pipeline_comparison_results.json")
+    except Exception as e:
+        print(f"Error compiling comparison: {e}")
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Run LexVed Evaluations")
+    parser.add_argument("--pipeline", type=str, choices=["enhanced", "primitive", "both"], default="enhanced", help="Choose which evaluation pipeline to run")
+    args = parser.parse_args()
+
+    if args.pipeline == "primitive":
+        from primitive_pipeline import run_primitive_pipeline
+        run_primitive_pipeline()
+    elif args.pipeline == "both":
+        compare_pipelines()
+    else:
+        run_evaluation()
+
+

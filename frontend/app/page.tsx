@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider } from "../components/ThemeProvider";
+import { AuthProvider, useAuth } from "../components/AuthContext";
+import LoginPage from "../components/LoginPage";
 import Sidebar from "../components/Sidebar";
 import WelcomeHero from "../components/WelcomeHero";
 import ChatHistory, { Message } from "../components/ChatHistory";
@@ -19,6 +21,7 @@ interface HealthData {
 }
 
 function Dashboard() {
+  const { authFetch } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -31,15 +34,15 @@ function Dashboard() {
   // Fetch health status
   useEffect(() => {
     const fetchHealth = () => {
-      fetch(`${API_URL}/api/health`)
+      authFetch(`${API_URL}/api/health`)
         .then(res => res.json())
         .then(data => setHealth(data))
         .catch(() => setHealth({ ollama: "offline" }));
     };
     fetchHealth();
-    const interval = setInterval(fetchHealth, 15000); // Poll every 15s
+    const interval = setInterval(fetchHealth, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [authFetch]);
 
   useEffect(() => {
     let timer: any;
@@ -59,13 +62,15 @@ function Dashboard() {
   const inputRef = useRef<{ focus: () => void }>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    // Small timeout to allow DOM to update before scrolling
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  }, [messages, isTyping]);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl+K — Focus search input
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         inputRef.current?.focus();
@@ -75,7 +80,7 @@ function Dashboard() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  async function handleSend(text: string) {
+  async function handleSend(text: string, agentic: boolean = false) {
     if (!hasStarted) setHasStarted(true);
 
     const userMsg: Message = { id: `u-${Date.now()}`, text, isUser: true };
@@ -86,12 +91,13 @@ function Dashboard() {
     let botMsgId = `b-${Date.now()}`;
     
     try {
-      const res = await fetch(`${API_URL}/api/chat`, {
+      const res = await authFetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           message: text,
-          history: conversationHistory.current.slice(-3)  // Send last 3 turns
+          history: conversationHistory.current.slice(-3),
+          agentic
         }),
       });
 
@@ -99,7 +105,6 @@ function Dashboard() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
 
-      // Placeholder for bot message
       setMessages((prev) => [
         ...prev,
         { id: botMsgId, text: "", isUser: false },
@@ -125,13 +130,23 @@ function Dashboard() {
                    retrieval_time: data.retrieval_time,
                    category: data.category,
                    subcategory: data.subcategory
-                }
+                },
+                sources: data.sources || []
+              } : m));
+            } else if (data.type === "agent_thought") {
+              setMessages((prev) => prev.map(m => m.id === botMsgId ? {
+                ...m,
+                agentThoughts: [...(m.agentThoughts || []), data.text]
               } : m));
             } else if (data.type === "content") {
               fullText += data.text;
               setMessages((prev) => prev.map(m => m.id === botMsgId ? { ...m, text: fullText } : m));
-              // Once we receive the first bit of content, stop the "Searching" indicator
               setIsTyping(false);
+            } else if (data.type === "done") {
+              setMessages((prev) => prev.map(m => m.id === botMsgId ? {
+                ...m,
+                metadata: { ...m.metadata, generation_time: data.generation_time }
+              } : m));
             }
           } catch (e) {
             console.error("Error parsing stream chunk", e);
@@ -139,7 +154,6 @@ function Dashboard() {
         }
       }
 
-      // Store in conversation history for multi-turn
       conversationHistory.current.push({ question: text, answer: fullText });
       
     } catch (e: unknown) {
@@ -154,7 +168,6 @@ function Dashboard() {
     }
   }
 
-  // Dynamic status bar values
   const modelName = health?.active_generation_model || "Connecting...";
   const ollamaStatus = health?.ollama === "connected" ? "OPTIMAL" : health?.ollama === "offline" ? "OFFLINE" : "CONNECTING";
   const statusColor = health?.ollama === "connected" ? "bg-[#D4AF37]" : health?.ollama === "offline" ? "bg-[#AA8C2C]/50" : "bg-[#D4AF37]/50";
@@ -235,10 +248,29 @@ function Dashboard() {
   );
 }
 
+function AuthGate() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#000" }}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
+          <p className="text-[#D4AF37]/50 text-xs uppercase tracking-widest font-bold">Restoring Session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <Dashboard /> : <LoginPage />;
+}
+
 export default function Home() {
   return (
     <ThemeProvider>
-       <Dashboard />
+      <AuthProvider>
+        <AuthGate />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

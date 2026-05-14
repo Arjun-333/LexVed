@@ -1,6 +1,6 @@
 # LexVed Pipeline Hardening & Comparative Audit Report
 
-## 🛠️ Infrastructure Hardening
+## Infrastructure Hardening
 The LexVed legal RAG pipeline has been upgraded for institutional-grade reliability and high-performance throughput.
 
 ### 1. Robust Fallback Mechanism
@@ -16,7 +16,7 @@ The LexVed legal RAG pipeline has been upgraded for institutional-grade reliabil
 - **Synchronized Benchmarking:** Unified the metric judging logic between Qdrant and Pinecone pipelines.
 - **24-KPI Suite:** Automated calculation of complex legal metrics including Citation Accuracy, Terminology Precision, and Precedent Coverage.
 
-## 📊 Comparative Database Audit (MPNet)
+## Comparative Database Audit (MPNet)
 A side-by-side performance evaluation was conducted using the `multi-qa-mpnet-base-cos-v1` embedding model across **19,793 legal chunks**.
 
 ### Key Findings:
@@ -24,12 +24,12 @@ A side-by-side performance evaluation was conducted using the `multi-qa-mpnet-ba
 - **Latency Trade-off:** Qdrant (Local) demonstrated significantly lower retrieval latency (sub-100ms) compared to Pinecone Cloud (~750ms), as expected due to network round-trips.
 - **Scalability:** Pinecone provided superior ease-of-management for the 22k+ vector set without local node resource exhaustion.
 
-## 📁 Artifacts
+## Artifacts
 - **Final Report:** `backend/Comparative_DB_Analysis.pdf`
 - **Metric Data:** `backend/qdrant_evaluation_results.json` & `backend/primitive_evaluation_results.json`
 - **Core Utility:** `backend/reingest_pinecone.py`
 
 ---
-**Status:** Institutional Grade 🏛️✅🥊
+**Status:** Institutional Grade
 **Author:** Antigravity AI
 **Date:** 15 May 2026

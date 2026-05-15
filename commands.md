@@ -97,12 +97,11 @@ tail -f backend/qdrant_run.log
 ```
 **Description:** Real-time monitoring of ongoing background benchmarking and ingestion tasks.
 
-### 12. Cleanup Evaluation Cache
+### 12. Verify Data Integrity (Duplicate Check)
 ```bash
-cd backend
-rm *.csv *.json report_*.json
+python3 scratch/test_duplicate_logic.py
 ```
-**Description:** Removes previous evaluation artifacts and cached results to ensure a clean state for new institutional audits.
+**Description:** Verifies that the SHA-256 fingerprinting logic correctly identifies and skips duplicate PDFs.
 
 ---
 

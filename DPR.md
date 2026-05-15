@@ -111,8 +111,14 @@ Dense vector search excels at understanding semantic intent, while sparse search
 ### D. Hierarchical Sub-Indexing
 During ingestion, documents are categorically tagged (e.g., Civil, Criminal, Constitutional). At query time, the system can selectively filter the vector database, preventing context contamination across distinct legal domains.
 
-### E. Evaluation Fingerprinting and Caching
-The platform features an automated 24-KPI benchmark suite. To preserve computational resources, LexVed fingerprints the dataset corpus. If an evaluation is triggered without any new PDFs having been ingested, the system bypasses the redundant LLM execution and instantly serves the cached benchmark results.
+### E. Data Integrity & SHA-256 Fingerprinting
+To maintain a production-grade corpus, LexVed implements a cryptographic fingerprinting system. Every legal document is hashed using SHA-256 before ingestion. This allows the platform to instantly skip duplicate files, detect content modifications in existing files, and maintain a 1:1 relationship between physical documents and vector segments.
+
+### F. Secure PDF Deep-Linking
+The citation engine has been upgraded from static text to interactive "Smart Citations." By utilizing secure one-time URL tokens and browser-native fragment identifiers (`#page=X`), LexVed allows legal researchers to jump directly from an AI-generated answer to the exact page of the cited document in a dedicated viewer.
+
+### G. GPU Cluster Transparency
+For local deployments (Ollama), LexVed monitors the VRAM state of the GPU. If a model cold-start is detected, the UI provides transparent feedback ("Loading neural weights..."), ensuring a seamless user experience during model initialization.
 
 ### G. Agentic Hardening & Context Continuity
 In the latest version, LexVed has been hardened for institutional audit readiness with three key memory and persona features:
@@ -129,4 +135,10 @@ In the latest version, LexVed has been hardened for institutional audit readines
 * **UI/UX Premium Polish:** Implemented automatic scrolling for streaming and premium glassmorphic scrollbars for reasoning chains.
 * **Authentication Sync:** Synchronized JWT display names to enable personalized AI greetings ("Counsel Arjun").
 * **Ingestion Integrity:** Patched the PDF processing pipeline to extract and persist physical page numbers across both Pinecone and Qdrant.
+
+### Session: Stability Hardening & Deep Linking (May 15, 2026)
+* **SHA-256 Fingerprinting:** Implemented cryptographic hashing for document duplicate prevention.
+* **Deep Citation Linking:** Refactored the backend and frontend to support secure, page-level PDF jumping.
+* **GPU Awareness:** Integrated real-time Ollama process monitoring for cold-start UI feedback.
+* **Infinite Model Wheel:** Refactored the Intelligence Engine UI for shortest-path 3D rotation and forced-direction navigation.
 

@@ -434,9 +434,56 @@ async def ingest_pdf(file: UploadFile = File(...), user: dict = Depends(get_curr
             from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch
             from src.ingestion.embedder import get_embeddings
             
-            yield json.dumps({"status": "processing", "step": "Extracting text from PDF..."}) + "\n"
+            yield json.dumps({"status": "processing", "step": "Extracting text and fingerprinting PDF..."}) + "\n"
             chunks = extract_chunks(file_path)
-            yield json.dumps({"status": "processing", "step": f"Extracted {len(chunks)} chunks. Processing NER..."}) + "\n"
+            if not chunks:
+                yield json.dumps({"status": "error", "step": "No text extracted from PDF."}) + "\n"
+                return
+
+            file_hash = chunks[0].get("file_hash")
+            yield json.dumps({"status": "processing", "step": f"Fingerprint: {file_hash[:12]}... Checking for duplicates..."}) + "\n"
+            
+            # 1. Pre-flight Check (Check if hash already exists in active DB)
+            active_db = get_active_db_name()
+            already_indexed = False
+            
+            if active_db == "qdrant":
+                try:
+                    from qdrant_client import QdrantClient
+                    from qdrant_client.http.models import Filter, FieldCondition, MatchValue
+                    from src.utils.qdrant_provider import COLLECTION_NAME
+                    client = QdrantClient(host="localhost", port=6333)
+                    # Check for Hash OR Filename (for legacy migration)
+                    search_res = client.scroll(
+                        collection_name=COLLECTION_NAME,
+                        scroll_filter=Filter(
+                            should=[
+                                FieldCondition(key="file_hash", match=MatchValue(value=file_hash)),
+                                FieldCondition(key="source", match=MatchValue(value=os.path.basename(file_path)))
+                            ]
+                        ),
+                        limit=1
+                    )
+                    if search_res[0]: already_indexed = True
+                except: pass
+            else:
+                try:
+                    from src.utils.pinecone_client import index
+                    # Check for Hash
+                    res = index.query(vector=[0]*768, filter={"file_hash": {"$eq": file_hash}}, top_k=1)
+                    if res.get("matches"): 
+                        already_indexed = True
+                    else:
+                        # Fallback check for Filename
+                        res_name = index.query(vector=[0]*768, filter={"source": {"$eq": os.path.basename(file_path)}}, top_k=1)
+                        if res_name.get("matches"): already_indexed = True
+                except: pass
+
+            if already_indexed:
+                yield json.dumps({"status": "complete", "step": f"Document already indexed (SHA-256 Match). Skipping redundant ingestion.", "chunks": 0}) + "\n"
+                return
+
+            yield json.dumps({"status": "processing", "step": f"Extracted {len(chunks)} chunks. Processing NER & Categories..."}) + "\n"
             
             chunks = process_chunks_batch(chunks)
             yield json.dumps({"status": "processing", "step": f"Cleaned {len(chunks)} chunks. Generating embeddings..."}) + "\n"
@@ -463,6 +510,7 @@ async def ingest_pdf(file: UploadFile = File(...), user: dict = Depends(get_curr
                             "text": chunk["text"],
                             "source": chunk["source"],
                             "page": chunk["page"],
+                            "file_hash": file_hash,
                             "category": cat,
                             "subcategory": sub
                         }
@@ -486,6 +534,7 @@ async def ingest_pdf(file: UploadFile = File(...), user: dict = Depends(get_curr
                             "text": chunk["text"],
                             "source": chunk["source"],
                             "page": chunk["page"],
+                            "file_hash": file_hash,
                             "category": cat,
                             "subcategory": sub
                         }

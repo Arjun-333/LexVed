@@ -15,16 +15,19 @@ const embeddingModels = [
 interface Props {
   selectedModel: string;
   onSelect: (id: string) => void;
+  isMultipleMode?: boolean;
 }
 
-export default function EmbeddingOmnitrix({ selectedModel, onSelect }: Props) {
+export default function EmbeddingOmnitrix({ selectedModel, onSelect, isMultipleMode }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Use IntersectionObserver to seamlessly update the selected state without blocking the animation thread
   useEffect(() => {
+    if (isMultipleMode) return;
     const container = scrollRef.current;
     if (!container) return;
+// ... (rest of the file remains same, but we wrap the return)
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -63,68 +66,81 @@ export default function EmbeddingOmnitrix({ selectedModel, onSelect }: Props) {
     <div className="w-full pt-6 pb-2">
       <div className="flex flex-col items-center gap-2 mb-6">
         <h3 className="font-display text-lg tracking-[0.3em] text-[#D4AF37] uppercase">
-          Neural Architecture
+          {isMultipleMode ? "Active Clusters" : "Neural Architecture"}
         </h3>
         <div className="h-px w-12 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50" />
       </div>
 
-      {/* Hardware-Accelerated Native Scroll Container */}
-      <div 
-        ref={scrollRef}
-        className="flex overflow-x-auto gap-6 py-8 px-[calc(50%-100px)] snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] cursor-grab active:cursor-grabbing"
-        style={{ scrollBehavior: 'smooth' }}
-      >
-        {embeddingModels.map((m) => {
-          const isSelected = m.id === selectedModel;
-          return (
-            <button
-              key={m.id}
-              data-model-id={m.id}
-              onClick={() => {
-                const container = scrollRef.current;
-                const card = container?.querySelector(`[data-model-id="${m.id}"]`) as HTMLElement;
-                if (container && card) {
-                  container.scrollTo({
-                    left: card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2,
-                    behavior: "smooth"
-                  });
-                }
-              }}
-              className={`model-card relative flex-shrink-0 w-[200px] h-[160px] flex flex-col items-center justify-center border transition-all duration-500 ease-out snap-center
-                ${isSelected 
-                  ? 'border-[#D4AF37] bg-black/80 scale-110 shadow-[0_0_30px_rgba(212,175,55,0.2)] z-10' 
-                  : 'border-[#D4AF37]/20 bg-transparent scale-90 opacity-40 hover:opacity-70 hover:border-[#D4AF37]/50'
-                }
-              `}
-            >
-              {/* Corner Ornaments */}
-              {isSelected && (
-                <>
-                  <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-[#D4AF37] opacity-60" />
-                  <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#D4AF37] opacity-60" />
-                </>
-              )}
+      {isMultipleMode ? (
+        <div className="flex flex-col gap-3 px-2">
+          {embeddingModels.map((m) => (
+            <div key={m.id} className="flex items-center gap-4 p-4 bg-white/5 border border-[#D4AF37]/20 rounded-xl">
+              <span className="material-icons-round text-[#D4AF37] text-xl">{m.icon}</span>
+              <div className="flex flex-col">
+                <span className="text-white text-sm font-bold tracking-widest uppercase">{m.name}</span>
+                <span className="text-[#D4AF37]/60 text-[8px] font-mono tracking-widest">{m.desc}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div 
+          ref={scrollRef}
+          className="flex overflow-x-auto gap-6 py-8 px-[calc(50%-100px)] snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] cursor-grab active:cursor-grabbing"
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          {embeddingModels.map((m) => {
+            const isSelected = m.id === selectedModel;
+            return (
+              <button
+                key={m.id}
+                data-model-id={m.id}
+                onClick={() => {
+                  const container = scrollRef.current;
+                  const card = container?.querySelector(`[data-model-id="${m.id}"]`) as HTMLElement;
+                  if (container && card) {
+                    container.scrollTo({
+                      left: card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2,
+                      behavior: "smooth"
+                    });
+                  }
+                }}
+                className={`model-card relative flex-shrink-0 w-[200px] h-[160px] flex flex-col items-center justify-center border transition-all duration-500 ease-out snap-center
+                  ${isSelected 
+                    ? 'border-[#D4AF37] bg-black/80 scale-110 shadow-[0_0_30px_rgba(212,175,55,0.2)] z-10' 
+                    : 'border-[#D4AF37]/20 bg-transparent scale-90 opacity-40 hover:opacity-70 hover:border-[#D4AF37]/50'
+                  }
+                `}
+              >
+                {/* Corner Ornaments */}
+                {isSelected && (
+                  <>
+                    <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-[#D4AF37] opacity-60" />
+                    <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#D4AF37] opacity-60" />
+                  </>
+                )}
 
-              <span className={`material-icons-round transition-all duration-500 ${isSelected ? 'text-4xl text-[#D4AF37] mb-3' : 'text-2xl text-white/40 mb-2'}`}>
-                {m.icon}
-              </span>
-              
-              <h4 className={`font-serif tracking-widest uppercase transition-colors duration-500 ${isSelected ? 'text-lg text-[#D4AF37]' : 'text-xs text-white/60'}`}>
-                {m.name}
-              </h4>
+                <span className={`material-icons-round transition-all duration-500 ${isSelected ? 'text-4xl text-[#D4AF37] mb-3' : 'text-2xl text-white/40 mb-2'}`}>
+                  {m.icon}
+                </span>
+                
+                <h4 className={`font-serif tracking-widest uppercase transition-colors duration-500 ${isSelected ? 'text-lg text-[#D4AF37]' : 'text-xs text-white/60'}`}>
+                  {m.name}
+                </h4>
 
-              {isSelected && (
-                <div className="mt-3 flex flex-col items-center">
-                  <div className="h-px w-8 bg-[#D4AF37]/40 mb-1" />
-                  <p className="text-[8px] font-mono tracking-[0.2em] text-[#D4AF37] uppercase">
-                    {m.desc}
-                  </p>
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
+                {isSelected && (
+                  <div className="mt-3 flex flex-col items-center">
+                    <div className="h-px w-8 bg-[#D4AF37]/40 mb-1" />
+                    <p className="text-[8px] font-mono tracking-[0.2em] text-[#D4AF37] uppercase">
+                      {m.desc}
+                    </p>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

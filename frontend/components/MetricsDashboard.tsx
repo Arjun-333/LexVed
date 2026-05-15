@@ -598,6 +598,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                    <EmbeddingOmnitrix 
                      selectedModel={selectedModel} 
                      onSelect={handleModelChange} 
+                     isMultipleMode={activeTab === "comparative"}
                    />
                    
                    {activeTab === "single" && (
@@ -631,7 +632,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                     {/* Tab Switcher */}
                     <div className="flex gap-1 bg-[#0a0a0a] border border-white/5 p-1 rounded-lg">
                       <button onClick={() => setActiveTab("single")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "single" ? "bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]" : "text-white/40 hover:text-[#d4af37]"}`}>Single</button>
-                      <button onClick={() => setActiveTab("comparative")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "comparative" ? "bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]" : "text-white/40 hover:text-[#d4af37]"}`}>Models</button>
+                      <button onClick={() => setActiveTab("comparative")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "comparative" ? "bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]" : "text-white/40 hover:text-[#d4af37]"}`}>Multiple</button>
                       <button onClick={() => setActiveTab("pipeline_compare")} className={`flex-1 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === "pipeline_compare" ? "bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]" : "text-white/40 hover:text-[#d4af37]"}`}>Pipelines</button>
                     </div>
 
@@ -644,7 +645,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                         className="w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs border transition-all disabled:opacity-30 bg-transparent text-[#d4af37] border-[#d4af37] shadow-[inset_0_0_15px_rgba(212,175,55,0.1)] hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]"
                       >
                         {isStartingComparative ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-                        Benchmark All 6 Models
+                        Benchmark All 6 Clusters
                       </motion.button>
                     )}
 
@@ -747,7 +748,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                     <div className="overflow-hidden border border-[#D4AF37]/20 rounded-xl bg-white/[0.02]">
                       <div className="px-6 py-4 border-b border-[#D4AF37]/20 bg-[#D4AF37]/10 flex justify-between items-center">
                         <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37]">Comparative Benchmark</span>
-                        <span className="text-[10px] text-[#D4AF37] font-mono">{comparative?.status === "complete" ? `${comparative.models_benchmarked?.length || 0} MODELS` : comparative?.status?.toUpperCase() || "NO DATA"}</span>
+                        <span className="text-[10px] text-[#D4AF37] font-mono">{comparative?.status === "complete" ? `${comparative.models_benchmarked?.length || 0} CLUSTERS` : comparative?.status?.toUpperCase() || "NO DATA"}</span>
                       </div>
                       {comparative?.status === "complete" && comparative.comparison_table ? (
                         <div className="overflow-x-auto">

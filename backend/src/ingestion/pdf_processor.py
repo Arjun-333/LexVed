@@ -152,8 +152,8 @@ def process_chunks_batch(chunks, batch_size=32):
     texts = [c["text"] for c in chunks]
     processed_texts = []
     
-    # SpaCy pipe is much faster with multi-processing
-    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=-1):
+    # Use single process for stability in production (still extremely fast for standard docs)
+    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=1):
         text = doc.text
         # NER for names is now disabled (Keep names visible as per user request)
         # However, we still redact other sensitive info below

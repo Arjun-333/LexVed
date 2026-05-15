@@ -12,6 +12,7 @@ backend/history.json
 backend/evaluation_results.json
 backend/comparative_results.json
 backend/system_config.json
+qdrant_storage/
 
 # Logs
 *.log

@@ -1,6 +1,8 @@
 from sentence_transformers import SentenceTransformer
-from src.utils.config_manager import get_active_model_name
+from src.utils.config_manager import get_active_model_name, get_active_db_name
 import numpy as np
+import os
+import time
 
 _model = None
 _current_model_name = None
@@ -56,3 +58,37 @@ def get_embeddings(texts):
                     print(f"[LexVed] Cohere embed failed after {max_retries} attempts: {e}")
                     raise
     return model.encode(texts, convert_to_numpy=True)
+
+class CohereEmbedder:
+    def __init__(self, api_key=None):
+        import cohere
+        self.api_key = api_key or os.getenv("COHERE_API_KEY", "")
+        self.client = cohere.ClientV2(self.api_key)
+        self.model = "embed-english-v3.0"
+        print(f"[LexVed] CohereEmbedder initialized with model: {self.model}")
+
+    def encode(self, texts, batch_size=96, show_progress_bar=True, input_type="search_document"):
+        all_emb = []
+        iterator = range(0, len(texts), batch_size)
+        if show_progress_bar:
+            from tqdm import tqdm
+            iterator = tqdm(iterator, desc="Cohere encoding")
+        for i in iterator:
+            batch = texts[i:i + batch_size]
+            resp = self.client.embed(
+                texts=list(batch),
+                model=self.model,
+                input_type=input_type,
+                embedding_types=["float"]
+            )
+            all_emb.extend(resp.embeddings.float_)
+        return np.array(all_emb)
+
+    def encode_query(self, texts):
+        resp = self.client.embed(
+            texts=list(texts),
+            model=self.model,
+            input_type="search_query",
+            embedding_types=["float"]
+        )
+        return np.array(resp.embeddings.float_)

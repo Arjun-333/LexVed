@@ -1,5 +1,159 @@
 [
     {
+        "id": 52,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 08:53",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 40.727649450302124,
+            "e2e_lat": 58.88159728050232,
+            "ans_length": 353
+        },
+        "username": "user"
+    },
+    {
+        "id": 51,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 08:52",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 35.20003843307495,
+            "e2e_lat": 37.6491379737854,
+            "ans_length": 369
+        },
+        "username": "user"
+    },
+    {
+        "id": 50,
+        "query": "can you explain me more about this case",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:54",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.441436767578125,
+            "e2e_lat": 168.75550365447998,
+            "ans_length": 257
+        },
+        "username": "user"
+    },
+    {
+        "id": 49,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:51",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.6259732246398926,
+            "e2e_lat": 118.42674994468689,
+            "ans_length": 261
+        },
+        "username": "user"
+    },
+    {
+        "id": 48,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:49",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.4566421508789062,
+            "e2e_lat": 3.3123085498809814,
+            "ans_length": 296
+        },
+        "username": "user"
+    },
+    {
+        "id": 47,
+        "query": "could ypou tell me more about this case",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:47",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.5110044479370117,
+            "e2e_lat": 370.3953664302826,
+            "ans_length": 27
+        },
+        "username": "user"
+    },
+    {
+        "id": 46,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:35",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.8953442573547363,
+            "e2e_lat": 559.6686015129089,
+            "ans_length": 739
+        },
+        "username": "user"
+    },
+    {
+        "id": 45,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:25",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 1.5612761974334717,
+            "e2e_lat": 3.129387378692627,
+            "ans_length": 210
+        },
+        "username": "user"
+    },
+    {
+        "id": 44,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 02:20",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 28.262426376342773,
+            "e2e_lat": 53.91502571105957,
+            "ans_length": 275
+        },
+        "username": "user"
+    },
+    {
+        "id": 43,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:44",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0.08214592933654785,
+            "e2e_lat": 282.08319330215454,
+            "ans_length": 396
+        },
+        "username": "user"
+    },
+    {
+        "id": 42,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-15 01:39",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 17.14454221725464,
+            "e2e_lat": 29.66287589073181,
+            "ans_length": 309
+        },
+        "username": "user"
+    },
+    {
         "id": 41,
         "query": "account_balance  chat_bubble New Brief  history Research History (Ctrl+H)  folder Case Files  light_mode Light Mode  tune System Settings person Legal Researcher @user \u00b7 user  logout Sign Out LexVed System Status llama-3.1-8b-instant \u00b7 OPTIMAL Abhishek Banerjee Case summary psychology Based on the provided context, the case summary of Abhishek Banerjee vs Directorate Of Enforcement on 9 September, 2024 is as follows:  **Case Summary:**  Abhishek Banerjee and his wife Rujira Banerjee filed a writ petition (Crl.) No. 1808 of 2021 and Crl. M.C. No. 2442 of 2021, respectively, against the Directorate of Enforcement (ED) seeking quashing of the summons issued to them under Section 50 of the Prevention of Money Laundering Act, 2002 (PMLA). The ED had issued the summons in connection with an FIR registered by the CBI, ACB, Kolkata, for alleged illegal excavation and theft of coal.  **Key Points:**  1. The ED had issued summons to Abhishek Banerjee and Rujira Banerjee to appear in New Delhi, despite Abhishek Banerjee being a permanent resident of Kolkata and having a residence in Delhi. 2. The Appellants argued that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, where the ED has a Zonal Office. 3. The Department of Revenue, Ministry of Finance, has issued administrative instructions consistent with Section 51 of PMLA, demarcating the specific territorial jurisdiction of various Zonal Offices of the ED. 4. The Appellants argued that the summons issued to Abhishek Banerjee under PMLA were for personal appearance before the Respondent at New Delhi, which is an abuse of process of law. 5. The Supreme Court held that the ED must strictly comply with the administrative instructions issued by the Department of Revenue, Ministry of Finance, and that the summons issued to Abhishek Banerjee were an abuse of process of law.  **Judgment:**  The Supreme Court allowed the appeals and quashed the summons issued to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA. The Court held that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.  **Relevant Sections:**  * Section 50 of the Prevention of Money Laundering Act, 2002 (PMLA) * Section 51 of the Prevention of Money Laundering Act, 2002 (PMLA) * Section 174 of the Indian Penal Code (IPC) * Section 91 of the Code of Criminal Procedure, 1973 (CrPC)  **Cited Judgments:**  * Deepak Bajaj vs State Of Maharashtra & Anr on 12 November, 2008 (Indian Kanoon)  **General Knowledge:**  While the provided context is sufficient to answer the question, I would like to supplement my answer with general knowledge on the topic. The Prevention of Money Laundering Act, 2002 (PMLA) is a law enacted to prevent and control money laundering in India. The Act provides for the attachment and confiscation of property involved in money laundering, as well as the prosecution of individuals involved in such activities.  The PMLA also provides for the establishment of the Financial Intelligence Unit (FIU) to collect and analyze information on suspicious transactions. The FIU is responsible for providing intelligence to law enforcement agencies to help them investigate and prosecute money laundering cases.  In this case, the ED had issued summons to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA, which requires individuals to appear before the ED for questioning. The Appellants argued that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.  The Supreme Court's judgment in this case highlights the importance of following administrative instructions and the need to demonstrate prejudice before issuing summons under the PMLA.  psychology LexVed Intelligence Engine bolt Generation: 44.45s Uncategorized \u2022 General menu_book Case References  open_in_new Abhishek Banerjee vs Directorate Of Enfo... p.1  open_in_new Deepak Bajaj vs State Of Maharashtra Anr... p.1  open_in_new Amritlal vs Shantilal Soni on 28 Februar... p.1  open_in_new Anokhilal vs The State Of Madhya Pradesh... p.1  open_in_new Bhadresh Bipinbhai Sheth vs State Of Guj... p.1  open_in_new Devender Pal Singh Bhullar Anr vs State ... p.1  open_in_new Ajay Kumar Choudhary vs Union Of India T... p.1 Abhishek Banerjee Case summary psychology psychology Agentic Reasoning Chain Determining query complexity and routing to optimal model...Query routed to llama-3.1-8b-instantReasoning Agent analyzing context and drafting logical chain...**Structured Logical Reasoning Chain:**  1. **Premise 1:** Abhishek Banerjee and his wife Rujira Banerjee filed a writ petition (Crl.) No. 1808 of 2021 and Crl. M.C. No. 2442 of 2021, respectively, against the Directorate of Enforcement (ED) seeking quashing of the summons issued to them under Section 50 of the Prevention of Money Laundering Act, 2002 (PMLA).  2. **Premise 2:** The ED had issued the summons in connection with an FIR registered by the CBI, ACB, Kolkata, for alleged illegal excavation and theft of coal.  3. **Premise 3:** The Appellants argued that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, where the ED has a Zonal Office.  4. **Premise 4:** The Department of Revenue, Ministry of Finance, has issued administrative instructions consistent with Section 51 of PMLA, demarcating the specific territorial jurisdiction of various Zonal Offices of the ED.  5. **Premise 5:** The Appellants argued that the summons issued to Abhishek Banerjee under PMLA were for personal appearance before the Respondent at New Delhi, which is an abuse of process of law.  6. **Inference 1:** The ED must strictly comply with the administrative instructions issued by the Department of Revenue, Ministry of Finance.  7. **Inference 2:** The summons issued to Abhishek Banerjee were an abuse of process of law, as the ED had not demonstrated how it could be prejudiced by calling him to its office in Kolkata.  8. **Conclusion 1:** The Supreme Court allowed the appeals and quashed the summons issued to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA.  9. **Conclusion 2:** The Court held that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.  **Logical Reasoning Chain:**  1. Premise 1 \u2192 Premise 2 \u2192 Premise 3 \u2192 Inference 1 2. Premise 4 \u2192 Premise 5 \u2192 Inference 2 3. Inference 1 \u2192 Inference 2 \u2192 Conclusion 1 4. Conclusion 1 \u2192 Conclusion 2  **Final Conclusion:** The Supreme Court allowed the appeals and quashed the summons issued to Abhishek Banerjee and Rujira Banerjee under Section 50 of the PMLA, holding that the ED had not demonstrated how it could be prejudiced by calling Abhishek Banerjee to its office in Kolkata, and that the summons issued to him were an abuse of process of law.--- Reasoning Complete ---   [Rate limit reached on Groq. Falling back to local Llama 3 infrastructure...]   psychology LexVed Intelligence Engine bolt Generation: 0.00s Uncategorized \u2022 General menu_book Case References  open_in_new Abhishek Banerjee vs Directorate Of Enfo... p.1  open_in_new Aloke Nath Dutta Ors vs State Of West Be... p.1  open_in_new Centrum Financial Services Limited vs St... p.1  open_in_new Dataram Singh vs The State Of Uttar Prad... p.1  open_in_new Devender Pal Singh Bhullar Anr vs State ... p.1  open_in_new Ajay Kumar Choudhary vs Union Of India T... p.1  open_in_new G Reddeiah vs Govt Of A P Anr on 9 Septe... p.1 search Ask a legal question...  psychology Agentic  arrow_upward Encrypted Local Inference \u00b7 Multi-Turn Context",
         "category": "Criminal",

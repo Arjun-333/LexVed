@@ -176,17 +176,24 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
     context = ""
     for m in res:
         source = os.path.basename(m.payload.get("source", "Unknown"))
-        page = m.payload.get("page", "?")
-        context += f"\n[Source: {source}, Page: {page}]\n{m.payload['text']}\n"
+        page_val = m.payload.get("page")
+        # Display logic: If 0, show 1. If any other number, show exact.
+        if isinstance(page_val, int):
+            display_page = page_val if page_val > 0 else 1
+        else:
+            display_page = page_val or "?"
+        context += f"\n[Source: {source}, Page: {display_page}]\n{m.payload['text']}\n"
 
     full_answer = ""
     # Collect source references for citation linking
     sources = []
     for m in res:
         src = os.path.basename(m.payload.get("source", "Unknown"))
-        pg = m.payload.get("page", 0)
+        pg_val = m.payload.get("page")
+        # For the sidebar: match the exact page or default to 1 if 0/None
+        display_pg = pg_val if (isinstance(pg_val, int) and pg_val > 0) else 1
         full_path = m.payload.get("source", "")
-        sources.append({"file": src, "page": pg, "path": full_path})
+        sources.append({"file": src, "page": display_pg, "path": full_path})
 
     def stream_response():
         nonlocal full_answer
@@ -261,7 +268,7 @@ async def serve_pdf(filename: str, user: dict = Depends(get_current_user)):
 # ─── Health Check — Authenticated ─────────────────────────────────
 
 @app.get("/api/health")
-async def health_check(user: dict = Depends(get_current_user)):
+async def health_check():
     """Returns system health: Ollama, Qdrant, active model, uptime."""
     import requests
     health = {

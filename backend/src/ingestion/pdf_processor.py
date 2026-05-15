@@ -54,7 +54,7 @@ def extract_chunks(pdf_path, chunk_size=200):
                     chunks.append({
                         "text": buf.strip(),
                         "source": pdf_path,
-                        "page": page_num
+                        "page": page_num + 1
                     })
                     buf = segment
 
@@ -62,7 +62,7 @@ def extract_chunks(pdf_path, chunk_size=200):
             chunks.append({
                 "text": buf.strip(),
                 "source": pdf_path,
-                "page": page_num
+                "page": page_num + 1
             })
 
     return chunks

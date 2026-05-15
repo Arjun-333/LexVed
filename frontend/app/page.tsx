@@ -27,6 +27,7 @@ function Dashboard() {
   const [isTyping, setIsTyping] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [health, setHealth] = useState<HealthData | null>(null);
+  const [activeModel, setActiveModel] = useState("ensemble");
   
   // Conversation history for multi-turn chat
   const conversationHistory = useRef<{question: string; answer: string}[]>([]);
@@ -36,13 +37,22 @@ function Dashboard() {
     const fetchHealth = () => {
       authFetch(`${API_URL}/api/health`)
         .then(res => res.json())
-        .then(data => setHealth(data))
+        .then(data => {
+          setHealth(data);
+          if (data.active_generation_model) {
+            setActiveModel(data.active_generation_model);
+          }
+        })
         .catch(() => setHealth({ ollama: "offline" }));
     };
     fetchHealth();
-    const interval = setInterval(fetchHealth, 15000);
+    const interval = setInterval(fetchHealth, 10000);
     return () => clearInterval(interval);
   }, [authFetch]);
+
+  const handleModelChange = useCallback((newModel: string) => {
+    setActiveModel(newModel);
+  }, []);
 
   useEffect(() => {
     let timer: any;
@@ -186,9 +196,20 @@ function Dashboard() {
     }
   }
 
-  const modelName = health?.active_generation_model || "Connecting...";
+  // Map IDs to pretty names for the top bar
+  const modelDisplayNames: Record<string, string> = {
+    "ensemble": "Ensemble Logic",
+    "llama-3.3-70b-versatile": "Llama 3.3 70B",
+    "llama-3.1-8b-instant": "Llama 3.1 8B",
+    "mixtral-8x7b-32768": "Mixtral 8x7B",
+    "llama3": "Local Llama 3",
+    "mistral": "Mistral 7B",
+    "qwen2.5:7b": "Local Qwen 2.5"
+  };
+
+  const modelName = modelDisplayNames[activeModel] || activeModel || "Connecting...";
   const ollamaStatus = health?.ollama === "connected" ? "OPTIMAL" : health?.ollama === "offline" ? "OFFLINE" : "CONNECTING";
-  const statusColor = health?.ollama === "connected" ? "bg-[#D4AF37]" : health?.ollama === "offline" ? "bg-[#AA8C2C]/50" : "bg-[#D4AF37]/50";
+  const statusColor = health?.ollama === "connected" ? "bg-[#D4AF37]" : health?.ollama === "offline" ? "bg-[#FF6B6B]" : "bg-[#D4AF37]/50";
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
@@ -261,7 +282,7 @@ function Dashboard() {
            <InputBar onSend={handleSend} onStop={handleStop} disabled={loading} ref={inputRef} />
         </div>
       </main>
-      <ModelWheel />
+      <ModelWheel activeModelId={activeModel} onModelChange={handleModelChange} />
     </div>
   );
 }

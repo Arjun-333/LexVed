@@ -605,7 +605,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                      <motion.button
                        whileHover={{ scale: 1.02 }}
                        whileTap={{ scale: 0.98 }}
-                       onClick={handleStartEvaluation}
+                       onClick={() => handleStartEvaluation()}
                        disabled={isProcessing || isStartingEval}
                        className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs transition-all
                          ${isProcessing || isStartingEval 
@@ -640,7 +640,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={handleStartComparative}
+                        onClick={() => handleStartComparative()}
                         disabled={isStartingComparative || comparative?.status === "processing"}
                         className="w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs border transition-all disabled:opacity-30 bg-transparent text-[#d4af37] border-[#d4af37] shadow-[inset_0_0_15px_rgba(212,175,55,0.1)] hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]"
                       >
@@ -668,7 +668,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                         {/* Standalone primitive run */}
                         <motion.button
                           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                          onClick={handleStartPrimitiveEval}
+                          onClick={() => handleStartPrimitiveEval()}
                           disabled={isStartingPrimitive || primitiveMetrics?.status === "processing"}
                           className="w-full py-3 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-xs transition-all disabled:opacity-30 bg-[#d4af37] text-black shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]"
                         >

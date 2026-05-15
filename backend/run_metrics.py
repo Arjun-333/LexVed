@@ -257,7 +257,7 @@ def ensure_data_ingested():
         print("[LexVed] No PDFs found in data/PDF/. Cannot evaluate.")
         return
         
-    from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch
+    from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch, get_pdf_hash
     from src.ingestion.embedder import get_embeddings
     
     CACHE_FILE = "data/evaluation_chunk_cache.json"
@@ -271,12 +271,16 @@ def ensure_data_ingested():
     for path in pdf_paths:
         try:
             print(f"[LexVed] Auto-ingesting: {os.path.basename(path)}")
+            file_hash = get_pdf_hash(path)
+            
             if path in chunk_cache:
                 print(f"[LexVed] Using pre-parsed chunks from cache.")
                 chunks = chunk_cache[path]
             else:
                 chunks = extract_chunks(path)
                 chunks = process_chunks_batch(chunks)
+                # Add hash to chunks for vector metadata
+                for c in chunks: c["file_hash"] = file_hash
                 chunk_cache[path] = chunks
                 # Save cache update
                 try:
@@ -312,6 +316,7 @@ def ensure_data_ingested():
                             "text": chunk["text"],
                             "source": chunk["source"],
                             "page": chunk["page"],
+                            "file_hash": chunk.get("file_hash", ""),
                             "category": cat,
                             "subcategory": sub
                         }
@@ -330,6 +335,7 @@ def ensure_data_ingested():
                             "text": chunk["text"],
                             "source": chunk["source"],
                             "page": chunk["page"],
+                            "file_hash": chunk.get("file_hash", ""),
                             "category": cat,
                             "subcategory": sub
                         }

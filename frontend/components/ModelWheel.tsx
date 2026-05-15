@@ -62,17 +62,7 @@ export default function ModelWheel({
 
   const snap = (r: number) => Math.round(r / DEG) * DEG;
 
-  const handleModelClick = async (id: string, idx: number) => {
-    onModelChange(id);
-    
-    // Continuous shortest-path rotation logic
-    setRotation((prevRotation) => {
-      const targetAngle = idx * DEG;
-      // Find the multiple of 360 that brings the targetAngle closest to prevRotation
-      const rounds = Math.round((prevRotation - targetAngle) / 360);
-      return targetAngle + (rounds * 360);
-    });
-    
+  const updateBackendModel = async (id: string) => {
     try {
       const token = localStorage.getItem("lexved_token");
       const res = await fetch(`${API_URL}/api/settings/generation_model`, {
@@ -89,13 +79,31 @@ export default function ModelWheel({
     }
   };
 
+  const handleModelClick = (id: string, idx: number) => {
+    onModelChange(id);
+    
+    // Shortest-path for direct clicks
+    setRotation((prevRotation) => {
+      const targetAngle = idx * DEG;
+      const diff = (targetAngle - (prevRotation % 360) + 540) % 360 - 180;
+      return prevRotation + diff;
+    });
+    
+    updateBackendModel(id);
+  };
+
   const stepModel = (direction: number) => {
     const currentIndex = modelsList.findIndex(m => m.id === activeModelId);
     let nextIndex = (currentIndex + direction) % modelsList.length;
     if (nextIndex < 0) nextIndex = modelsList.length - 1;
     
     const nextModel = modelsList[nextIndex];
-    handleModelClick(nextModel.id, nextIndex);
+    
+    // FORCE direction regardless of distance
+    onModelChange(nextModel.id);
+    setRotation(prev => prev + (direction * DEG));
+    
+    updateBackendModel(nextModel.id);
   };
 
   return (

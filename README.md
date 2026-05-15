@@ -15,7 +15,12 @@ LexVed maintains conversation continuity across multi-turn interactions:
 * **Query Condensation Engine:** Automatically rephrases follow-up questions into standalone queries to maintain retrieval accuracy.
 * **Contextual Persistence:** Pass-through memory ensures the reasoning and synthesis agents stay locked onto the case subject established in previous messages.
 
-### 3. Advanced Hybrid Retrieval
+### 3. Data Integrity & Fingerprinting
+LexVed ensures 100% data integrity for large-scale legal corpuses:
+* **SHA-256 Fingerprinting:** Every PDF is cryptographicly fingerprinted before ingestion. The system automatically identifies and skips duplicate files, preventing vector database bloat and redundant processing.
+* **Content-Aware Caching:** Ingestion caches are indexed by content hash rather than filename, ensuring modifications to documents are detected even if filenames remain unchanged.
+
+### 4. Advanced Hybrid Retrieval
 The platform utilizes a multi-tiered retrieval strategy to guarantee maximum recall and precision:
 * **Production Hybrid Index:** Active connection to the 19,483-vector production repository (MPNet-based).
 * **Dense Vector Search:** Understands the semantic intent of complex legal queries using high-dimensional embeddings (Pinecone/Qdrant).
@@ -26,10 +31,11 @@ The platform utilizes a multi-tiered retrieval strategy to guarantee maximum rec
 * **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile`, `qwen2.5:70b`, or `llama3:70b` for deep, multi-faceted analysis requiring extensive logical deduction. Strictly constrained to provided context.
 * **Evaluation Node:** Employs `llama-3.1-8b-instant` on Groq for high-performance KPI judging.
 
-### 4. Enterprise Interface
+### 5. Enterprise Interface
 The frontend is built on Next.js 14 and Framer Motion, delivering a premium, glassmorphic UI ("All Black But Gold" aesthetic). It features:
 * Real-time streaming of Agentic Reasoning Chains.
-* Dedicated Citation Cards for immediate source verification.
+* **Smart Citations:** Clicking a citation now opens the source PDF directly in a new tab, automatically jumping to the cited page using secure one-time URL tokens.
+* **GPU-Aware Loading:** Transparent UI feedback during local model cold-starts ("Loading neural weights into local GPU memory...") eliminates perceived latency frustration.
 * A comprehensive Metrics Dashboard for benchmark visualization.
 
 ## Technical Stack

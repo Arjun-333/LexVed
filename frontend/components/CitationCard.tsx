@@ -31,32 +31,16 @@ function deduplicateSources(sources: Source[]): Source[] {
 }
 
 function openPdf(filename: string, page: number) {
-  // Open PDF in a new tab via the backend API with page fragment
+  // Open PDF in a new tab via the backend API with page fragment and secure token
   const token = typeof window !== "undefined" ? localStorage.getItem("lexved_token") : null;
-  // Use a direct window.open with the PDF URL — the browser will handle PDF viewing
+  
   if (token) {
     const finalFilename = filename.toLowerCase().endsWith(".pdf") ? filename : `${filename}.pdf`;
-    const finalUrl = `${API_URL}/api/pdf/${encodeURIComponent(finalFilename)}#page=${page + 1}`;
-
-    fetch(finalUrl, { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => {
-        if (!res.ok) throw new Error("PDF not found");
-        return res.blob();
-      })
-      .then(blob => {
-        const blobUrl = URL.createObjectURL(blob);
-        // Create a temporary link to trigger download/view in a new tab
-        const link = document.createElement("a");
-        link.href = `${blobUrl}#page=${page + 1}`;
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch(() => {
-        // Fallback: copy citation
-        navigator.clipboard.writeText(`${filename}, Page: ${page + 1}`);
-      });
+    // We use the 1-indexed page directly as PDF viewers expect #page=1 for the first page
+    const finalUrl = `${API_URL}/api/pdf/${encodeURIComponent(finalFilename)}?token=${token}#page=${page}`;
+    
+    // Open in a new tab
+    window.open(finalUrl, "_blank");
   }
 }
 

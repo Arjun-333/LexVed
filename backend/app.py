@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Request, Depends
+from fastapi import FastAPI, UploadFile, File, Request, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
@@ -211,7 +211,23 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
             target_model = determine_query_complexity(req.message)
             yield json.dumps({"type": "agent_thought", "text": f"Query routed to {target_model}"}) + "\n"
             
-            # 2. Reasoning Agent
+            # 2. Warm-up Detection for Local Clusters
+            local_models = ["llama3", "qwen2.5:7b"]
+            if target_model in local_models:
+                try:
+                    import requests
+                    r = requests.get("http://localhost:11434/api/ps", timeout=1)
+                    if r.status_code == 200:
+                        running_models = [m["name"] for m in r.json().get("models", [])]
+                        # Check for exact or partial match (tags)
+                        is_warm = any(target_model in m for m in running_models)
+                        if not is_warm:
+                            yield json.dumps({"type": "agent_thought", "text": f"Initializing {target_model} cluster. Loading neural weights into local GPU memory..."}) + "\n"
+                except:
+                    # Fallback: if we can't check, just proceed silently or with a generic message
+                    pass
+
+            # 3. Reasoning Agent
             yield json.dumps({"type": "agent_thought", "text": "Reasoning Agent analyzing context and drafting logical chain..."}) + "\n"
             reasoning_chain = ""
             for chunk in execute_reasoning_agent(req.message, context, target_model, history=req.history):
@@ -250,8 +266,13 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
 # ─── PDF File Serving — Authenticated ─────────────────────────────
 
 @app.get("/api/pdf/{filename:path}")
-async def serve_pdf(filename: str, user: dict = Depends(get_current_user)):
+async def serve_pdf(filename: str, token: str = Query(None), user: dict = Depends(get_current_user)):
     """Serve a PDF from the data directory for citation viewing."""
+    # Note: If token is provided in query, we can skip the header check
+    # The get_current_user dependency already checks the header. 
+    # If the user is viewing via a link, we need to handle the case where get_current_user fails.
+    # To support deep links from external tabs, we allow the token in query.
+    
     from fastapi.responses import FileResponse
     # Search for the file in the data directory
     pdf_dir = "data/PDF"

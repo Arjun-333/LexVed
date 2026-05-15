@@ -159,12 +159,20 @@ def initialize_users():
 # ─── FastAPI Dependencies ─────────────────────────────────────────
 
 async def get_current_user(request: Request) -> dict:
-    """FastAPI dependency: Extract and validate the current user from the Authorization header."""
+    """FastAPI dependency: Extract and validate the current user from the Authorization header OR query param."""
+    # 1. Try Authorization header
     auth_header = request.headers.get("Authorization", "")
-    if not auth_header.startswith("Bearer "):
+    token = ""
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+    
+    # 2. Try query parameter (for PDF deep links)
+    if not token:
+        token = request.query_params.get("token", "")
+        
+    if not token:
         raise HTTPException(status_code=401, detail="Authentication required")
 
-    token = auth_header[7:]
     payload = verify_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")

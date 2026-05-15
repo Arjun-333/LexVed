@@ -1,6 +1,7 @@
 import fitz
 import re
 import spacy
+import hashlib
 from dotenv import load_dotenv
 
 # Load variables from .env if present
@@ -18,10 +19,23 @@ except:
     nlp = spacy.load("en_core_web_sm")
 
 # ============================================
-# 2. Extract and Chunk PDF
+# 2. Hashing and Fingerprinting
+# ============================================
+def calculate_pdf_hash(pdf_path):
+    """Calculates the SHA-256 hash of a file."""
+    sha256_hash = hashlib.sha256()
+    with open(pdf_path, "rb") as f:
+        # Read in 4KB chunks
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+
+# ============================================
+# 3. Extract and Chunk PDF
 # ============================================
 def extract_chunks(pdf_path, chunk_size=200):
     doc = fitz.open(pdf_path)
+    file_hash = calculate_pdf_hash(pdf_path)
     chunks = []
 
     citation_pattern = re.compile(
@@ -54,7 +68,8 @@ def extract_chunks(pdf_path, chunk_size=200):
                     chunks.append({
                         "text": buf.strip(),
                         "source": pdf_path,
-                        "page": page_num + 1
+                        "page": page_num + 1,
+                        "file_hash": file_hash
                     })
                     buf = segment
 
@@ -62,7 +77,8 @@ def extract_chunks(pdf_path, chunk_size=200):
             chunks.append({
                 "text": buf.strip(),
                 "source": pdf_path,
-                "page": page_num + 1
+                "page": page_num + 1,
+                "file_hash": file_hash
             })
 
     return chunks

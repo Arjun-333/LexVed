@@ -108,67 +108,102 @@ def extract_chunks(pdf_path: Path, chunk_size=200):
     return chunks
 
 def load_all_chunks() -> list:
-    """Load/cache chunks from all 516 PDFs."""
+    """Load/cache chunks from all PDFs using SHA-256 hashes as keys."""
+    from src.ingestion.pdf_processor import calculate_pdf_hash, process_chunks_batch
+    
     cache = {}
     if CACHE_FILE.exists():
         try:
             with open(CACHE_FILE) as f: cache = json.load(f)
-            print(f"[Primitive] Cache: {len(cache)} PDFs already parsed.")
+            print(f"[Primitive] Cache: {len(cache)} unique documents already parsed.")
         except: pass
 
     pdf_files = list(BASE_PDF_DIR.rglob("*.pdf"))
     print(f"[Primitive] Found {len(pdf_files)} PDFs.")
     all_chunks, updated = [], False
 
-    for p in tqdm(pdf_files, desc="Parsing PDFs"):
-        k = str(p)
-        if k in cache:
-            all_chunks.extend(cache[k])
-        else:
-            try:
-                from src.ingestion.pdf_processor import process_chunks_batch
-                extracted = process_chunks_batch(extract_chunks(p))
-            except Exception:
+    for p in tqdm(pdf_files, desc="Fingerprinting & Parsing"):
+        try:
+            f_hash = calculate_pdf_hash(p)
+            if f_hash in cache:
+                all_chunks.extend(cache[f_hash])
+            else:
                 extracted = extract_chunks(p)
-            cache[k] = extracted
-            all_chunks.extend(extracted)
-            updated = True
+                # Ensure each chunk has the hash
+                for c in extracted: c["file_hash"] = f_hash
+                
+                try:
+                    processed = process_chunks_batch(extracted)
+                except:
+                    processed = extracted
+                
+                cache[f_hash] = processed
+                all_chunks.extend(processed)
+                updated = True
+        except Exception as e:
+            print(f"[Primitive] Error processing {p.name}: {e}")
 
     if updated:
         CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(CACHE_FILE, "w") as f: json.dump(cache, f)
-        print(f"[Primitive] Cache saved ({len(cache)} PDFs).")
+        print(f"[Primitive] Cache updated with {len(cache)} document fingerprints.")
 
     print(f"[Primitive] Total chunks: {len(all_chunks)}")
     return all_chunks, pdf_files
 
 # ── Embed & Upsert to Qdrant ─────────────────────────────────────────
 def embed_and_upsert(chunks, embedder, model_name, collection_name, batch_size=96):
-    # Check if already populated
-    existing = qc.get_collection(collection_name).points_count
-    if existing >= len(chunks) * 0.9:
-        print(f"[Qdrant] Collection already has {existing} vectors — skipping upsert.")
-        emb_time = 0.0
-        return emb_time, existing
+    """Embeds and upserts chunks while skipping already-ingested file hashes."""
+    from qdrant_client.http.models import Filter, FieldCondition, MatchValue
+    
+    # Identify unique file hashes in this batch
+    unique_hashes = list(set(c.get("file_hash") for c in chunks if c.get("file_hash")))
+    print(f"[Qdrant] Checking {len(unique_hashes)} document fingerprints against '{collection_name}'...")
+    
+    hashes_to_ingest = []
+    for h in unique_hashes:
+        # Check if hash exists in collection
+        search_res = qc.scroll(
+            collection_name=collection_name,
+            scroll_filter=Filter(
+                must=[FieldCondition(key="file_hash", match=MatchValue(value=h))]
+            ),
+            limit=1
+        )
+        if not search_res[0]:
+            hashes_to_ingest.append(h)
+            
+    if not hashes_to_ingest:
+        count = qc.get_collection(collection_name).points_count
+        print(f"[Qdrant] All documents already indexed ({count} vectors) — skipping upsert.")
+        return 0.0, count
 
-    texts = [c["text"] for c in chunks]
-    is_cohere = hasattr(embedder, "encode_query")
-    print(f"[Primitive] Embedding {len(texts)} chunks...")
+    print(f"[Qdrant] {len(hashes_to_ingest)} new documents detected. Processing...")
+    
+    # Filter chunks to only those that need ingestion
+    filtered_chunks = [c for c in chunks if c.get("file_hash") in hashes_to_ingest]
+    
+    texts = [c["text"] for c in filtered_chunks]
+    print(f"[Primitive] Embedding {len(texts)} new chunks...")
     t0 = time.time()
     vecs = embedder.encode(texts, show_progress_bar=True, batch_size=batch_size)
     emb_time = time.time() - t0
-    print(f"[Primitive] Embedding done in {emb_time:.1f}s")
-
+    
     batch = []
+    # Use high-offset ID to avoid collision or use UUIDs
+    # For this primitive pipeline, we'll start after existing points
+    start_id = qc.get_collection(collection_name).points_count
+    
     for i, vec in enumerate(tqdm(vecs, desc="Upserting to Qdrant")):
         batch.append(
             PointStruct(
-                id=i,
+                id=start_id + i,
                 vector=vec.tolist(),
                 payload={
-                    "text": chunks[i]["text"], 
-                    "source": chunks[i]["source"],
-                    "page": chunks[i].get("page", 1)
+                    "text": filtered_chunks[i]["text"], 
+                    "source": filtered_chunks[i]["source"],
+                    "page": filtered_chunks[i].get("page", 1),
+                    "file_hash": filtered_chunks[i].get("file_hash")
                 }
             )
         )
@@ -177,8 +212,10 @@ def embed_and_upsert(chunks, embedder, model_name, collection_name, batch_size=9
             batch = []
     if batch:
         qc.upsert(collection_name=collection_name, points=batch)
-    print(f"[Qdrant] {len(vecs)} vectors upserted.")
-    return emb_time, len(vecs)
+        
+    final_count = qc.get_collection(collection_name).points_count
+    print(f"[Qdrant] {len(vecs)} new vectors upserted. Total: {final_count}")
+    return emb_time, final_count
 
 # ── Groq generation ───────────────────────────────────────────────────
 def generate_with_groq(prompt: str):

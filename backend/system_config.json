@@ -1,5 +1,5 @@
 {
-    "generation_model": "ensemble",
+    "generation_model": "llama-3.3-70b-versatile",
     "embedding_model": "multi-qa-mpnet-base-cos-v1",
     "vector_db": "pinecone",
     "models": {

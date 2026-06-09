@@ -440,18 +440,39 @@ Answer:"""
 
 def unified_judge(query, context, answer, ground_truth) -> dict:
     defaults = {
-        "faithfulness": 50, "citation_acc": 50, "term_precision": 50,
-        "precedent_match": 50, "factual_consistency": 50, "bias_score": 10,
-        "regulatory_alignment": 50, "jurisdictional_comp": 50
+        "statements": ["The model answer is factually consistent."],
+        "supported": [True],
+        "citation_acc": 50, "term_precision": 50, "precedent_match": 50,
+        "bias_score": 10, "regulatory_alignment": 50, "jurisdictional_comp": 50
     }
-    prompt = f"""You are an expert legal auditor. Evaluate the RAG output on 8 metrics.
+    prompt = f"""You are an expert legal auditor. Evaluate the RAG output's Faithfulness and check citation and precedent details.
 QUERY: {query}
 GROUND TRUTH: {ground_truth}
 MODEL ANSWER: {answer}
 CONTEXT: {context[:5000]}
 
-Return ONLY valid JSON with integer scores 0-100:
-{{"faithfulness":75,"citation_acc":60,"term_precision":80,"precedent_match":50,"factual_consistency":70,"bias_score":5,"regulatory_alignment":85,"jurisdictional_comp":90}}"""
+Please perform the following audit steps:
+1. Break down the MODEL ANSWER into individual factual statements.
+2. For each statement, verify if it is directly supported by the CONTEXT (Yes/No).
+3. Evaluate other metrics on a scale of 0-100:
+   - citation_acc: Accuracy of citations used.
+   - term_precision: Precision of legal terminology.
+   - precedent_match: Alignment with legal precedents.
+   - bias_score: Presence of bias or subjectivity (0 is best, 100 is worst).
+   - regulatory_alignment: Alignment with regulations.
+   - jurisdictional_comp: Jurisdictional competence.
+
+Return ONLY valid JSON:
+{{
+  "statements": ["statement 1", "statement 2"],
+  "supported": [true, false],
+  "citation_acc": 80,
+  "term_precision": 90,
+  "precedent_match": 75,
+  "bias_score": 5,
+  "regulatory_alignment": 85,
+  "jurisdictional_comp": 90
+}}"""
 
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     payload = {
@@ -469,7 +490,11 @@ Return ONLY valid JSON with integer scores 0-100:
                 m = re.search(r'\{.*\}', raw, re.DOTALL)
                 if m:
                     parsed = json.loads(m.group(0))
-                    return {**defaults, **{k.lower(): v for k, v in parsed.items()}}
+                    # Handle key case-insensitivity
+                    norm_parsed = {}
+                    for k, v in parsed.items():
+                        norm_parsed[k.lower()] = v
+                    return {**defaults, **norm_parsed}
             elif r.status_code == 429:
                 time.sleep(15)
             else:
@@ -489,6 +514,14 @@ def _jval(judge, key, default=50.0):
 def evaluate_pipeline(pipeline_type):
     print(f"\nRunning evaluation on {pipeline_type.upper()} pipeline...")
     
+    # Precompute gold standard chunks for each query using ground truths
+    print("[*] Precomputing gold-standard chunks for Recall@5...")
+    gold_texts_list = []
+    for gt in GTS:
+        gt_vec = embedder.encode([gt], show_progress_bar=False)[0]
+        res = dense_retrieve(gt_vec, top_k=5)
+        gold_texts_list.append([match.get("text", "") for match in res])
+
     preds, ret_texts_all, q_vecs = [], [], []
     r_times, g_times = [], []
     prefill_latencies = []
@@ -567,7 +600,6 @@ def evaluate_pipeline(pipeline_type):
     for i in range(len(preds)):
         r = rouge.score(GTS[i], preds[i])
         bert_f1 = bert_f1_scores[i]
-        fcd = float(1 - bert_ctx_scores[i])
 
         try:
             bleu = sentence_bleu([GTS[i].split()], preds[i].split(), smoothing_function=smoothie)
@@ -580,17 +612,39 @@ def evaluate_pipeline(pipeline_type):
 
         ctx_vecs = embedder.encode(ret_texts_all[i], show_progress_bar=False) if ret_texts_all[i] else np.zeros((1, 1))
         cosine_sim = float(np.mean(cosine_similarity([q_vecs[i]], ctx_vecs))) if len(ctx_vecs) else 0.0
-        sims_arr = cosine_similarity([q_vecs[i]], ctx_vecs)[0] if len(ctx_vecs) else []
-        topk_acc = float(np.mean([1 if s > 0.8 else 0 for s in sims_arr])) if len(sims_arr) else 0.0
+
+        # Real Recall@5 (M5)
+        gold_texts = gold_texts_list[i] if i < len(gold_texts_list) else []
+        ret_texts = ret_texts_all[i]
+        recall_at_5 = len(set(ret_texts) & set(gold_texts)) / max(1, len(gold_texts))
+
+        # Real Ground Truth Coverage (M15)
+        cleaned_gt = re.sub(r'[^\w\s]', '', GTS[i].lower())
+        cleaned_ctx = re.sub(r'[^\w\s]', '', contexts_joined[i].lower())
+        gt_tokens = set(cleaned_gt.split())
+        ctx_tokens = set(cleaned_ctx.split())
+        gt_coverage = len(gt_tokens & ctx_tokens) / max(1, len(gt_tokens))
 
         # LLM Judge evaluation
         judge = unified_judge(QUERIES[i], contexts_joined[i], preds[i], GTS[i])
+
+        # RAGAS-like Faithfulness (M14)
+        statements = judge.get("statements", ["The model answer is factually consistent."])
+        supported = judge.get("supported", [True])
+        if not isinstance(statements, list) or not isinstance(supported, list) or len(statements) != len(supported) or not statements:
+            faithfulness_score = 0.5
+        else:
+            faithfulness_score = sum(1 for x in supported if x) / len(supported)
+
+        # Factual Consistency Deviation (M13)
+        fcd = 1.0 - faithfulness_score
+
         e2e = r_times[i] + g_times[i]
 
         df_list.append({
             "M3": r_times[i],
             "M4": cosine_sim,
-            "M5": topk_acc,
+            "M5": recall_at_5,
             "M6": r["rouge1"].fmeasure,
             "M7": r["rouge2"].fmeasure,
             "M8": r["rougeL"].fmeasure,
@@ -599,8 +653,8 @@ def evaluate_pipeline(pipeline_type):
             "M11": met,
             "M12": bert_f1,
             "M13": fcd,
-            "M14": _jval(judge, "faithfulness"),
-            "M15": _jval(judge, "factual_consistency") * 100,
+            "M14": faithfulness_score,
+            "M15": gt_coverage * 100,
             "M16": e2e,
             "M17": round(1.0 / max(0.001, e2e), 4),
             "M18": psutil.cpu_percent(),

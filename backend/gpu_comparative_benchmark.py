@@ -772,14 +772,14 @@ print("\n[SUCCESS] Saved comparative results to 'gpu_comparative_results.json'")
 
 metrics_list = [
     ("M1", "Emb. Latency (s)", "lower"),
-    ("M2", "Index Size (Vectors)", "higher"),
+    ("M2", "Index Size (Vectors)", "neutral"),
     ("M3", "Ret. Latency (s)", "lower"),
     ("M4", "Cos. Similarity", "higher"),
     ("M5", "Recall@5", "higher"),
     ("M6", "ROUGE-1 F1", "higher"),
     ("M7", "ROUGE-2 F1", "higher"),
     ("M8", "ROUGE-L F1", "higher"),
-    ("M9", "Context Words", "higher"),
+    ("M9", "Context Words", "neutral"),
     ("M10", "BLEU Score", "higher"),
     ("M11", "METEOR Score", "higher"),
     ("M12", "BERTScore F1", "higher"),

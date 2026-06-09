@@ -1015,7 +1015,7 @@ async def trigger_primitive_evaluation(request: Request, user: dict = Depends(re
             venv_python = os.path.join(backend_dir, "venv", "bin", "python3")
             proc = subprocess.Popen(
                 [venv_python, "-c",
-                 f"from primitive_pipeline import run_primitive_pipeline; run_primitive_pipeline(model_choice='{model_choice}')"],
+                 f"from qdrant_pipeline import run_primitive_pipeline; run_primitive_pipeline(model_choice='{model_choice}')"],
                 cwd=backend_dir
             )
             prim_path = os.path.join(backend_dir, "primitive_evaluation_results.json")

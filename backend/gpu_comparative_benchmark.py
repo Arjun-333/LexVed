@@ -40,27 +40,49 @@ print(f"[*] Benchmark will run on device: {device.upper()}")
 if device == "cuda":
     print(f"[*] GPU Device Name: {torch.cuda.get_device_name(0)}")
 
-# ─── 1. Interactive Credentials Setup ────────────────────────────────
+import sys
 
 env_pinecone = os.getenv("PINECONE_API_KEY", "").strip()
 env_groq = os.getenv("GROQ_API_KEY", "").strip()
 
 print("\n--- API Credentials ---")
-# Prompt for Pinecone key
-if env_pinecone:
-    pc_prompt = f"Enter your Pinecone API Key [Press ENTER to use key from .env]: "
-else:
-    pc_prompt = "Enter your Pinecone API Key: "
-user_pc = input(pc_prompt).strip()
-PINECONE_API_KEY = user_pc if user_pc else env_pinecone
+is_interactive = sys.stdin.isatty()
+try:
+    from IPython import get_ipython
+    if get_ipython() is not None:
+        is_interactive = True
+except ImportError:
+    pass
 
-# Prompt for Groq key
-if env_groq:
-    groq_prompt = f"Enter your Groq API Key [Press ENTER to use key from .env]: "
+PINECONE_API_KEY = env_pinecone
+GROQ_API_KEY = env_groq
+
+if is_interactive:
+    # Prompt for Pinecone key
+    if env_pinecone:
+        pc_prompt = "Enter your Pinecone API Key [Press ENTER to use key from .env]: "
+    else:
+        pc_prompt = "Enter your Pinecone API Key: "
+    try:
+        user_pc = input(pc_prompt).strip()
+        if user_pc:
+            PINECONE_API_KEY = user_pc
+    except (EOFError, OSError):
+        print("[*] Could not read from input stream. Using environment credentials.")
+
+    # Prompt for Groq key
+    if env_groq:
+        groq_prompt = "Enter your Groq API Key [Press ENTER to use key from .env]: "
+    else:
+        groq_prompt = "Enter your Groq API Key: "
+    try:
+        user_groq = input(groq_prompt).strip()
+        if user_groq:
+            GROQ_API_KEY = user_groq
+    except (EOFError, OSError):
+        pass
 else:
-    groq_prompt = "Enter your Groq API Key: "
-user_groq = input(groq_prompt).strip()
-GROQ_API_KEY = user_groq if user_groq else env_groq
+    print("[*] Non-interactive environment detected. Using environment credentials.")
 
 if not PINECONE_API_KEY or not GROQ_API_KEY:
     raise ValueError("Both PINECONE_API_KEY and GROQ_API_KEY are required to run the evaluation.")
@@ -121,7 +143,21 @@ print("2) multi-qa-mpnet-base-cos-v1 (768d) [Default]")
 print("3) multi-qa-distilbert-cos-v1 (768d)")
 print("4) BAAI/bge-m3 (1024d)")
 
-model_choice = input("Select an embedding model [1-4, Default: 2]: ").strip()
+is_interactive = sys.stdin.isatty()
+try:
+    from IPython import get_ipython
+    if get_ipython() is not None:
+        is_interactive = True
+except ImportError:
+    pass
+
+if not is_interactive:
+    model_choice = "2"
+else:
+    try:
+        model_choice = input("Select an embedding model [1-4, Default: 2]: ").strip()
+    except (EOFError, OSError):
+        model_choice = "2"
 
 MODELS_CONFIG = {
     "1": {
@@ -162,17 +198,45 @@ print(f"[*] Loading CrossEncoder (ms-marco-MiniLM-L-6-v2) on {device.upper()}...
 reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", device=device)
 
 # --- Compute M1 (Embedding Latency) and M2 (Index Size) ---
-print("[*] Encoding full corpus to compute embedding latency (M1)...")
-t_emb_start = time.time()
-corpus_embeddings = embedder.encode([c["text"] for c in chunks], show_progress_bar=True, batch_size=128, convert_to_numpy=True)
-emb_latency = time.time() - t_emb_start
-print(f"[SUCCESS] Encoded {len(corpus_embeddings)} vectors in {emb_latency:.2f} seconds.")
+skip_full_encoding = False
+if device == "cpu":
+    try:
+        from pinecone import Pinecone
+        pc_check = Pinecone(api_key=PINECONE_API_KEY)
+        pc_idx_check = pc_check.Index(f"lexved-audit-{model_dim}")
+        stats = pc_idx_check.describe_index_stats()
+        existing_count = stats.get("namespaces", {}).get(model_name, {}).get("vector_count", 0)
+        if existing_count >= len(chunks):
+            skip_full_encoding = True
+            print(f"[*] Pinecone namespace '{model_name}' is already fully populated ({existing_count} vectors). Skipping full CPU corpus encoding!")
+    except Exception:
+        pass
+
+if not skip_full_encoding:
+    print("[*] Encoding full corpus to compute embedding latency (M1)...")
+    t_emb_start = time.time()
+    corpus_embeddings = embedder.encode([c["text"] for c in chunks], show_progress_bar=True, batch_size=128, convert_to_numpy=True)
+    emb_latency = time.time() - t_emb_start
+    print(f"[SUCCESS] Encoded {len(corpus_embeddings)} vectors in {emb_latency:.2f} seconds.")
+else:
+    # Estimate embedding latency using a subset of 100 chunks
+    print("[*] Estimating embedding latency (M1) using a sample of 100 chunks...")
+    t_emb_start = time.time()
+    sample_texts = [c["text"] for c in chunks[:100]]
+    _ = embedder.encode(sample_texts, show_progress_bar=False, batch_size=32, convert_to_numpy=True)
+    sample_time = time.time() - t_emb_start
+    emb_latency = (sample_time / 100.0) * len(chunks)
+    corpus_embeddings = None
+    print(f"[SUCCESS] Estimated M1 latency: {emb_latency:.2f} seconds.")
 
 # Convert corpus embeddings to PyTorch Tensor for fast local matching fallback
 if device == "cuda":
     corpus_tensor = torch.tensor(corpus_embeddings).cuda()
 else:
-    corpus_tensor = torch.tensor(corpus_embeddings)
+    if corpus_embeddings is not None:
+        corpus_tensor = torch.tensor(corpus_embeddings)
+    else:
+        corpus_tensor = None
 
 # ─── 4. Pinecone Connection and Auto-Indexing ────────────────────────
 
@@ -258,8 +322,19 @@ def bm25_retrieve(query, top_k=20):
 
 # ─── 6. Benchmark Queries and Ground Truths ──────────────────────────
 
-synthetic_path = "data/synthetic_evaluation_dataset.json"
-if os.path.exists(synthetic_path):
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+synthetic_path_candidates = [
+    os.path.join(backend_dir, "data", "synthetic_evaluation_dataset.json"),
+    "data/synthetic_evaluation_dataset.json",
+    "backend/data/synthetic_evaluation_dataset.json"
+]
+synthetic_path = None
+for candidate in synthetic_path_candidates:
+    if os.path.exists(candidate):
+        synthetic_path = candidate
+        break
+
+if synthetic_path is not None:
     print(f"[SUCCESS] Found synthetic dataset. Loading queries from {synthetic_path}...")
     with open(synthetic_path, "r") as f:
         synthetic_data = json.load(f)
@@ -267,7 +342,7 @@ if os.path.exists(synthetic_path):
     GTS = [item["ground_truth"] for item in synthetic_data]
     GOLD_CHUNKS = [item["gold_chunk_text"] for item in synthetic_data]
 else:
-    print(f"[*] Synthetic dataset not found at '{synthetic_path}'. Falling back to 10 manual queries...")
+    print(f"[*] Synthetic dataset not found. Falling back to 10 manual queries...")
     QUERIES = [
         "Does the introduction of a Family Benefit Scheme by an employer completely extinguish a dependent's right to claim compassionate appointment?",
         "Can a person who has been convicted of a criminal offence and sentenced to imprisonment for more than two years be appointed as the Chief Minister of a State if their conviction has not been suspended?",

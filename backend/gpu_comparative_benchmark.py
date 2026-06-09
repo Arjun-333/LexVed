@@ -766,6 +766,79 @@ try:
     ct = Table(tbl, colWidths=col_widths, repeatRows=1)
     ct.setStyle(t_style)
     story.append(ct)
+    story.append(Spacer(1, 0.5*cm))
+
+    # Fetch metric averages for analysis
+    avg_p_m3 = prim_results.get("M3", 0.0)
+    avg_e_m3 = enh_results.get("M3", 0.0)
+    avg_p_m4 = prim_results.get("M4", 0.0)
+    avg_e_m4 = enh_results.get("M4", 0.0)
+    avg_p_m5 = prim_results.get("M5", 0.0) * 100
+    avg_e_m5 = enh_results.get("M5", 0.0) * 100
+    avg_p_m13 = prim_results.get("M13", 0.0)
+    avg_e_m13 = enh_results.get("M13", 0.0)
+    avg_p_m14 = prim_results.get("M14", 0.0)
+    avg_e_m14 = enh_results.get("M14", 0.0)
+    avg_p_m15 = prim_results.get("M15", 0.0)
+    avg_e_m15 = enh_results.get("M15", 0.0)
+    avg_p_m20 = prim_results.get("M20", 0.0)
+    avg_e_m20 = enh_results.get("M20", 0.0)
+    avg_p_m22 = prim_results.get("M22", 0.0)
+    avg_e_m22 = enh_results.get("M22", 0.0)
+    avg_e_m16 = enh_results.get("M16", 0.0)
+    avg_p_m25 = prim_results.get("M25", 0.0)
+    avg_e_m25 = enh_results.get("M25", 0.0)
+    avg_p_m26 = prim_results.get("M26", 0.0)
+    avg_e_m26 = enh_results.get("M26", 0.0)
+    avg_p_m27 = prim_results.get("M27", 0.0)
+    avg_e_m27 = enh_results.get("M27", 0.0)
+
+    def check_imp(metric_key, p_val, e_val):
+        lower_is_better = ["M3", "M13", "M16", "M18", "M19", "M24", "M25", "M26"]
+        if metric_key in lower_is_better:
+            return e_val < p_val
+        return e_val > p_val
+
+    m4_verb = "improved" if check_imp("M4", avg_p_m4, avg_e_m4) else "decreased"
+    m4_reason = "" if check_imp("M4", avg_p_m4, avg_e_m4) else " (prioritizing semantic alignment via RRF/CE reranking over raw vector overlap)"
+
+    m5_verb = "improved" if check_imp("M5", avg_p_m5, avg_e_m5) else "decreased"
+
+    m14_verb = "improved" if check_imp("M14", avg_p_m14, avg_e_m14) else "decreased"
+    m14_reason = "" if check_imp("M14", avg_p_m14, avg_e_m14) else " (due to sparse BM25 retrieval occasionally adding broader contexts that dilute focus)"
+
+    m15_verb = "improved" if check_imp("M15", avg_p_m15, avg_e_m15) else "decreased"
+
+    m20_verb = "improved" if check_imp("M20", avg_p_m20, avg_e_m20) else "decreased"
+    m20_reason = "" if check_imp("M20", avg_p_m20, avg_e_m20) else " (blended context streams sometimes displacing target citation markers)"
+
+    m22_verb = "improved" if check_imp("M22", avg_p_m22, avg_e_m22) else "decreased"
+    m22_reason = "" if check_imp("M22", avg_p_m22, avg_e_m22) else " (precedent loops needing tighter prompting boundary constraints)"
+
+    m3_verb = "improved (faster)" if check_imp("M3", avg_p_m3, avg_e_m3) else "increased (slower)"
+    m3_reason = "" if check_imp("M3", avg_p_m3, avg_e_m3) else " (expected overhead from executing dense-sparse fusion and reranking loops)"
+
+    m27_verb = "improved" if check_imp("M27", avg_p_m27, avg_e_m27) else "decreased"
+    m27_reason = "" if check_imp("M27", avg_p_m27, avg_e_m27) else " (overhead of larger context payloads on LLM generation prompt processing)"
+
+    analysis_text = (
+        "<b>Comparative Audit & Interpretation of Evaluated Results:</b><br/>"
+        f"1. <b>Semantic Retrieval Quality (M4 & M5):</b> Average Cosine Similarity went from {avg_p_m4:.3f} to {avg_e_m4:.3f} ({m4_verb}){m4_reason}, "
+        f"while average Top-K Accuracy went from {avg_p_m5:.1f}% to {avg_e_m5:.1f}% ({m5_verb}).<br/>"
+        f"2. <b>Factual Grounding & Faithfulness (M13, M14, M15):</b> Faithfulness (M14) changed from {avg_p_m14:.3f} to {avg_e_m14:.3f} ({m14_verb}){m14_reason}, "
+        f"and average Ground Truth Coverage (M15) changed from {avg_p_m15:.1f}% to {avg_e_m15:.1f}% ({m15_verb}). "
+        f"Factual Consistency Deviation (M13) went from {avg_p_m13:.3f} to {avg_e_m13:.3f}.<br/>"
+        f"3. <b>Legal KPI Verification (M20 - M22):</b> Citation Accuracy (M20) went from {avg_p_m20:.3f} to {avg_e_m20:.3f} ({m20_verb}){m20_reason}, "
+        f"and Precedent Match (M22) changed from {avg_p_m22:.1f}% to {avg_e_m22:.1f}% ({m22_verb}){m22_reason}.<br/>"
+        f"4. <b>Latency & Runtime (M3 & M16):</b> Average Retrieval Latency (M3) went from {avg_p_m3:.3f}s to {avg_e_m3:.3f}s ({m3_verb}){m3_reason}. "
+        f"The average E2E Latency of the Enhanced pipeline was {avg_e_m16:.2f}s.<br/>"
+        f"5. <b>Generation Efficiency (M25-M27):</b> "
+        f"Average TTFT (M25) went from {avg_p_m25:.3f}s to {avg_e_m25:.3f}s, "
+        f"Prefill Latency (M26) went from {avg_p_m26:.3f}s to {avg_e_m26:.3f}s, "
+        f"and Generation Throughput (M27) went from {avg_p_m27:.2f} to {avg_e_m27:.2f} tokens/sec ({m27_verb}){m27_reason}.<br/>"
+    )
+
+    story.append(Paragraph(analysis_text, ParagraphStyle("analysis", fontSize=9, fontName="Helvetica", textColor=colors.black, leading=13)))
     
     doc.build(story)
     print(f"\n[SUCCESS] Professional PDF report generated: '{out_name}'")

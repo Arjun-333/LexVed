@@ -233,26 +233,38 @@ def run_evaluation():
     _update_progress(f"Loading evaluation queries for {active_model}...")
 
     # Load evaluation data
-    if not os.path.exists(EVAL_DATA_PATH):
-        # Fallback to root-level evaluation_data.json
-        alt_path = os.path.join(PROJECT_ROOT, "evaluation_data.json")
-        if os.path.exists(alt_path):
-            eval_path = alt_path
-        else:
-            _update_progress("No evaluation data found.", status="error")
-            return
+    synthetic_path = os.path.join(PROJECT_ROOT, "data", "synthetic_evaluation_dataset.json")
+    gold_chunks = []
+    
+    if os.path.exists(synthetic_path):
+        _update_progress(f"Loading synthetic dataset from {synthetic_path}...")
+        with open(synthetic_path, "r") as f:
+            synthetic_data = json.load(f)
+        queries = [item["query"] for item in synthetic_data]
+        ground_truths = [item["ground_truth"] for item in synthetic_data]
+        gold_chunks = [item["gold_chunk_text"] for item in synthetic_data]
     else:
-        eval_path = EVAL_DATA_PATH
+        if not os.path.exists(EVAL_DATA_PATH):
+            # Fallback to root-level evaluation_data.json
+            alt_path = os.path.join(PROJECT_ROOT, "evaluation_data.json")
+            if os.path.exists(alt_path):
+                eval_path = alt_path
+            else:
+                _update_progress("No evaluation data found.", status="error")
+                return
+        else:
+            eval_path = EVAL_DATA_PATH
 
-    with open(eval_path, "r") as f:
-        data = json.load(f)
+        with open(eval_path, "r") as f:
+            data = json.load(f)
 
-    queries = []
-    ground_truths = []
-    for cat in ["civil", "criminal"]:
-        for item in data.get(cat, []):
-            queries.append(item["query"])
-            ground_truths.append(item["ground_truth"])
+        queries = []
+        ground_truths = []
+        for cat in ["civil", "criminal"]:
+            for item in data.get(cat, []):
+                queries.append(item["query"])
+                ground_truths.append(item["ground_truth"])
+        gold_chunks = [None] * len(queries)
 
     total_queries = len(queries)
     if total_queries == 0:
@@ -283,27 +295,12 @@ def run_evaluation():
     except Exception as e:
         print(f"[LexVed] Could not get index size: {e}")
 
-    # Precompute gold standard chunks for each query using ground truths
-    _update_progress("Precomputing gold-standard chunks for Recall@5...")
-    from src.retrieval.retriever import retrieve_qdrant, retrieve_pinecone
-    from src.ingestion.embedder import get_embeddings
-    
-    gold_texts_list = []
-    for gt in ground_truths:
-        gt_emb = get_embeddings([gt])[0]
-        try:
-            if active_db == "qdrant":
-                res = retrieve_qdrant(gt_emb, None, None, 5)
-            else:
-                res = retrieve_pinecone(gt_emb, None, None, 5)
-            gold_texts_list.append([hit.payload.get("text", "") for hit in res])
-        except Exception as e:
-            print(f"[LexVed] Gold precompute failed: {e}")
-            gold_texts_list.append([])
+
 
     # --- Per-Query Evaluation (Enhanced Pipeline from notebook) ---
     preds = []
     ret_texts_all = []
+    all_ret_texts_all = []
     q_vecs = []
     r_times = []
     g_times = []
@@ -319,11 +316,12 @@ def run_evaluation():
         q_vec = get_embeddings([query])[0]
 
         # Enhanced retrieval (Hybrid BM25 + Dense + RRF + CrossEncoder)
-        docs, ret_time = retrieve(query, top_k=5)
+        docs, ret_time = retrieve(query, top_k=10)
         r_times.append(ret_time)
 
-        ret = [d.payload.get("text", "") for d in docs]
-        context_str = "\n\n".join(ret)
+        ret_all = [d.payload.get("text", "") for d in docs]
+        ret_5 = ret_all[:5]
+        context_str = "\n\n".join(ret_5)
 
         # Generation via LLM
         t1 = time.time()
@@ -334,7 +332,8 @@ def run_evaluation():
         throughput_rates.append(throughput)
 
         preds.append(ans)
-        ret_texts_all.append(ret)
+        ret_texts_all.append(ret_5)
+        all_ret_texts_all.append(ret_all)
         q_vecs.append(q_vec)
 
     # --- Batch metrics computation (matching notebook) ---
@@ -376,6 +375,18 @@ def run_evaluation():
     else:
         contexts_joined = [" ".join(ret_texts_all[i]) for i in range(len(preds))]
 
+    from nltk.stem import PorterStemmer
+    ps = PorterStemmer()
+
+    def verify_citations(pred_text, gt_text):
+        pattern = r'(Section\s+\d+[A-Za-z]*|S\.\s*\d+|Article\s+\d+|Art\.\s*\d+|Act,\s+\d{4}|[A-Z]{3,4}\s+\d{4}\s+[A-Z\s]+|AIR\s+\d{4}\s+SC\s+\d+|\(\d{4}\)\s+\d+\s+SCC\s+\d+)'
+        gt_citations = set(re.findall(pattern, gt_text, re.IGNORECASE))
+        if not gt_citations:
+            return 1.0
+        pred_citations = set(re.findall(pattern, pred_text, re.IGNORECASE))
+        matched = gt_citations & pred_citations
+        return len(matched) / len(gt_citations)
+
     rouge = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
     smoothie = SmoothingFunction().method4
     metric_rows = []
@@ -398,16 +409,37 @@ def run_evaluation():
         ctx_vecs = get_embeddings(ret_texts_all[i]) if ret_texts_all[i] else np.zeros((1, 1))
         cosine_sim = float(np.mean(cosine_similarity([q_vecs[i]], ctx_vecs))) if len(ctx_vecs) else 0.0
         
-        # Real Recall@5 (M5)
-        gold_texts = gold_texts_list[i] if i < len(gold_texts_list) else []
-        ret_texts = ret_texts_all[i]
-        recall_at_5 = len(set(ret_texts) & set(gold_texts)) / max(1, len(gold_texts))
+        # Retrieve target gold document if available (non-circular evaluation)
+        gold_chunk = gold_chunks[i] if (i < len(gold_chunks) and gold_chunks[i] is not None) else None
+        gold_chunks_set = {gold_chunk} if gold_chunk else set()
+        
+        # Determine the retrieved texts
+        ret_texts_5 = ret_texts_all[i]
+        ret_texts_10 = all_ret_texts_all[i] if i < len(all_ret_texts_all) else ret_texts_5
 
-        # Real Ground Truth Coverage (M15)
+        recall_at_5 = len(set(ret_texts_5) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
+        recall_at_10 = len(set(ret_texts_10) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
+        precision_at_5 = len(set(ret_texts_5) & gold_chunks_set) / 5.0
+        
+        # MRR
+        mrr = 0.0
+        for rank, doc in enumerate(ret_texts_10):
+            if doc in gold_chunks_set:
+                mrr = 1.0 / (rank + 1)
+                break
+        
+        # nDCG@10
+        ndcg_at_10 = 0.0
+        for rank, doc in enumerate(ret_texts_10):
+            if doc in gold_chunks_set:
+                ndcg_at_10 = 1.0 / np.log2(rank + 2)
+                break
+
+        # Real Ground Truth Coverage (M15) using Porter Stemmer
         cleaned_gt = re.sub(r'[^\w\s]', '', ground_truths[i].lower())
         cleaned_ctx = re.sub(r'[^\w\s]', '', contexts_joined[i].lower())
-        gt_tokens = set(cleaned_gt.split())
-        ctx_tokens = set(cleaned_ctx.split())
+        gt_tokens = {ps.stem(w) for w in cleaned_gt.split()}
+        ctx_tokens = {ps.stem(w) for w in cleaned_ctx.split()}
         gt_coverage = len(gt_tokens & ctx_tokens) / max(1, len(gt_tokens))
 
         # LLM Judge (8 legal KPIs)
@@ -424,6 +456,9 @@ def run_evaluation():
 
         # Factual Consistency Deviation (M13)
         fcd = 1.0 - faithfulness_score
+
+        # Objective Regex Citation Accuracy (M20)
+        citation_acc = verify_citations(preds[i], ground_truths[i])
 
         e2e = r_times[i] + g_times[i]
 
@@ -445,7 +480,7 @@ def run_evaluation():
             "M17": round(1.0 / max(0.001, e2e), 4),
             "M18": psutil.cpu_percent(),
             "M19": round(psutil.virtual_memory().used / (1024**3), 2),
-            "M20": _jval(judge, "citation_acc"),
+            "M20": citation_acc * 100,
             "M21": _jval(judge, "term_precision"),
             "M22": _jval(judge, "precedent_match") * 100,
             "M23": _jval(judge, "regulatory_alignment"),
@@ -453,6 +488,10 @@ def run_evaluation():
             "M25": ttft_latencies[i],
             "M26": prefill_latencies[i],
             "M27": throughput_rates[i],
+            "M28": recall_at_10,
+            "M29": mrr,
+            "M30": ndcg_at_10,
+            "M31": precision_at_5,
         })
 
     # --- Aggregate all metrics (mean across queries) ---

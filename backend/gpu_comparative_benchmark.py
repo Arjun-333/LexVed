@@ -258,31 +258,41 @@ def bm25_retrieve(query, top_k=20):
 
 # ─── 6. Benchmark Queries and Ground Truths ──────────────────────────
 
-QUERIES = [
-    "Does the introduction of a Family Benefit Scheme by an employer completely extinguish a dependent's right to claim compassionate appointment?",
-    "Can a person who has been convicted of a criminal offence and sentenced to imprisonment for more than two years be appointed as the Chief Minister of a State if their conviction has not been suspended?",
-    "What was the Supreme Court's directive regarding the methods of recruitment for the Higher Judicial Service (District Judges) to ensure merit and efficiency?",
-    "Do candidates placed on a waiting list have an absolute legal right to be appointed if the initially selected candidates fail to join the service?",
-    "Are teachers employed in schools considered \"employees\" eligible for gratuity under Section 2(e) of the Payment of Gratuity Act, 1972?",
-    "Under Section 319 of the Cr.P.C., can a trial court add new individuals as accused persons based merely on suspicion arising during the examination of witnesses?",
-    "What procedure did the Supreme Court mandate for trial courts when objections are raised regarding the admissibility of documents during the evidence-recording stage?",
-    "Can a criminal complaint under Section 138 of the Negotiable Instruments Act be maintained against a guarantor who issues a cheque solely to secure the debt of the principal debtor?",
-    "Can criminal proceedings for cheating under Section 420/120B IPC continue against an assessee if their civil tax liability has already been fully settled under the Kar Vivad Samadhan Scheme, 1998?",
-    "What degree of negligence is required to hold a medical professional criminally liable for the death of a patient under Section 304A of the IPC?"
-]
-
-GTS = [
-    "No. The Supreme Court held that a Family Benefit Scheme (which provides a monthly deposit) cannot be equated with or replace the constitutional philosophy of social justice underlying compassionate appointments. The employer must still consider the dependent's application for compassionate employment.",
-    "No. The Supreme Court ruled that a person disqualified from being a member of the legislature under Article 191(1)(e) read with Section 8(3) of the Representation of the People Act, 1951, due to a criminal conviction, cannot be legally appointed as Chief Minister, even if they enjoy the majority support of the legislative assembly.",
-    "The Supreme Court directed that recruitment to the Higher Judicial Service should be divided into three avenues: 50% by promotion based on merit-cum-seniority, 25% by promotion strictly on merit through a limited departmental competitive examination, and 25% by direct recruitment from eligible advocates.",
-    "No. The Supreme Court held that the existence of a waiting list does not create an indefeasible right to appointment. The employer has the discretion to carry forward unfilled vacancies to the next year, provided the decision is not arbitrary or mala fide.",
-    "No. The Supreme Court held that teachers do not fall within the definition of \"employee\" under the Act because imparting education is a noble vocation and cannot be classified as skilled, unskilled, manual, supervisory, or clerical work.",
-    "No. The Supreme Court held that the power under Section 319 is an extraordinary power that must be used sparingly. It requires a reasonable prospect of conviction and compelling reasons; mere suspicion is insufficient to subject a person to the agony of a criminal trial.",
-    "To prevent unnecessary delays, the Supreme Court directed trial courts to tentatively mark the objected documents as exhibits and defer the final decision on their admissibility until the final judgment stage, rather than halting the trial to pass interlocutory orders.",
-    "Yes. The Supreme Court ruled that the words \"any cheque\" and \"other liability\" in Section 138 are broad enough to cover cheques issued by a guarantor. The liability cannot be avoided merely because the cheque was issued as security for someone else's debt.",
-    "No. The Supreme Court held once the civil dispute is resolved and the authorities grant immunity under the Scheme, continuing the criminal prosecution lacks the requisite fraudulent intention and constitutes an abuse of the judicial process.",
-    "The Supreme Court held that to secure a criminal conviction under Section 304A, the doctor's negligence must be \"gross\" or \"reckless.\" A mere lack of necessary care or an error of judgment, which might create civil liability in tort, is not sufficient for criminal punishment."
-]
+synthetic_path = "data/synthetic_evaluation_dataset.json"
+if os.path.exists(synthetic_path):
+    print(f"[SUCCESS] Found synthetic dataset. Loading queries from {synthetic_path}...")
+    with open(synthetic_path, "r") as f:
+        synthetic_data = json.load(f)
+    QUERIES = [item["query"] for item in synthetic_data]
+    GTS = [item["ground_truth"] for item in synthetic_data]
+    GOLD_CHUNKS = [item["gold_chunk_text"] for item in synthetic_data]
+else:
+    print(f"[*] Synthetic dataset not found at '{synthetic_path}'. Falling back to 10 manual queries...")
+    QUERIES = [
+        "Does the introduction of a Family Benefit Scheme by an employer completely extinguish a dependent's right to claim compassionate appointment?",
+        "Can a person who has been convicted of a criminal offence and sentenced to imprisonment for more than two years be appointed as the Chief Minister of a State if their conviction has not been suspended?",
+        "What was the Supreme Court's directive regarding the methods of recruitment for the Higher Judicial Service (District Judges) to ensure merit and efficiency?",
+        "Do candidates placed on a waiting list have an absolute legal right to be appointed if the initially selected candidates fail to join the service?",
+        "Are teachers employed in schools considered \"employees\" eligible for gratuity under Section 2(e) of the Payment of Gratuity Act, 1972?",
+        "Under Section 319 of the Cr.P.C., can a trial court add new individuals as accused persons based merely on suspicion arising during the examination of witnesses?",
+        "What procedure did the Supreme Court mandate for trial courts when objections are raised regarding the admissibility of documents during the evidence-recording stage?",
+        "Can a criminal complaint under Section 138 of the Negotiable Instruments Act be maintained against a guarantor who issues a cheque solely to secure the debt of the principal debtor?",
+        "Can criminal proceedings for cheating under Section 420/120B IPC continue against an assessee if their civil tax liability has already been fully settled under the Kar Vivad Samadhan Scheme, 1998?",
+        "What degree of negligence is required to hold a medical professional criminally liable for the death of a patient under Section 304A of the IPC?"
+    ]
+    GTS = [
+        "No. The Supreme Court held that a Family Benefit Scheme (which provides a monthly deposit) cannot be equated with or replace the constitutional philosophy of social justice underlying compassionate appointments. The employer must still consider the dependent's application for compassionate employment.",
+        "No. The Supreme Court ruled that a person disqualified from being a member of the legislature under Article 191(1)(e) read with Section 8(3) of the Representation of the People Act, 1951, due to a criminal conviction, cannot be legally appointed as Chief Minister, even if they enjoy the majority support of the legislative assembly.",
+        "The Supreme Court directed that recruitment to the Higher Judicial Service should be divided into three avenues: 50% by promotion based on merit-cum-seniority, 25% by promotion strictly on merit through a limited departmental competitive examination, and 25% by direct recruitment from eligible advocates.",
+        "No. The Supreme Court held that the existence of a waiting list does not create an indefeasible right to appointment. The employer has the discretion to carry forward unfilled vacancies to the next year, provided the decision is not arbitrary or mala fide.",
+        "No. The Supreme Court held that teachers do not fall within the definition of \"employee\" under the Act because imparting education is a noble vocation and cannot be classified as skilled, unskilled, manual, supervisory, or clerical work.",
+        "No. The Supreme Court held that the power under Section 319 is an extraordinary power that must be used sparingly. It requires a reasonable prospect of conviction and compelling reasons; mere suspicion is insufficient to subject a person to the agony of a criminal trial.",
+        "To prevent unnecessary delays, the Supreme Court directed trial courts to tentatively mark the objected documents as exhibits and defer the final decision on their admissibility until the final judgment stage, rather than halting the trial to pass interlocutory orders.",
+        "Yes. The Supreme Court ruled that the words \"any cheque\" and \"other liability\" in Section 138 are broad enough to cover cheques issued by a guarantor. The liability cannot be avoided merely because the cheque was issued as security for someone else's debt.",
+        "No. The Supreme Court held once the civil dispute is resolved and the authorities grant immunity under the Scheme, continuing the criminal prosecution lacks the requisite fraudulent intention and constitutes an abuse of the judicial process.",
+        "The Supreme Court held that to secure a criminal conviction under Section 304A, the doctor's negligence must be \"gross\" or \"reckless.\" A mere lack of necessary care or an error of judgment, which might create civil liability in tort, is not sufficient for criminal punishment."
+    ]
+    GOLD_CHUNKS = [None] * len(QUERIES)
 
 # ─── 7. Retrieval Logic (Pinecone / Local Fallback) ──────────────────
 
@@ -514,15 +524,8 @@ def _jval(judge, key, default=50.0):
 def evaluate_pipeline(pipeline_type):
     print(f"\nRunning evaluation on {pipeline_type.upper()} pipeline...")
     
-    # Precompute gold standard chunks for each query using ground truths
-    print("[*] Precomputing gold-standard chunks for Recall@5...")
-    gold_texts_list = []
-    for gt in GTS:
-        gt_vec = embedder.encode([gt], show_progress_bar=False)[0]
-        res = dense_retrieve(gt_vec, top_k=5)
-        gold_texts_list.append([match.get("text", "") for match in res])
-
     preds, ret_texts_all, q_vecs = [], [], []
+    all_ret_texts_all = []
     r_times, g_times = [], []
     prefill_latencies = []
     ttft_latencies = []
@@ -534,18 +537,21 @@ def evaluate_pipeline(pipeline_type):
         # Embed query on GPU
         q_vec = embedder.encode([q], show_progress_bar=False)[0]
         
-        # Retrieval
+        # Retrieval (retrieve top-10 for evaluation, top-5 for LLM context)
         if pipeline_type == "primitive":
-            ret_docs = dense_retrieve(q_vec, top_k=5)
+            all_ret_docs = dense_retrieve(q_vec, top_k=10)
+            ret_docs = all_ret_docs[:5]
             rt = time.time() - t_start
         else:
             dense_docs = dense_retrieve(q_vec, top_k=20)
             sparse_docs = bm25_retrieve(q, top_k=20)
             fused_docs = reciprocal_rank_fusion(dense_docs, sparse_docs)
-            ret_docs = cross_encode_rerank(q, fused_docs[:10], top_k=5)
+            all_ret_docs = cross_encode_rerank(q, fused_docs[:10], top_k=10)
+            ret_docs = all_ret_docs[:5]
             rt = time.time() - t_start
 
         ret = [doc.get("text", "") for doc in ret_docs]
+        all_ret_texts = [doc.get("text", "") for doc in all_ret_docs]
         context_str = "\n\n".join(ret)
         
         # Generation
@@ -555,6 +561,7 @@ def evaluate_pipeline(pipeline_type):
         
         preds.append(ans)
         ret_texts_all.append(ret)
+        all_ret_texts_all.append(all_ret_texts)
         q_vecs.append(q_vec)
         
         r_times.append(rt)
@@ -592,6 +599,17 @@ def evaluate_pipeline(pipeline_type):
         meteor_score = None
 
     from sklearn.metrics.pairwise import cosine_similarity
+    from nltk.stem import PorterStemmer
+    ps = PorterStemmer()
+
+    def verify_citations(pred_text, gt_text):
+        pattern = r'(Section\s+\d+[A-Za-z]*|S\.\s*\d+|Article\s+\d+|Art\.\s*\d+|Act,\s+\d{4}|[A-Z]{3,4}\s+\d{4}\s+[A-Z\s]+|AIR\s+\d{4}\s+SC\s+\d+|\(\d{4}\)\s+\d+\s+SCC\s+\d+)'
+        gt_citations = set(re.findall(pattern, gt_text, re.IGNORECASE))
+        if not gt_citations:
+            return 1.0
+        pred_citations = set(re.findall(pattern, pred_text, re.IGNORECASE))
+        matched = gt_citations & pred_citations
+        return len(matched) / len(gt_citations)
     
     rouge = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
     smoothie = SmoothingFunction().method4
@@ -613,16 +631,37 @@ def evaluate_pipeline(pipeline_type):
         ctx_vecs = embedder.encode(ret_texts_all[i], show_progress_bar=False) if ret_texts_all[i] else np.zeros((1, 1))
         cosine_sim = float(np.mean(cosine_similarity([q_vecs[i]], ctx_vecs))) if len(ctx_vecs) else 0.0
 
-        # Real Recall@5 (M5)
-        gold_texts = gold_texts_list[i] if i < len(gold_texts_list) else []
-        ret_texts = ret_texts_all[i]
-        recall_at_5 = len(set(ret_texts) & set(gold_texts)) / max(1, len(gold_texts))
+        # Retrieve target gold document if available (non-circular evaluation)
+        gold_chunk = GOLD_CHUNKS[i] if (i < len(GOLD_CHUNKS) and GOLD_CHUNKS[i] is not None) else None
+        gold_chunks_set = {gold_chunk} if gold_chunk else set()
+        
+        # Determine the retrieved texts
+        ret_texts_5 = ret_texts_all[i]
+        ret_texts_10 = all_ret_texts_all[i] if i < len(all_ret_texts_all) else ret_texts_5
 
-        # Real Ground Truth Coverage (M15)
+        recall_at_5 = len(set(ret_texts_5) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
+        recall_at_10 = len(set(ret_texts_10) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
+        precision_at_5 = len(set(ret_texts_5) & gold_chunks_set) / 5.0
+        
+        # MRR
+        mrr = 0.0
+        for rank, doc in enumerate(ret_texts_10):
+            if doc in gold_chunks_set:
+                mrr = 1.0 / (rank + 1)
+                break
+        
+        # nDCG@10
+        ndcg_at_10 = 0.0
+        for rank, doc in enumerate(ret_texts_10):
+            if doc in gold_chunks_set:
+                ndcg_at_10 = 1.0 / np.log2(rank + 2)
+                break
+
+        # Real Ground Truth Coverage (M15) using Porter Stemmer
         cleaned_gt = re.sub(r'[^\w\s]', '', GTS[i].lower())
         cleaned_ctx = re.sub(r'[^\w\s]', '', contexts_joined[i].lower())
-        gt_tokens = set(cleaned_gt.split())
-        ctx_tokens = set(cleaned_ctx.split())
+        gt_tokens = {ps.stem(w) for w in cleaned_gt.split()}
+        ctx_tokens = {ps.stem(w) for w in cleaned_ctx.split()}
         gt_coverage = len(gt_tokens & ctx_tokens) / max(1, len(gt_tokens))
 
         # LLM Judge evaluation
@@ -638,6 +677,9 @@ def evaluate_pipeline(pipeline_type):
 
         # Factual Consistency Deviation (M13)
         fcd = 1.0 - faithfulness_score
+
+        # Objective Regex Citation Accuracy (M20)
+        citation_acc = verify_citations(preds[i], GTS[i])
 
         e2e = r_times[i] + g_times[i]
 
@@ -659,7 +701,7 @@ def evaluate_pipeline(pipeline_type):
             "M17": round(1.0 / max(0.001, e2e), 4),
             "M18": psutil.cpu_percent(),
             "M19": round(psutil.virtual_memory().used / (1024**3), 2),
-            "M20": _jval(judge, "citation_acc"),
+            "M20": citation_acc * 100,
             "M21": _jval(judge, "term_precision"),
             "M22": _jval(judge, "precedent_match") * 100,
             "M23": _jval(judge, "regulatory_alignment"),
@@ -667,6 +709,10 @@ def evaluate_pipeline(pipeline_type):
             "M25": ttft_latencies[i],
             "M26": prefill_latencies[i],
             "M27": throughput_rates[i],
+            "M28": recall_at_10,
+            "M29": mrr,
+            "M30": ndcg_at_10,
+            "M31": precision_at_5,
         })
         time.sleep(1)
 
@@ -706,7 +752,7 @@ metrics_list = [
     ("M2", "Index Size (Vectors)", "higher"),
     ("M3", "Ret. Latency (s)", "lower"),
     ("M4", "Cos. Similarity", "higher"),
-    ("M5", "Top-K Accuracy", "higher"),
+    ("M5", "Recall@5", "higher"),
     ("M6", "ROUGE-1 F1", "higher"),
     ("M7", "ROUGE-2 F1", "higher"),
     ("M8", "ROUGE-L F1", "higher"),
@@ -728,7 +774,11 @@ metrics_list = [
     ("M24", "Bias Score", "lower"),
     ("M25", "TTFT (s)", "lower"),
     ("M26", "Prefill Latency (s)", "lower"),
-    ("M27", "Tokens/sec", "higher")
+    ("M27", "Tokens/sec", "higher"),
+    ("M28", "Recall@10", "higher"),
+    ("M29", "MRR", "higher"),
+    ("M30", "nDCG@10", "higher"),
+    ("M31", "Precision@5", "higher")
 ]
 
 print("\n" + "="*80)
@@ -846,6 +896,14 @@ try:
     avg_e_m26 = enh_results.get("M26", 0.0)
     avg_p_m27 = prim_results.get("M27", 0.0)
     avg_e_m27 = enh_results.get("M27", 0.0)
+    avg_p_m28 = prim_results.get("M28", 0.0)
+    avg_e_m28 = enh_results.get("M28", 0.0)
+    avg_p_m29 = prim_results.get("M29", 0.0)
+    avg_e_m29 = enh_results.get("M29", 0.0)
+    avg_p_m30 = prim_results.get("M30", 0.0)
+    avg_e_m30 = enh_results.get("M30", 0.0)
+    avg_p_m31 = prim_results.get("M31", 0.0)
+    avg_e_m31 = enh_results.get("M31", 0.0)
 
     def check_imp(metric_key, p_val, e_val):
         lower_is_better = ["M3", "M13", "M16", "M18", "M19", "M24", "M25", "M26"]
@@ -878,7 +936,7 @@ try:
     analysis_text = (
         "<b>Comparative Audit & Interpretation of Evaluated Results:</b><br/>"
         f"1. <b>Semantic Retrieval Quality (M4 & M5):</b> Average Cosine Similarity went from {avg_p_m4:.3f} to {avg_e_m4:.3f} ({m4_verb}){m4_reason}, "
-        f"while average Top-K Accuracy went from {avg_p_m5:.1f}% to {avg_e_m5:.1f}% ({m5_verb}).<br/>"
+        f"while average Recall@5 went from {avg_p_m5:.1f}% to {avg_e_m5:.1f}% ({m5_verb}).<br/>"
         f"2. <b>Factual Grounding & Faithfulness (M13, M14, M15):</b> Faithfulness (M14) changed from {avg_p_m14:.3f} to {avg_e_m14:.3f} ({m14_verb}){m14_reason}, "
         f"and average Ground Truth Coverage (M15) changed from {avg_p_m15:.1f}% to {avg_e_m15:.1f}% ({m15_verb}). "
         f"Factual Consistency Deviation (M13) went from {avg_p_m13:.3f} to {avg_e_m13:.3f}.<br/>"
@@ -890,6 +948,11 @@ try:
         f"Average TTFT (M25) went from {avg_p_m25:.3f}s to {avg_e_m25:.3f}s, "
         f"Prefill Latency (M26) went from {avg_p_m26:.3f}s to {avg_e_m26:.3f}s, "
         f"and Generation Throughput (M27) went from {avg_p_m27:.2f} to {avg_e_m27:.2f} tokens/sec ({m27_verb}){m27_reason}.<br/>"
+        f"6. <b>Standard Information Retrieval Benchmarks:</b> "
+        f"Recall@10 went from {avg_p_m28:.3f} to {avg_e_m28:.3f}, "
+        f"MRR went from {avg_p_m29:.3f} to {avg_e_m29:.3f}, "
+        f"nDCG@10 went from {avg_p_m30:.3f} to {avg_e_m30:.3f}, "
+        f"and Precision@5 went from {avg_p_m31:.3f} to {avg_e_m31:.3f}.<br/>"
     )
 
     story.append(Paragraph(analysis_text, ParagraphStyle("analysis", fontSize=9, fontName="Helvetica", textColor=colors.black, leading=13)))

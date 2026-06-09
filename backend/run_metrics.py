@@ -378,11 +378,30 @@ def run_evaluation():
     from nltk.stem import PorterStemmer
     ps = PorterStemmer()
 
+    def is_match(ret_doc, gold_doc):
+        if not ret_doc or not gold_doc:
+            return False
+        # 1. Normalize spaces & lowercase
+        r_norm = "".join(ret_doc.split()).lower()
+        g_norm = "".join(gold_doc.split()).lower()
+        if g_norm in r_norm or r_norm in g_norm:
+            return True
+        # 2. Token overlap checks
+        r_toks = set(ret_doc.lower().split())
+        g_toks = set(gold_doc.lower().split())
+        if not r_toks or not g_toks:
+            return False
+        overlap_ratio = len(r_toks & g_toks) / len(g_toks)
+        if overlap_ratio >= 0.60:
+            return True
+        jaccard = len(r_toks & g_toks) / len(r_toks | g_toks)
+        return jaccard >= 0.60
+
     def verify_citations(pred_text, gt_text):
         pattern = r'(Section\s+\d+[A-Za-z]*|S\.\s*\d+|Article\s+\d+|Art\.\s*\d+|Act,\s+\d{4}|[A-Z]{3,4}\s+\d{4}\s+[A-Z\s]+|AIR\s+\d{4}\s+SC\s+\d+|\(\d{4}\)\s+\d+\s+SCC\s+\d+)'
         gt_citations = set(re.findall(pattern, gt_text, re.IGNORECASE))
         if not gt_citations:
-            return 1.0
+            return None
         pred_citations = set(re.findall(pattern, pred_text, re.IGNORECASE))
         matched = gt_citations & pred_citations
         return len(matched) / len(gt_citations)
@@ -411,27 +430,31 @@ def run_evaluation():
         
         # Retrieve target gold document if available (non-circular evaluation)
         gold_chunk = gold_chunks[i] if (i < len(gold_chunks) and gold_chunks[i] is not None) else None
-        gold_chunks_set = {gold_chunk} if gold_chunk else set()
         
         # Determine the retrieved texts
         ret_texts_5 = ret_texts_all[i]
         ret_texts_10 = all_ret_texts_all[i] if i < len(all_ret_texts_all) else ret_texts_5
 
-        recall_at_5 = len(set(ret_texts_5) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
-        recall_at_10 = len(set(ret_texts_10) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
-        precision_at_5 = len(set(ret_texts_5) & gold_chunks_set) / 5.0
+        # Check robust matches
+        matches_5 = [doc for doc in ret_texts_5 if is_match(doc, gold_chunk)]
+        matches_10 = [doc for doc in ret_texts_10 if is_match(doc, gold_chunk)]
+        has_gold = (gold_chunk is not None)
+
+        recall_at_5 = 1.0 if (has_gold and matches_5) else 0.0
+        recall_at_10 = 1.0 if (has_gold and matches_10) else 0.0
+        precision_at_5 = len(matches_5) / 5.0
         
         # MRR
         mrr = 0.0
         for rank, doc in enumerate(ret_texts_10):
-            if doc in gold_chunks_set:
+            if is_match(doc, gold_chunk):
                 mrr = 1.0 / (rank + 1)
                 break
         
         # nDCG@10
         ndcg_at_10 = 0.0
         for rank, doc in enumerate(ret_texts_10):
-            if doc in gold_chunks_set:
+            if is_match(doc, gold_chunk):
                 ndcg_at_10 = 1.0 / np.log2(rank + 2)
                 break
 
@@ -478,9 +501,9 @@ def run_evaluation():
             "M15": gt_coverage * 100,
             "M16": e2e,
             "M17": round(1.0 / max(0.001, e2e), 4),
-            "M18": psutil.cpu_percent(),
-            "M19": round(psutil.virtual_memory().used / (1024**3), 2),
-            "M20": citation_acc * 100,
+            "M18": psutil.Process(os.getpid()).cpu_percent(),
+            "M19": round(psutil.Process(os.getpid()).memory_info().rss / (1024**3), 2),
+            "M20": citation_acc * 100 if citation_acc is not None else None,
             "M21": _jval(judge, "term_precision"),
             "M22": _jval(judge, "precedent_match") * 100,
             "M23": _jval(judge, "regulatory_alignment"),

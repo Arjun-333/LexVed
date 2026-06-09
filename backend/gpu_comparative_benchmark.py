@@ -602,11 +602,30 @@ def evaluate_pipeline(pipeline_type):
     from nltk.stem import PorterStemmer
     ps = PorterStemmer()
 
+    def is_match(ret_doc, gold_doc):
+        if not ret_doc or not gold_doc:
+            return False
+        # 1. Normalize spaces & lowercase
+        r_norm = "".join(ret_doc.split()).lower()
+        g_norm = "".join(gold_doc.split()).lower()
+        if g_norm in r_norm or r_norm in g_norm:
+            return True
+        # 2. Token overlap checks
+        r_toks = set(ret_doc.lower().split())
+        g_toks = set(gold_doc.lower().split())
+        if not r_toks or not g_toks:
+            return False
+        overlap_ratio = len(r_toks & g_toks) / len(g_toks)
+        if overlap_ratio >= 0.60:
+            return True
+        jaccard = len(r_toks & g_toks) / len(r_toks | g_toks)
+        return jaccard >= 0.60
+
     def verify_citations(pred_text, gt_text):
         pattern = r'(Section\s+\d+[A-Za-z]*|S\.\s*\d+|Article\s+\d+|Art\.\s*\d+|Act,\s+\d{4}|[A-Z]{3,4}\s+\d{4}\s+[A-Z\s]+|AIR\s+\d{4}\s+SC\s+\d+|\(\d{4}\)\s+\d+\s+SCC\s+\d+)'
         gt_citations = set(re.findall(pattern, gt_text, re.IGNORECASE))
         if not gt_citations:
-            return 1.0
+            return None
         pred_citations = set(re.findall(pattern, pred_text, re.IGNORECASE))
         matched = gt_citations & pred_citations
         return len(matched) / len(gt_citations)
@@ -633,27 +652,31 @@ def evaluate_pipeline(pipeline_type):
 
         # Retrieve target gold document if available (non-circular evaluation)
         gold_chunk = GOLD_CHUNKS[i] if (i < len(GOLD_CHUNKS) and GOLD_CHUNKS[i] is not None) else None
-        gold_chunks_set = {gold_chunk} if gold_chunk else set()
         
         # Determine the retrieved texts
         ret_texts_5 = ret_texts_all[i]
         ret_texts_10 = all_ret_texts_all[i] if i < len(all_ret_texts_all) else ret_texts_5
 
-        recall_at_5 = len(set(ret_texts_5) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
-        recall_at_10 = len(set(ret_texts_10) & gold_chunks_set) / max(1, len(gold_chunks_set)) if gold_chunks_set else 0.0
-        precision_at_5 = len(set(ret_texts_5) & gold_chunks_set) / 5.0
+        # Check robust matches
+        matches_5 = [doc for doc in ret_texts_5 if is_match(doc, gold_chunk)]
+        matches_10 = [doc for doc in ret_texts_10 if is_match(doc, gold_chunk)]
+        has_gold = (gold_chunk is not None)
+
+        recall_at_5 = 1.0 if (has_gold and matches_5) else 0.0
+        recall_at_10 = 1.0 if (has_gold and matches_10) else 0.0
+        precision_at_5 = len(matches_5) / 5.0
         
         # MRR
         mrr = 0.0
         for rank, doc in enumerate(ret_texts_10):
-            if doc in gold_chunks_set:
+            if is_match(doc, gold_chunk):
                 mrr = 1.0 / (rank + 1)
                 break
         
         # nDCG@10
         ndcg_at_10 = 0.0
         for rank, doc in enumerate(ret_texts_10):
-            if doc in gold_chunks_set:
+            if is_match(doc, gold_chunk):
                 ndcg_at_10 = 1.0 / np.log2(rank + 2)
                 break
 
@@ -699,9 +722,9 @@ def evaluate_pipeline(pipeline_type):
             "M15": gt_coverage * 100,
             "M16": e2e,
             "M17": round(1.0 / max(0.001, e2e), 4),
-            "M18": psutil.cpu_percent(),
-            "M19": round(psutil.virtual_memory().used / (1024**3), 2),
-            "M20": citation_acc * 100,
+            "M18": psutil.Process(os.getpid()).cpu_percent(),
+            "M19": round(psutil.Process(os.getpid()).memory_info().rss / (1024**3), 2),
+            "M20": citation_acc * 100 if citation_acc is not None else None,
             "M21": _jval(judge, "term_precision"),
             "M22": _jval(judge, "precedent_match") * 100,
             "M23": _jval(judge, "regulatory_alignment"),
@@ -859,10 +882,11 @@ try:
         p_val = float(tbl[i][2])
         e_val = float(tbl[i][3])
         improved = False
-        if goal == "higher" and e_val > p_val:
-            improved = True
-        elif goal == "lower" and e_val < p_val:
-            improved = True
+        if abs(e_val - p_val) > 1e-5:
+            if goal == "higher" and e_val > p_val:
+                improved = True
+            elif goal == "lower" and e_val < p_val:
+                improved = True
         if improved:
             t_style.add("TEXTCOLOR", (3, i), (3, i), HIGHLIGHT_GREEN)
             t_style.add("FONTNAME", (3, i), (3, i), "Helvetica-Bold")
@@ -905,33 +929,37 @@ try:
     avg_p_m31 = prim_results.get("M31", 0.0)
     avg_e_m31 = enh_results.get("M31", 0.0)
 
-    def check_imp(metric_key, p_val, e_val):
+    def get_comparison_verb(metric_key, p_val, e_val):
+        if abs(p_val - e_val) < 1e-5:
+            return "unchanged"
         lower_is_better = ["M3", "M13", "M16", "M18", "M19", "M24", "M25", "M26"]
         if metric_key in lower_is_better:
-            return e_val < p_val
-        return e_val > p_val
+            improved = e_val < p_val
+        else:
+            improved = e_val > p_val
+        return "improved" if improved else "decreased"
 
-    m4_verb = "improved" if check_imp("M4", avg_p_m4, avg_e_m4) else "decreased"
-    m4_reason = "" if check_imp("M4", avg_p_m4, avg_e_m4) else " (prioritizing semantic alignment via RRF/CE reranking over raw vector overlap)"
+    m4_verb = get_comparison_verb("M4", avg_p_m4, avg_e_m4)
+    m4_reason = "" if m4_verb in ["improved", "unchanged"] else " (prioritizing semantic alignment via RRF/CE reranking over raw vector overlap)"
 
-    m5_verb = "improved" if check_imp("M5", avg_p_m5, avg_e_m5) else "decreased"
+    m5_verb = get_comparison_verb("M5", avg_p_m5, avg_e_m5)
 
-    m14_verb = "improved" if check_imp("M14", avg_p_m14, avg_e_m14) else "decreased"
-    m14_reason = "" if check_imp("M14", avg_p_m14, avg_e_m14) else " (due to sparse BM25 retrieval occasionally adding broader contexts that dilute focus)"
+    m14_verb = get_comparison_verb("M14", avg_p_m14, avg_e_m14)
+    m14_reason = "" if m14_verb in ["improved", "unchanged"] else " (due to sparse BM25 retrieval occasionally adding broader contexts that dilute focus)"
 
-    m15_verb = "improved" if check_imp("M15", avg_p_m15, avg_e_m15) else "decreased"
+    m15_verb = get_comparison_verb("M15", avg_p_m15, avg_e_m15)
 
-    m20_verb = "improved" if check_imp("M20", avg_p_m20, avg_e_m20) else "decreased"
-    m20_reason = "" if check_imp("M20", avg_p_m20, avg_e_m20) else " (blended context streams sometimes displacing target citation markers)"
+    m20_verb = get_comparison_verb("M20", avg_p_m20, avg_e_m20)
+    m20_reason = "" if m20_verb in ["improved", "unchanged"] else " (blended context streams sometimes displacing target citation markers)"
 
-    m22_verb = "improved" if check_imp("M22", avg_p_m22, avg_e_m22) else "decreased"
-    m22_reason = "" if check_imp("M22", avg_p_m22, avg_e_m22) else " (precedent loops needing tighter prompting boundary constraints)"
+    m22_verb = get_comparison_verb("M22", avg_p_m22, avg_e_m22)
+    m22_reason = "" if m22_verb in ["improved", "unchanged"] else " (precedent loops needing tighter prompting boundary constraints)"
 
-    m3_verb = "improved (faster)" if check_imp("M3", avg_p_m3, avg_e_m3) else "increased (slower)"
-    m3_reason = "" if check_imp("M3", avg_p_m3, avg_e_m3) else " (expected overhead from executing dense-sparse fusion and reranking loops)"
+    m3_verb = "improved (faster)" if get_comparison_verb("M3", avg_p_m3, avg_e_m3) == "improved" else ("unchanged" if get_comparison_verb("M3", avg_p_m3, avg_e_m3) == "unchanged" else "increased (slower)")
+    m3_reason = "" if m3_verb in ["improved (faster)", "unchanged"] else " (expected overhead from executing dense-sparse fusion and reranking loops)"
 
-    m27_verb = "improved" if check_imp("M27", avg_p_m27, avg_e_m27) else "decreased"
-    m27_reason = "" if check_imp("M27", avg_p_m27, avg_e_m27) else " (overhead of larger context payloads on LLM generation prompt processing)"
+    m27_verb = get_comparison_verb("M27", avg_p_m27, avg_e_m27)
+    m27_reason = "" if m27_verb in ["improved", "unchanged"] else " (overhead of larger context payloads on LLM generation prompt processing)"
 
     analysis_text = (
         "<b>Comparative Audit & Interpretation of Evaluated Results:</b><br/>"

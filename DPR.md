@@ -157,3 +157,10 @@ In the latest version, LexVed has been hardened for institutional audit readines
 * **M27 (Generation Throughput):** Integrated throughput measurement (tokens/sec) calculations inside the streaming pipelines.
 * **GPU Comparative Benchmark:** Created `backend/gpu_comparative_benchmark.py` utilizing PyTorch/CUDA and local BM25 to run side-by-side RAG pipeline evaluations on an NVIDIA A100 GPU, generating printable landscape PDF audit sheets.
 
+### Session: Research-Grade Metrics & Pluggable Frameworks (June 9, 2026 - Part 2) [NEW]
+* **100-Query Synthetic Dataset:** Replaced the manually defined 10 queries with a programmatically generated, 100-query synthetic dataset (`data/synthetic_evaluation_dataset.json`). Each item maps a legal query and ground-truth answer to a known target document chunk, enabling true non-circular evaluation.
+* **Standard IR Benchmarks (M28-M31):** Integrated standard Information Retrieval benchmarks into the metric suite: Recall@10, Mean Reciprocal Rank (MRR), nDCG@10, and Precision@5.
+* **Enhanced Metric Reliability:** Integrated PorterStemmer for token cleaning in Ground Truth Coverage (M15), and expanded the statutory/case-law citation regex (M20) to capture NI Act, section codes, articles, and case reporters objectively.
+* **Pluggable Evaluation Adapters:** Created `backend/src/evaluation/framework_evaluators.py` offering pluggable integrations for RAGAS and DeepEval frameworks, complete with standardized dataset exporting.
+
+

@@ -109,14 +109,16 @@ The interface includes a toggle switch allowing users to dictate the execution p
 ### Pipeline Comparisons
 The Metrics Dashboard includes a dedicated "Pipelines" tab, allowing administrators to execute and compare the performance of the Baseline Primitive Pipeline against the Enhanced Multi-Agent Pipeline across a 26-KPI benchmark suite.
 
-## Institutional Audit Metrics (M1-M27)
+## Institutional Audit Metrics (M1-M31)
 
-The platform evaluates system integrity across 27 distinct dimensions, including:
+The platform evaluates system integrity across 31 distinct dimensions, including:
 * **M1 - M3:** Infrastructure Latency (Embedding, Indexing, Retrieval).
-* **M4 - M5:** Retrieval Quality (Cosine Similarity, Recall@K).
+* **M4 - M5:** Retrieval Quality (Cosine Similarity, Recall@5).
 * **M6 - M12:** Lexical and Semantic Precision (ROUGE, BLEU, METEOR, BERTScore).
-* **M20 - M24:** Legal Verification (Citation Accuracy, Precedent Match, Regulatory Alignment).
+* **M13 - M15:** Grounding & Faithfulness (Factual Consistency Deviation, Faithfulness, Porter-Stemmed GT Coverage).
+* **M20 - M24:** Legal Verification (Regex Citation Accuracy, Precedent Match, Regulatory Alignment).
 * **M25 - M27:** Generation Efficiency (Prefill Latency, Time To First Token / TTFT, Generation Throughput).
+* **M28 - M31:** Standard IR Benchmarks (Recall@10, MRR, nDCG@10, Precision@5).
 
 ## Embedding Models (4)
 
@@ -127,7 +129,7 @@ The platform evaluates system integrity across 27 distinct dimensions, including
 | multi-qa-distilbert-cos-v1 | 768 | SentenceTransformers |
 | BAAI/bge-m3 | 1024 | HuggingFace |
 
-## Evaluation Metrics (M1-M27)
+## Evaluation Metrics (M1-M31)
 
 | ID | Metric | Method |
 |----|--------|--------|
@@ -135,20 +137,20 @@ The platform evaluates system integrity across 27 distinct dimensions, including
 | M2 | Index Point Count | DB Stats |
 | M3 | Retrieval Latency | Timer |
 | M4 | Cosine Similarity | SentenceTransformers |
-| M5 | Recall@K | Category Match |
+| M5 | Recall@5 | Known Gold Chunk |
 | M6-M8 | ROUGE-1/2/L | rouge-score |
 | M9 | METEOR | HuggingFace evaluate |
 | M10 | BLEU | HuggingFace evaluate |
 | M11 | Semantic Score | Cosine(GT, Ans) |
 | M12 | BERTScore F1 | bert-score |
-| M13 | Factual Deviation (FCD) | BERTScore Context |
-| M14 | Faithfulness | DeBERTa NLI |
-| M15 | Factual Consistency | LLM Judge |
+| M13 | Factual Consistency Deviation | 1.0 - Faithfulness |
+| M14 | Faithfulness | LLM Judge |
+| M15 | GT Coverage (%) | Porter Stemmer Match |
 | M16 | E2E Latency | Timer |
 | M17 | Token Gen Latency | Timer/Tokens |
 | M18 | Cost Per Query | Token Estimation |
 | M19 | RAM Utilization | psutil |
-| M20 | Citation Accuracy | LLM Judge |
+| M20 | Citation Accuracy | Regex Citation Matcher |
 | M21 | Term Precision | SpaCy NER |
 | M22 | Precedent Match | LLM Judge |
 | M23 | Regulatory Alignment | LLM Judge |
@@ -156,6 +158,10 @@ The platform evaluates system integrity across 27 distinct dimensions, including
 | M25 | Prefill Latency | Groq Usage API |
 | M26 | Time to First Token (TTFT) | Groq Stream Timer |
 | M27 | Generation Throughput (Tokens/sec) | Timer / Token Count |
+| M28 | Recall@10 | Known Gold Chunk |
+| M29 | Mean Reciprocal Rank (MRR) | Reciprocal Rank |
+| M30 | nDCG@10 | Normalized Discounted Cumulative Gain |
+| M31 | Precision@5 | Known Gold Chunk |
 
 ## Swarm Mode & GPU Benchmarking
 

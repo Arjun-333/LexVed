@@ -104,5 +104,24 @@ A side-by-side performance evaluation was conducted using the `multi-qa-mpnet-ba
 - **Core Utility:** `backend/reingest_pinecone.py`
 
 ---
+
+## Extended Benchmarking & Framework Integrations (June 2026)
+
+To elevate LexVed to research-grade standards, the benchmarking engine has been refactored:
+1. **100-Query Synthetic Dataset:** We replaced the baseline 10 manual queries with a programmatically generated, 100-query synthetic dataset (`data/synthetic_evaluation_dataset.json`). Each item maps a realistic legal query and ground-truth answer to a specific, known target document chunk, enabling true non-circular evaluation.
+2. **Standard Information Retrieval Benchmarks:** Added computation of:
+   * **Recall@10** (M28)
+   * **Mean Reciprocal Rank (MRR)** (M29)
+   * **nDCG@10** (M30)
+   * **Precision@5** (M31) - computed as a general, set-based overlap of relevant chunks.
+3. **Pluggable Evaluation Adapters (`framework_evaluators.py`):** Added a new adapter module that formats our benchmark data and runs it through industry-standard RAG assessment frameworks, including:
+   * **RAGAS:** Evaluates `faithfulness`, `answer_relevancy`, `context_precision`, and `context_recall`.
+   * **DeepEval:** Evaluates `FaithfulnessMetric` and `AnswerRelevancyMetric` using test cases.
+4. **Enhanced Metric Reliability:**
+   * **Porter Stemmer for M15 (Ground Truth Coverage):** Token matching is now performed after lowercase cleaning and Porter stemming.
+   * **Regex Citation Audits (M20):** Objective legal citation checking for NI Act, statutory sections (`S.138`, `Art. 21`), and case reports (e.g. `AIR 1962 SC 123`, `(2005) 6 SCC 344`).
+
+---
 **Author:** Arjun R
 **Date:** 9 June 2026
+

@@ -114,10 +114,46 @@ print(f"[SUCCESS] Loaded {len(chunks)} text chunks.")
 
 # ─── 3. Initialize Embedding & Reranker Models ───────────────────────
 
-from sentence_transformers import SentenceTransformer, CrossEncoder
+# Interactive Selection of Embedding Model
+print("\n--- Embedding Model Selection ---")
+print("1) multi-qa-MiniLM-L6-cos-v1 (384d)")
+print("2) multi-qa-mpnet-base-cos-v1 (768d) [Default]")
+print("3) multi-qa-distilbert-cos-v1 (768d)")
+print("4) BAAI/bge-m3 (1024d)")
 
-model_name = "multi-qa-mpnet-base-cos-v1"
-hf_name = f"sentence-transformers/{model_name}"
+model_choice = input("Select an embedding model [1-4, Default: 2]: ").strip()
+
+MODELS_CONFIG = {
+    "1": {
+        "name": "multi-qa-MiniLM-L6-cos-v1",
+        "hf_name": "sentence-transformers/multi-qa-MiniLM-L6-cos-v1",
+        "dim": 384
+    },
+    "2": {
+        "name": "multi-qa-mpnet-base-cos-v1",
+        "hf_name": "sentence-transformers/multi-qa-mpnet-base-cos-v1",
+        "dim": 768
+    },
+    "3": {
+        "name": "multi-qa-distilbert-cos-v1",
+        "hf_name": "sentence-transformers/multi-qa-distilbert-cos-v1",
+        "dim": 768
+    },
+    "4": {
+        "name": "BAAI/bge-m3",
+        "hf_name": "BAAI/bge-m3",
+        "dim": 1024
+    }
+}
+
+selected_cfg = MODELS_CONFIG.get(model_choice, MODELS_CONFIG["2"])
+model_name = selected_cfg["name"]
+hf_name = selected_cfg["hf_name"]
+model_dim = selected_cfg["dim"]
+
+print(f"\n[*] Selected Embedding Model: {model_name} ({model_dim}d)")
+
+from sentence_transformers import SentenceTransformer, CrossEncoder
 
 print(f"\n[*] Loading SentenceTransformer ({model_name}) on {device.upper()}...")
 embedder = SentenceTransformer(hf_name, device=device)
@@ -142,8 +178,8 @@ else:
 
 from pinecone import Pinecone, ServerlessSpec
 pc = Pinecone(api_key=PINECONE_API_KEY)
-pinecone_index_name = "lexved-audit-768"
-pinecone_namespace = "multi-qa-mpnet-base-cos-v1"
+pinecone_index_name = f"lexved-audit-{model_dim}"
+pinecone_namespace = model_name
 
 # Check if index exists, create if missing
 try:
@@ -152,7 +188,7 @@ try:
         print(f"[*] Index '{pinecone_index_name}' not found. Creating serverless spec in Pinecone...")
         pc.create_index(
             name=pinecone_index_name,
-            dimension=768,
+            dimension=model_dim,
             metric="cosine",
             spec=ServerlessSpec(cloud="aws", region="us-east-1")
         )
@@ -687,8 +723,8 @@ try:
     meta_text = (
         f"<b>Audit Date:</b> {datetime.now().strftime('%d %B %Y, %H:%M IST')}<br/>"
         f"<b>Hardware:</b> NVIDIA A100 GPU (PyTorch/CUDA Acceleration)<br/>"
-        f"<b>Evaluation Corpus:</b> 516 Documents ({index_size} vector segments)<br/>"
-        f"<b>Active Model:</b> {model_name} (768d)"
+        f"<b>Evaluation Corpus:</b> {index_size} vector segments<br/>"
+        f"<b>Active Model:</b> {model_name} ({model_dim}d)"
     )
     story.append(Paragraph(meta_text, ParagraphStyle("meta", fontSize=9, fontName="Helvetica", textColor=colors.black, leading=13)))
     story.append(Spacer(1, 0.6*cm))

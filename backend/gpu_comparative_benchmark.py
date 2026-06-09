@@ -322,7 +322,10 @@ def bm25_retrieve(query, top_k=20):
 
 # ─── 6. Benchmark Queries and Ground Truths ──────────────────────────
 
-backend_dir = os.path.dirname(os.path.abspath(__file__))
+try:
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+except NameError:
+    backend_dir = os.getcwd()
 synthetic_path_candidates = [
     os.path.join(backend_dir, "data", "synthetic_evaluation_dataset.json"),
     "data/synthetic_evaluation_dataset.json",

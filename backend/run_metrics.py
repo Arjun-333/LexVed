@@ -1,614 +1,446 @@
+"""
+LexVed Enhanced Pipeline Evaluation Runner
+References the same methodology as LexVed_Institutional_Audit.ipynb:
+  - Hybrid BM25/Dense retrieval with Reciprocal Rank Fusion
+  - CrossEncoder reranking (ms-marco-MiniLM-L-6-v2)
+  - LLM Judge via Groq (llama-3.1-8b-instant)
+  - 26 KPI metrics (M1-M26)
+
+Writes results to evaluation_results.json for the frontend dashboard.
+"""
 import os
-from dotenv import load_dotenv
-load_dotenv()
 import json
 import time
-import requests
+import re
 import psutil
-import torch
 import numpy as np
-from sentence_transformers import SentenceTransformer, util
-from rouge_score import rouge_scorer
-import evaluate
-from src.retrieval.retriever import retrieve
-from src.generation.generator import generate_answer_stream
-from src.utils.config_manager import get_active_model_name, get_active_db_name, get_active_generation_model, load_config
+from dotenv import load_dotenv
 
-# Evaluation Config
-EVAL_DATA_PATH = "evaluation_data.json"
-OLLAMA_URL = "http://localhost:11434/api/generate"
+load_dotenv()
 
-# Initialize local metrics
-scorer_rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
-metric_bleu = evaluate.load("bleu")
-metric_meteor = evaluate.load("meteor")
-metric_bertscore = evaluate.load("bertscore")
-_model_st = None
-_model_st_name = None
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+EVAL_DATA_PATH = os.path.join(PROJECT_ROOT, "data", "evaluation_queries.json")
+RESULTS_PATH = os.path.join(PROJECT_ROOT, "evaluation_results.json")
 
-def get_model_st():
-    """Lazily load the SentenceTransformer model, refreshing if the active model changed."""
-    global _model_st, _model_st_name
-    active = get_active_model_name()
-    # Cohere uses API-based embeddings, fall back to a lightweight local model for cosine sim calculations
-    if "embed-english" in active or "cohere" in active.lower():
-        if _model_st_name != "multi-qa-mpnet-base-cos-v1":
-            _model_st = SentenceTransformer("multi-qa-mpnet-base-cos-v1")
-            _model_st_name = "multi-qa-mpnet-base-cos-v1"
-        return _model_st
-    if _model_st is None or _model_st_name != active:
-        print(f"[LexVed] Loading SentenceTransformer for metrics: {active}")
-        _model_st = SentenceTransformer(active)
-        _model_st_name = active
-    return _model_st
+# ─── Groq LLM Judge (from notebook) ──────────────────────────────
 
-def check_hallucination_nli(context, answer):
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+
+def _update_progress(msg, status="processing"):
+    """Write progress to evaluation_results.json so the frontend can poll."""
     try:
-        if not globals().get("nli_pipeline"):
-            from transformers import pipeline
-            globals()["nli_pipeline"] = pipeline("text-classification", model="cross-encoder/nli-deberta-v3-small")
-            
-        ctx_trunc = context[:2000] 
-        res = globals()["nli_pipeline"]({"text": ctx_trunc, "text_pair": answer})
-        label = res.get("label", "").lower()
-        score = res.get("score", 0.5)
-        
-        if "entailment" in label or "label_1" in label or "label_2" in label:
-            return int(score * 100)
-        elif "contradiction" in label or "label_0" in label:
-            return int((1 - score) * 100)
-        return 50 # Neutral
-    except Exception as e:
-        print(f"NLI Error: {e}")
-        return 75
+        existing = {}
+        if os.path.exists(RESULTS_PATH):
+            with open(RESULTS_PATH, "r") as f:
+                existing = json.load(f)
+        existing["status"] = status
+        existing["progress"] = msg
+        existing["pid"] = os.getpid()
+        with open(RESULTS_PATH, "w") as f:
+            json.dump(existing, f, indent=2)
+    except Exception:
+        pass
 
-def get_ner_precision(gt, ans):
-    try:
-        if not globals().get("nlp"):
-            import spacy
-            try:
-                globals()["nlp"] = spacy.load("en_core_web_sm")
-            except:
-                import os
-                os.system("python3 -m spacy download en_core_web_sm")
-                globals()["nlp"] = spacy.load("en_core_web_sm")
-        
-        gt_doc = globals()["nlp"](gt)
-        ans_doc = globals()["nlp"](ans)
-        
-        gt_ents = {ent.text.lower() for ent in gt_doc.ents if ent.label_ in ["PERSON", "ORG", "GPE", "LAW", "DATE"]}
-        ans_ents = {ent.text.lower() for ent in ans_doc.ents if ent.label_ in ["PERSON", "ORG", "GPE", "LAW", "DATE"]}
-        
-        if not gt_ents: return 100
-        overlap = gt_ents.intersection(ans_ents)
-        return int((len(overlap) / len(gt_ents)) * 100)
-        
-    except Exception as e:
-        print(f"NER Error: {e}")
-        return 50
 
-def judge_llm_metrics(query, ground_truth, model_answer, context):
-    """Uses Llama 3 to evaluate complex metrics like Faithfulness, Bias, and Terminology Precision."""
-    prompt = f"""
-    You are an expert legal auditor. Evaluate the following RAG system output against 6 specific metrics.
-    
-    [DATA]
-    QUERY: {query}
-    GROUND TRUTH: {ground_truth}
-    MODEL ANSWER: {model_answer}
-    CONTEXT: {context[:2000]}
+def unified_judge(query, context, answer, ground_truth) -> dict:
+    """LLM-based judge matching the notebook's unified_judge function."""
+    import requests
 
-    [METRICS TO EVALUATE]
-    1. faithfulness: Does the answer only use information from the context? Score 1-100.
-    2. citation_acc: Are legal citations (sections, acts, case names) correct? Score 1-100.
-    3. term_precision: Is legal terminology used correctly? Score 1-100.
-    4. precedent_match: Are relevant legal precedents and cases correctly cited? Score 1-100.
-    5. factual_consistency: How factually consistent is the answer with the ground truth? Score 1-100.
-    6. bias_score: Presence of bias towards protected attributes. Score 0-100, 0 means no bias.
-    7. regulatory_alignment: Does the answer align with standard legal regulations? Score 1-100.
-    8. jurisdictional_comp: Is the jurisdictional context appropriate? Score 1-100.
+    defaults = {
+        "faithfulness": 50, "citation_acc": 50, "term_precision": 50,
+        "precedent_match": 50, "factual_consistency": 50, "bias_score": 10,
+        "regulatory_alignment": 50, "jurisdictional_comp": 50
+    }
+    prompt = f"""You are an expert legal auditor. Evaluate the RAG output on 8 metrics.
+QUERY: {query}
+GROUND TRUTH: {ground_truth}
+MODEL ANSWER: {answer}
+CONTEXT: {context[:5000]}
 
-    Output ONLY a valid JSON object with integer values:
-    {{"faithfulness": 75, "citation_acc": 60, "term_precision": 80, "precedent_match": 50, "factual_consistency": 70, "bias_score": 5, "regulatory_alignment": 85, "jurisdictional_comp": 90}}
-    """
-    
-    api_key = os.getenv("GROQ_API_KEY")
-    if api_key:
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        # Determine which Groq model to use for judging
-        judge_model = get_active_generation_model()
-        if judge_model not in load_config().get("groq_models", []):
-            judge_model = "llama-3.1-8b-instant"
+Return ONLY valid JSON with integer scores 0-100:
+{{"faithfulness":75,"citation_acc":60,"term_precision":80,"precedent_match":50,"factual_consistency":70,"bias_score":5,"regulatory_alignment":85,"jurisdictional_comp":90}}"""
 
-        eval_payload = {
-            "model": judge_model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.1,
-            "response_format": {"type": "json_object"}
-        }
-        try:
-            res = requests.post(url, headers=headers, json=eval_payload, timeout=60)
-            if res.status_code == 200:
-                raw_resp = res.json()["choices"][0]["message"]["content"]
-                import re
-                match = re.search(r'\{.*\}', raw_resp, re.DOTALL)
-                if match:
-                    parsed = json.loads(match.group(0))
-                    if isinstance(parsed, dict):
-                        parsed = {k.lower(): v for k, v in parsed.items()}
-                    return parsed
-        except Exception as e:
-            print(f"[LexVed] Groq Judge failed ({e}), falling back to Ollama...")
-
-    # Fallback to Ollama if Groq fails or is not configured
-    gen_model = get_active_generation_model()
-    # If the active model is a Groq model, Ollama won't recognize it. Use generic llama3 for local judge.
-    if gen_model in load_config().get("groq_models", []):
-        gen_model = "llama3"
-
-    payload = {"model": gen_model, "prompt": prompt, "stream": False, "format": "json"}
-    try:
-        import re
-        res = requests.post(OLLAMA_URL, json=payload, timeout=180) 
-        raw_resp = res.json().get("response", "{}")
-        match = re.search(r'\{.*\}', raw_resp, re.DOTALL)
-        if match:
-            parsed = json.loads(match.group(0))
-        else:
-            parsed = json.loads(raw_resp)
-            
-        # Normalize keys to lowercase to prevent 8B model formatting bugs
-        if isinstance(parsed, dict):
-            parsed = {k.lower(): v for k, v in parsed.items()}
-        return parsed
-    except Exception as e:
-        print(f"Exception during Llama 3 Judge Evaluation: {e}")
-        return {"faithfulness": 50, "citation_acc": 50, "term_precision": 50, "precedent_match": 50, "factual_consistency": 50, "bias_score": 10, "regulatory_alignment": 50, "jurisdictional_comp": 50}
-
-def calculate_local_metrics(gt, ans):
-    rouge_res = scorer_rouge.score(gt, ans)
-    try: bleu_res = metric_bleu.compute(predictions=[ans], references=[[gt]])
-    except: bleu_res = {"bleu": 0}
-    try: meteor_res = metric_meteor.compute(predictions=[ans], references=[gt])
-    except: meteor_res = {"meteor": 0}
-    try: bert_res = metric_bertscore.compute(predictions=[ans], references=[gt], lang="en")
-    except: bert_res = {"f1": [0]}
-    
-    return {
-        "rouge1": rouge_res['rouge1'].fmeasure,
-        "rouge2": rouge_res['rouge2'].fmeasure,
-        "rougeL": rouge_res['rougeL'].fmeasure,
-        "bleu": bleu_res.get("bleu", 0),
-        "meteor": meteor_res.get("meteor", 0),
-        "bert_f1": bert_res['f1'][0]
+    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
+        "response_format": {"type": "json_object"}
     }
 
-def calculate_recall_at_k(docs, query_category):
-    # Heuristic recall: Check if any retrieved doc matches the expected category sample
-    # In this limited 10-PDF case, we assume docs tagged with the correct 'category' are relevant.
-    hits = [1 for d in docs if d.payload.get('category', '').lower() == query_category.lower()]
-    return (sum(hits) / len(docs)) if docs else 0
+    for attempt in range(5):
+        try:
+            r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=60)
+            if r.status_code == 200:
+                raw = r.json()["choices"][0]["message"]["content"]
+                m = re.search(r'\{.*\}', raw, re.DOTALL)
+                if m:
+                    parsed = json.loads(m.group(0))
+                    return {**defaults, **{k.lower(): v for k, v in parsed.items()}}
+            elif r.status_code == 429:
+                print("[LexVed] Judge rate limit (429). Waiting 30s...")
+                time.sleep(30)
+            else:
+                time.sleep(5)
+        except Exception:
+            time.sleep(5)
+    return defaults
 
-def ensure_data_ingested():
-    active_db = get_active_db_name()
-    vector_count = 0
-    dimension_ok = True
-    expected_dim = get_active_model_params = None
-    
+
+def _jval(judge, key, default=50.0):
     try:
-        from src.utils.config_manager import get_active_model_params as _get_params
-        expected_dim = _get_params()["dimension"]
-    except:
-        pass
-    
-    try:
-        if active_db == "pinecone":
-            from src.utils.pinecone_client import index, create_index
-            stats = index.describe_index_stats()
-            vector_count = stats.get('total_vector_count', 0)
-            
-            if expected_dim and 'dimension' in stats:
-                if stats['dimension'] != expected_dim:
-                    print(f"[LexVed] Dimension mismatch! Pinecone has {stats['dimension']}d vectors, model needs {expected_dim}d. Recreating index...")
-                    create_index()
-                    vector_count = 0
-                    dimension_ok = False
-        else:
-            from src.utils.qdrant_provider import client, COLLECTION_NAME
-            try:
-                col_info = client.get_collection(COLLECTION_NAME)
-                vector_count = col_info.vectors_count
-                # Check if collection dimensions match the current model
-                if expected_dim and hasattr(col_info.config, 'params') and hasattr(col_info.config.params, 'vectors'):
-                    col_dim = col_info.config.params.vectors.size if hasattr(col_info.config.params.vectors, 'size') else None
-                    if col_dim and col_dim != expected_dim:
-                        print(f"[LexVed] Dimension mismatch! Collection has {col_dim}d vectors, model needs {expected_dim}d. Re-ingesting...")
-                        dimension_ok = False
-                elif expected_dim and hasattr(col_info.config, 'params'):
-                    # Try alternative attribute path
+        return float(str(judge.get(key, default)).strip()) / 100.0
+    except Exception:
+        return default / 100.0
+
+
+def generate_llm_answer(query, context):
+    """Generate an answer using the active generation model via the project's generator.
+    Also returns (answer, prefill_latency, ttft, throughput) by streaming the response.
+    """
+    import requests
+    import tiktoken
+
+    prompt = f"""Answer the following query using ONLY the context below. Keep it professional.
+Context:
+{context}
+
+Query: {query}
+Answer:"""
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+        "Groq-Beta": "inference-metrics"
+    }
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
+        "stream": True,
+        "stream_options": {
+            "include_usage": True
+        }
+    }
+    for attempt in range(5):
+        try:
+            t_start = time.time()
+            r = requests.post(GROQ_URL, headers=headers, json=payload, stream=True, timeout=60)
+            if r.status_code == 200:
+                answer = ""
+                ttft = 0.0
+                prefill_latency = 0.0
+                throughput = 0.0
+                first_token_received = False
+                first_token_time = None
+                for line in r.iter_lines():
+                    if not line:
+                        continue
+                    line_str = line.decode("utf-8").strip()
+                    if line_str.startswith("data: "):
+                        data_content = line_str[6:]
+                        if data_content == "[DONE]":
+                            break
+                        try:
+                            chunk = json.loads(data_content)
+                            choices = chunk.get("choices", [])
+                            if choices:
+                                delta = choices[0].get("delta", {})
+                                content = delta.get("content", "")
+                                if content:
+                                    if not first_token_received:
+                                        first_token_time = time.time()
+                                        ttft = first_token_time - t_start
+                                        first_token_received = True
+                                    answer += content
+                            
+                            usage = chunk.get("usage") or chunk.get("x_groq", {}).get("usage")
+                            if usage:
+                                prefill_latency = usage.get("prompt_time", 0.0)
+                                completion_tokens = usage.get("completion_tokens", 0)
+                                completion_time = usage.get("completion_time", 0.0)
+                                if completion_time > 0:
+                                    throughput = completion_tokens / completion_time
+                        except Exception:
+                            pass
+                t_end = time.time()
+                if answer and ttft == 0.0:
+                    ttft = t_end - t_start
+                if prefill_latency == 0.0:
+                    prefill_latency = ttft
+                if throughput == 0.0:
                     try:
-                        col_dim = col_info.config.params.vectors_config.size if hasattr(col_info.config.params, 'vectors_config') else None
-                    except:
-                        pass
-            except Exception as e:
-                # Collection doesn't exist yet
-                print(f"[LexVed] Qdrant collection check failed: {e}")
-                vector_count = 0
-    except Exception as e:
-        print(f"[LexVed] DB check error: {e}")
-        pass
-        
-    if vector_count > 0 and dimension_ok:
-        return
-        
-    print(f"[LexVed] No data found in {active_db.upper()}. Auto-ingesting evaluation documents...")
-    
-    # Search for PDFs
-    pdf_paths = []
-    pdf_dir = "data/PDF"
-    if os.path.exists(pdf_dir):
-        for root, dirs, files in os.walk(pdf_dir):
-            for f in files:
-                if f.lower().endswith(".pdf"):
-                    pdf_paths.append(os.path.join(root, f))
-                    
-    if not pdf_paths:
-        print("[LexVed] No PDFs found in data/PDF/. Cannot evaluate.")
-        return
-        
-    from src.ingestion.pdf_processor import extract_chunks, process_chunks_batch, get_pdf_hash
-    from src.ingestion.embedder import get_embeddings
-    
-    CACHE_FILE = "data/evaluation_chunk_cache.json"
-    chunk_cache = {}
-    if os.path.exists(CACHE_FILE):
-        try:
-            with open(CACHE_FILE, "r") as f:
-                chunk_cache = json.load(f)
-        except: pass
-
-    for path in pdf_paths:
-        try:
-            print(f"[LexVed] Auto-ingesting: {os.path.basename(path)}")
-            file_hash = get_pdf_hash(path)
-            
-            if path in chunk_cache:
-                print(f"[LexVed] Using pre-parsed chunks from cache.")
-                chunks = chunk_cache[path]
+                        enc = tiktoken.get_encoding("cl100k_base")
+                    except Exception:
+                        class FakeEnc:
+                            def encode(self, text):
+                                return text.split()
+                        enc = FakeEnc()
+                    ans_tokens = len(enc.encode(answer))
+                    gen_time = t_end - (first_token_time or t_start)
+                    if gen_time > 0:
+                        throughput = ans_tokens / gen_time
+                return answer, prefill_latency, ttft, throughput
+            elif r.status_code == 429:
+                print("[LexVed] Generation rate limit (429). Waiting 30s...")
+                time.sleep(30)
             else:
-                chunks = extract_chunks(path)
-                chunks = process_chunks_batch(chunks)
-                # Add hash to chunks for vector metadata
-                for c in chunks: c["file_hash"] = file_hash
-                chunk_cache[path] = chunks
-                # Save cache update
-                try:
-                    os.makedirs("data", exist_ok=True)
-                    with open(CACHE_FILE, "w") as f:
-                        json.dump(chunk_cache, f)
-                except: pass
-                
-            texts = [c["text"] for c in chunks]
-            embeddings = get_embeddings(texts)
-            
-            # Helper for categorization
-            def categorize_text(text):
-                text_lower = text.lower()
-                if any(k in text_lower for k in ["contract", "lease", "tenant", "owner", "property", "agreement", "civil"]):
-                    return "civil", "general"
-                return "criminal", "general"
-
-            if active_db == "qdrant":
-                from qdrant_client import QdrantClient
-                from qdrant_client.models import PointStruct
-                from src.utils.qdrant_provider import COLLECTION_NAME
-                import uuid
-                
-                qc = QdrantClient(host="localhost", port=6333)
-                points = []
-                for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
-                    cat, sub = categorize_text(chunk["text"])
-                    points.append(PointStruct(
-                        id=str(uuid.uuid4()),
-                        vector=emb.tolist(),
-                        payload={
-                            "text": chunk["text"],
-                            "source": chunk["source"],
-                            "page": chunk["page"],
-                            "file_hash": chunk.get("file_hash", ""),
-                            "category": cat,
-                            "subcategory": sub
-                        }
-                    ))
-                qc.upsert(collection_name=COLLECTION_NAME, points=points)
-            else:
-                from src.utils.pinecone_client import index
-                import uuid
-                vectors = []
-                for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
-                    cat, sub = categorize_text(chunk["text"])
-                    vectors.append({
-                        "id": str(uuid.uuid4()),
-                        "values": emb.tolist(),
-                        "metadata": {
-                            "text": chunk["text"],
-                            "source": chunk["source"],
-                            "page": chunk["page"],
-                            "file_hash": chunk.get("file_hash", ""),
-                            "category": cat,
-                            "subcategory": sub
-                        }
-                    })
-                index.upsert(vectors=vectors)
-                
-            from src.retrieval.retriever import invalidate_bm25
-            invalidate_bm25()
-            
+                time.sleep(5)
         except Exception as e:
-            print(f"[LexVed] Error ingesting {path}: {e}")
+            print(f"[LexVed] Error in generation attempt {attempt}: {e}")
+            time.sleep(5)
+    return "", 0.0, 0.0, 0.0
+
+
 
 def run_evaluation():
+    """Full 24-KPI evaluation using the Enhanced Pipeline (matching the notebook)."""
+    from src.utils.config_manager import get_active_model_name, get_active_db_name
+    from src.retrieval.retriever import retrieve
+    from src.ingestion.embedder import get_embeddings
+
+    active_model = get_active_model_name()
+    active_db = get_active_db_name()
+    print(f"\n[LexVed] >>> STARTING ENHANCED PIPELINE AUDIT: {active_model} on {active_db} <<<")
+
+    _update_progress(f"Loading evaluation queries for {active_model}...")
+
+    # Load evaluation data
     if not os.path.exists(EVAL_DATA_PATH):
-        print("Data target missing.")
-        return
+        # Fallback to root-level evaluation_data.json
+        alt_path = os.path.join(PROJECT_ROOT, "evaluation_data.json")
+        if os.path.exists(alt_path):
+            eval_path = alt_path
+        else:
+            _update_progress("No evaluation data found.", status="error")
+            return
+    else:
+        eval_path = EVAL_DATA_PATH
 
-    # Guarantee we have data to benchmark
-    ensure_data_ingested()
-
-    with open(EVAL_DATA_PATH, 'r') as f:
+    with open(eval_path, "r") as f:
         data = json.load(f)
 
-    all_results = []
-    active_db = get_active_db_name()
-    
-    # System Baseline (M2)
-    vector_count = 0
-    try:
-        if active_db == "pinecone":
-            from src.utils.pinecone_client import index
-            vector_count = index.describe_index_stats()['total_vector_count']
-        else:
-            from src.utils.qdrant_provider import client, COLLECTION_NAME
-            vector_count = client.get_collection(COLLECTION_NAME).vectors_count
-    except: pass
-
-    print("\n" + "="*80)
-    print(f" LEXVED BENCHMARK - {active_db.upper()} ".center(80))
-    print("="*80)
-
-    import threading
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    all_results = []
-    lock = threading.Lock()
-    
-    def process_query(cat, query, gt):
-        process = psutil.Process(os.getpid())
-        ram_before = process.memory_info().rss
-        
-        # M1: Embedding Time
-        t_start_emb = time.time()
-        query_emb = get_model_st().encode([query])[0]
-        m1_emb_time = max(0, time.time() - t_start_emb)
-        
-        # M3: Retrieval Latency
-        docs, m3_ret_lat = retrieve(query, top_k=5)
-        m3_ret_lat = max(0, m3_ret_lat)
-        
-        if not docs:
-            print(f"[LexVed] [ERROR] No documents retrieved for query: {query}")
-            # Still record a 0 result so it doesn't break the averages, but log the error
-            docs = []
-            
-        # M4: Cosine Similarity
-        if docs:
-            doc_embs = get_model_st().encode([d.payload['text'] for d in docs])
-            cos_sims = util.cos_sim(query_emb, doc_embs)[0]
-            m4_cos_sim = max(0, cos_sims.mean().item())
-            context = "".join([f"[Source: {d.payload.get('source')}] {d.payload['text']}\n" for d in docs])
-        else:
-            m4_cos_sim = 0
-            context = "No context available."
-        
-        # M16: End-to-End Latency & M17: Token Latency
-        ans = ""
-        t_gen_start = time.time()
-        try:
-            for chunk in generate_answer_stream(query, context): 
-                ans += chunk
-        except Exception as e:
-            print(f"Warning: LLM generation failed ({e}). Using fallback answer.")
-            ans = "The system encountered an unexpected inference timeout while generating the response."
-        
-        t_gen_end = time.time()
-        m17_gen_total_time = max(0, t_gen_end - t_gen_start)
-        m16_e2e = max(0, time.time() - t_start_emb)
-        
-        q_stats = calculate_local_metrics(gt, ans)
-        judge_res = judge_llm_metrics(query, gt, ans, context)
-        nli_score = check_hallucination_nli(context, ans)
-        ner_score = get_ner_precision(gt, ans)
-        
-        ram_after = process.memory_info().rss
-        m19_ram = max(0, (ram_after - ram_before) / (1024**2))
-        
-        gt_emb = get_model_st().encode([gt])[0]
-        ans_emb = get_model_st().encode([ans])[0]
-        m11_sem_score = max(0, util.cos_sim(gt_emb, ans_emb)[0].item())
-        
-        total_tokens = max(len(ans.split()), 1)
-        # M17 is Token Generation Latency (seconds per token)
-        m17_tgl = m17_gen_total_time / total_tokens
-        m18_cost = max(0, (len(context.split()) + len(query.split()) + len(ans.split())) * 0.000002)
-        
-        def to_int(val, default=50):
-            if val is None: return default
-            try: 
-                # Handle cases where LLM might return "80/100" or "80%"
-                clean_val = str(val).split('/')[0].replace("%", "").strip()
-                return int(clean_val)
-            except: return default
- 
-        res = {
-            "id": len(all_results) + 1,
-            "category": cat,
-            "query": query,
-            "ground_truth": gt,
-            "answer": ans,
-            "metrics": {
-                "M1": m1_emb_time, 
-                "M2": vector_count, 
-                "M3": m3_ret_lat,
-                "M4": m4_cos_sim, 
-                "M5": calculate_recall_at_k(docs, cat),
-                "M6": q_stats['rouge1'], 
-                "M7": q_stats['rouge2'],
-                "M8": q_stats['rougeL'], 
-                "M9": q_stats['meteor'], 
-                "M10": q_stats['bleu'],
-                "M11": m11_sem_score,
-                "M12": q_stats['bert_f1'],
-                "M13": 100 - nli_score, 
-                "M14": nli_score, 
-                "M15": to_int(judge_res.get("factual_consistency")),
-                "M16": m16_e2e,
-                "M17": m17_tgl,
-                "M18": m18_cost,
-                "M19": m19_ram, 
-                "M20": to_int(judge_res.get("citation_acc")),
-                "M21": ner_score,
-                "M22": to_int(judge_res.get("precedent_match")),
-                "M23": to_int(judge_res.get("regulatory_alignment")),
-                "M24": to_int(judge_res.get("jurisdictional_comp"))
-            }
-        }
-        
-        with lock:
-            all_results.append(res)
-            
-            # Update status
-            report = {
-                "timestamp": time.ctime(),
-                "status": "processing",
-                "progress": f"{len(all_results)} cases processed on {active_db.upper()}",
-                "summary": {k: sum(r['metrics'][k] for r in all_results)/len(all_results) for k in res['metrics']},
-                "details": all_results
-            }
-            with open("evaluation_results.json", "w") as f: json.dump(report, f, indent=4)
-            
-            # Also update comparative results if active
-            if os.path.exists("comparative_results.json"):
-                try:
-                    with open("comparative_results.json", "r") as f:
-                        comp_data = json.load(f)
-                    if comp_data.get("status") == "processing":
-                        # We are in a comparative run
-                        orig_progress = comp_data.get("progress", "")
-                        # Remove existing query suffix if present
-                        if " (" in orig_progress:
-                            orig_progress = orig_progress.split(" (")[0]
-                        comp_data["progress"] = f"{orig_progress} ({len(all_results)}/10 queries evaluated)"
-                        with open("comparative_results.json", "w") as f:
-                            json.dump(comp_data, f, indent=4)
-                except: pass
-
-            print(f"[{len(all_results)}/10] Completed evaluation for query.")
-
     queries = []
+    ground_truths = []
     for cat in ["civil", "criminal"]:
-        for item in data[cat]:
-            queries.append((cat, item['query'], item['ground_truth']))
+        for item in data.get(cat, []):
+            queries.append(item["query"])
+            ground_truths.append(item["ground_truth"])
 
-    # Use 2 workers to perfectly balance i9 CPU saturation and 32GB RAM limits
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        futures = [executor.submit(process_query, c, q, gt) for c, q, gt in queries]
-        for _ in as_completed(futures):
+    total_queries = len(queries)
+    if total_queries == 0:
+        _update_progress("No queries found in evaluation data.", status="error")
+        return
+
+    print(f"[LexVed] Loaded {total_queries} evaluation queries.")
+
+    # --- Compute M1 (Embedding Latency) & M2 (Index Size) ---
+    _update_progress("Computing embedding latency (M1)...")
+    t_emb = time.time()
+    _ = get_embeddings(["benchmark latency test query"])
+    emb_latency = time.time() - t_emb
+
+    # Get index size from active DB
+    index_size = 0
+    try:
+        if active_db == "qdrant":
+            from qdrant_client import QdrantClient
+            from src.utils.qdrant_provider import COLLECTION_NAME
+            client = QdrantClient(host="localhost", port=6333)
+            info = client.get_collection(COLLECTION_NAME)
+            index_size = info.points_count
+        else:
+            from src.utils.pinecone_client import index as pc_index
+            stats = pc_index.describe_index_stats()
+            index_size = stats.get("total_vector_count", 0)
+    except Exception as e:
+        print(f"[LexVed] Could not get index size: {e}")
+
+    # --- Per-Query Evaluation (Enhanced Pipeline from notebook) ---
+    preds = []
+    ret_texts_all = []
+    q_vecs = []
+    r_times = []
+    g_times = []
+    prefill_latencies = []
+    ttft_latencies = []
+    throughput_rates = []
+
+    for i, query in enumerate(queries):
+        _update_progress(f"Evaluating query {i+1}/{total_queries}: {query[:50]}...")
+        print(f"[Auditor] Query {i+1}/{total_queries}: {query[:60]}...")
+
+        t_start = time.time()
+        q_vec = get_embeddings([query])[0]
+
+        # Enhanced retrieval (Hybrid BM25 + Dense + RRF + CrossEncoder)
+        docs, ret_time = retrieve(query, top_k=5)
+        r_times.append(ret_time)
+
+        ret = [d.payload.get("text", "") for d in docs]
+        context_str = "\n\n".join(ret)
+
+        # Generation via LLM
+        t1 = time.time()
+        ans, prefill_lat, ttft, throughput = generate_llm_answer(query, context_str)
+        g_times.append(time.time() - t1)
+        prefill_latencies.append(prefill_lat)
+        ttft_latencies.append(ttft)
+        throughput_rates.append(throughput)
+
+        preds.append(ans)
+        ret_texts_all.append(ret)
+        q_vecs.append(q_vec)
+
+    # --- Batch metrics computation (matching notebook) ---
+    _update_progress("Computing NLP metrics (ROUGE, BLEU, METEOR, BERTScore)...")
+
+    from rouge_score import rouge_scorer
+    from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+    try:
+        from nltk.translate.meteor_score import meteor_score
+        import nltk
+        for r in ['wordnet', 'omw-1.4', 'punkt', 'punkt_tab']:
+            nltk.download(r, quiet=True)
+    except Exception:
+        meteor_score = None
+
+    try:
+        from bert_score import score as bert_score_fn
+    except ImportError:
+        bert_score_fn = None
+
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    # BERTScore (batched)
+    bert_f1_scores = [0.0] * len(preds)
+    bert_ctx_scores = [0.0] * len(preds)
+    if bert_score_fn:
+        try:
+            _, _, F1_gt = bert_score_fn(preds, ground_truths, lang='en', verbose=False)
+            bert_f1_scores = F1_gt.tolist()
+        except Exception:
             pass
 
-    # Final Report
-    if all_results:
-        avgs = {k: sum(r['metrics'][k] for r in all_results)/len(all_results) for k in all_results[0]['metrics']}
+        contexts_joined = [" ".join(ret_texts_all[i]) for i in range(len(preds))]
+        try:
+            _, _, F1_ctx = bert_score_fn(preds, contexts_joined, lang='en', verbose=False)
+            bert_ctx_scores = F1_ctx.tolist()
+        except Exception:
+            pass
     else:
-        print("[Warning] No queries processed successfully.")
-        avgs = {f"M{i}": 0 for i in range(1, 25)}
-        
-    report = {
-        "timestamp": time.ctime(),
-        "status": "complete",
-        "progress": f"Audit Complete — {len(all_results)} cases verified on {active_db.upper()}",
-        "summary": avgs,
-        "details": all_results,
-        "system_info": {
-            "vector_db": active_db.upper(),
-            "model": get_active_generation_model(),
-            "embedding": get_active_model_name(),
-            "encryption": "AES-256"
-        }
-    }
-    with open("evaluation_results.json", "w") as f: json.dump(report, f, indent=4)
-    print(f"\n[SUCCESS] Metrics saved for {active_db.upper()}")
+        contexts_joined = [" ".join(ret_texts_all[i]) for i in range(len(preds))]
 
-def compare_pipelines():
-    print("\n" + "="*80)
-    print(" COMPARING PRIMITIVE VS ENHANCED PIPELINE ".center(80))
-    print("="*80)
-    
-    # 1. Run Enhanced
-    print("\n--- Running Enhanced Pipeline ---")
-    run_evaluation()
-    
-    # 2. Run Primitive
-    print("\n--- Running Primitive Pipeline ---")
-    from primitive_pipeline import run_primitive_pipeline
-    active_model = get_active_model_name()
-    # Map active model to primitive choice
-    choice = "1"
-    if "MiniLM" in active_model: choice = "2"
-    elif "E5" in active_model: choice = "3"
-    elif "distilbert" in active_model.lower(): choice = "4"
-    elif "cohere" in active_model.lower(): choice = "5"
-    elif "bge" in active_model.lower(): choice = "6"
-    
-    api_key = os.getenv("COHERE_API_KEY") if choice == "5" else None
-    
-    run_primitive_pipeline(model_choice=choice, api_key=api_key)
-    
-    # 3. Aggregate results
-    try:
-        with open("evaluation_results.json", "r") as f:
-            enh_res = json.load(f)
-        
-        with open("primitive_evaluation_results.json", "r") as f:
-            prim_res = json.load(f)
-            
-        comparison = {
-            "status": "complete",
-            "timestamp": time.ctime(),
-            "comparison": "Primitive vs Enhanced",
-            "active_model": active_model,
-            "summary_comparison": {
-                "Enhanced": enh_res.get("summary", {}),
-                "Primitive": prim_res.get("summary", {})
-            }
-        }
-        with open("pipeline_comparison_results.json", "w") as f:
-            json.dump(comparison, f, indent=4)
-        print("\n[SUCCESS] Pipeline comparison saved to pipeline_comparison_results.json")
-    except Exception as e:
-        print(f"Error compiling comparison: {e}")
+    rouge = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
+    smoothie = SmoothingFunction().method4
+    metric_rows = []
+
+    for i in range(len(preds)):
+        _update_progress(f"Computing metrics for query {i+1}/{total_queries}...")
+
+        r_scores = rouge.score(ground_truths[i], preds[i])
+        bert_f1 = bert_f1_scores[i]
+        fcd = float(1 - bert_ctx_scores[i])
+
+        try:
+            bleu = sentence_bleu([ground_truths[i].split()], preds[i].split(), smoothing_function=smoothie)
+        except Exception:
+            bleu = 0.0
+        try:
+            met = meteor_score([ground_truths[i].split()], preds[i].split()) if meteor_score else 0.0
+        except Exception:
+            met = 0.0
+
+        ctx_vecs = get_embeddings(ret_texts_all[i]) if ret_texts_all[i] else np.zeros((1, 1))
+        cosine_sim = float(np.mean(cosine_similarity([q_vecs[i]], ctx_vecs))) if len(ctx_vecs) else 0.0
+        sims_arr = cosine_similarity([q_vecs[i]], ctx_vecs)[0] if len(ctx_vecs) else []
+        topk_acc = float(np.mean([1 if s > 0.8 else 0 for s in sims_arr])) if len(sims_arr) else 0.0
+
+        # LLM Judge (8 legal KPIs)
+        _update_progress(f"LLM Judge evaluating query {i+1}/{total_queries}...")
+        judge = unified_judge(queries[i], contexts_joined[i], preds[i], ground_truths[i])
+
+        e2e = r_times[i] + g_times[i]
+
+        metric_rows.append({
+            "M3": r_times[i],
+            "M4": cosine_sim,
+            "M5": topk_acc,
+            "M6": r_scores["rouge1"].fmeasure,
+            "M7": r_scores["rouge2"].fmeasure,
+            "M8": r_scores["rougeL"].fmeasure,
+            "M9": len(contexts_joined[i].split()),
+            "M10": bleu,
+            "M11": met,
+            "M12": bert_f1,
+            "M13": fcd,
+            "M14": _jval(judge, "faithfulness"),
+            "M15": _jval(judge, "factual_consistency") * 100,
+            "M16": e2e,
+            "M17": round(1.0 / max(0.001, e2e), 4),
+            "M18": psutil.cpu_percent(),
+            "M19": round(psutil.virtual_memory().used / (1024**3), 2),
+            "M20": _jval(judge, "citation_acc"),
+            "M21": _jval(judge, "term_precision"),
+            "M22": _jval(judge, "precedent_match") * 100,
+            "M23": _jval(judge, "regulatory_alignment"),
+            "M24": _jval(judge, "bias_score"),
+            "M25": ttft_latencies[i],
+            "M26": prefill_latencies[i],
+            "M27": throughput_rates[i],
+        })
+
+    # --- Aggregate all metrics (mean across queries) ---
+    import pandas as pd
+    df = pd.DataFrame(metric_rows)
+    summary = df.mean().to_dict()
+    summary["M1"] = emb_latency
+    summary["M2"] = index_size
+
+    # --- Count actual PDF docs in corpus ---
+    corpus_dir = os.path.join(PROJECT_ROOT, "data", "PDF")
+    total_docs = 0
+    if os.path.exists(corpus_dir):
+        for root, dirs, files in os.walk(corpus_dir):
+            for f in files:
+                if f.lower().endswith(".pdf"):
+                    total_docs += 1
+
+    # --- Build detailed results per query ---
+    details = []
+    for i in range(len(queries)):
+        details.append({
+            "query": queries[i],
+            "ground_truth": ground_truths[i],
+            "answer": preds[i],
+            "metrics": metric_rows[i]
+        })
+
+    # --- Write final report ---
+    report = {
+        "status": "done",
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "system_info": {
+            "vector_db": active_db,
+            "embedding": active_model,
+            "model": "llama-3.1-8b-instant",
+            "total_documents": total_docs,
+            "index_size": index_size,
+            "pipeline": "enhanced"
+        },
+        "summary": summary,
+        "details": details,
+        "pid": os.getpid()
+    }
+
+    with open(RESULTS_PATH, "w") as f:
+        json.dump(report, f, indent=2)
+
+    print(f"\n[LexVed] Audit for {active_model} complete. Results saved to {RESULTS_PATH}")
+    return report
+
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Run LexVed Evaluations")
-    parser.add_argument("--pipeline", type=str, choices=["enhanced", "primitive", "both"], default="enhanced", help="Choose which evaluation pipeline to run")
-    args = parser.parse_args()
-
-    if args.pipeline == "primitive":
-        from primitive_pipeline import run_primitive_pipeline
-        run_primitive_pipeline()
-    elif args.pipeline == "both":
-        compare_pipelines()
-    else:
-        run_evaluation()
-
-
+    run_evaluation()

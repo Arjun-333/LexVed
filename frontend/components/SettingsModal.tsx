@@ -12,6 +12,8 @@ export default function SettingsModal({ isOpen, onClose }: { isOpen: boolean; on
   const [availableEmbeddings, setAvailableEmbeddings] = useState<string[]>([]);
   const [availableGenModels, setAvailableGenModels] = useState<string[]>([]);
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
+  const [genModelMeta, setGenModelMeta] = useState<Record<string, {name: string; tier: string}>>({});
+  const [groqModels, setGroqModels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const API = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
@@ -23,7 +25,7 @@ export default function SettingsModal({ isOpen, onClose }: { isOpen: boolean; on
       authFetch(`${API}/api/settings/embedding_model`).then(r => r.json()).catch(() => ({ model: "" })),
       authFetch(`${API}/api/settings/generation_model`).then(r => r.json()).catch(() => ({ model: "" })),
       authFetch(`${API}/api/settings/vector_db`).then(r => r.json()).catch(() => ({ db: "" })),
-      authFetch(`${API}/api/settings/config`).then(r => r.json()).catch(() => ({ embedding_models: [], generation_models: [], providers: [] })),
+      authFetch(`${API}/api/settings/config`).then(r => r.json()).catch(() => ({ embedding_models: [], generation_models: [], providers: [], generation_model_metadata: [], groq_models: [] })),
     ]).then(([emb, gen, db, config]) => {
       setEmbeddingModel(emb.model || "");
       setGenModel(gen.model || "");
@@ -31,6 +33,13 @@ export default function SettingsModal({ isOpen, onClose }: { isOpen: boolean; on
       setAvailableEmbeddings(config.embedding_models || []);
       setAvailableGenModels(config.generation_models || []);
       setAvailableProviders(config.providers || []);
+      setGroqModels(config.groq_models || []);
+      // Build metadata lookup from config
+      const meta: Record<string, {name: string; tier: string}> = {};
+      (config.generation_model_metadata || []).forEach((m: {id: string; name: string; tier: string}) => {
+        meta[m.id] = { name: m.name, tier: m.tier };
+      });
+      setGenModelMeta(meta);
       setLoading(false);
     });
   }, [isOpen, authFetch, API]);
@@ -89,16 +98,22 @@ export default function SettingsModal({ isOpen, onClose }: { isOpen: boolean; on
                 <div>
                   <div className="flex items-center gap-2 mb-3"><Cpu className="w-3.5 h-3.5" style={{ color: 'var(--accent-dim)' }} /><span className="text-[9px] uppercase tracking-[0.2em] font-bold" style={{ color: 'var(--text-muted)' }}>Generation Model (LLM)</span></div>
                   <div className="grid gap-2">
-                    {availableGenModels.map(m => (
+                    {availableGenModels.map(m => {
+                      const meta = genModelMeta[m];
+                      const displayName = meta?.name || m;
+                      const tier = meta?.tier || (groqModels.includes(m) ? "cloud" : "local");
+                      return (
                       <button key={m} onClick={() => saveGen(m)}
                         className={`flex items-center gap-3 p-3 rounded-xl text-left transition-all border`}
                         style={{ background: genModel === m ? 'var(--accent-bg)' : 'var(--surface)', borderColor: genModel === m ? 'var(--accent-dim)' : 'var(--border)' }}>
                         <span className="w-2 h-2 rounded-full" style={{ background: genModel === m ? 'var(--accent)' : 'var(--border)' }} />
-                        <span className="text-xs font-mono" style={{ color: genModel === m ? 'var(--accent)' : 'var(--text-secondary)', fontWeight: genModel === m ? 700 : 400 }}>{m}</span>
-                        {m.includes("instant") && <span className="text-[8px] bg-[#D4AF37]/10 text-[#D4AF37] px-1.5 py-0.5 rounded border border-[#D4AF37]/20 font-bold uppercase">Fast</span>}
-                        {m.includes("70b") && <span className="text-[8px] bg-white/5 text-white/40 px-1.5 py-0.5 rounded border border-white/10 font-bold uppercase">Heavy</span>}
+                        <span className="text-xs font-mono flex-1" style={{ color: genModel === m ? 'var(--accent)' : 'var(--text-secondary)', fontWeight: genModel === m ? 700 : 400 }}>{displayName}</span>
+                        {tier === "cloud" && <span className="text-[8px] bg-[#D4AF37]/10 text-[#D4AF37] px-1.5 py-0.5 rounded border border-[#D4AF37]/20 font-bold uppercase">Cloud</span>}
+                        {tier === "local" && <span className="text-[8px] bg-white/5 text-white/40 px-1.5 py-0.5 rounded border border-white/10 font-bold uppercase">Local</span>}
+                        {tier === "orchestrator" && <span className="text-[8px] bg-[#D4AF37]/10 text-[#D4AF37] px-1.5 py-0.5 rounded border border-[#D4AF37]/20 font-bold uppercase">Multi-Model</span>}
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 

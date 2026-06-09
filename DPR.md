@@ -92,18 +92,16 @@ graph TD
 
 ## 4. Key Features of the Enhanced Pipeline
 
-### A. Multi-Agent Architecture
-Instead of generating an answer in a single pass, the Enhanced Pipeline splits the cognitive load across three specialized agents:
-1. **Routing Agent:** Instantly evaluates the complexity of the user's query.
-2. **Reasoning Agent:** Mandated to read the retrieved context and "think aloud." It drafts a step-by-step logical chain, actively searching for contradictions, precedents, and facts. It is strictly constrained from utilizing outside knowledge.
-3. **Synthesis Agent:** Acts as the Senior Legal Counsel. It takes the raw logical chain from the Reasoning Agent and drafts a cohesive, professional, and authoritative final response, embedding exact citations.
+### A. Dual Operational Framework
+LexVed divides its execution paths into two distinct, high-fidelity approaches based on user selection:
+1. **Standard Mode (Universal RAG):** Orchestrates dynamic LLM complexity routing. Simple queries are handled by lightweight, rapid-inference engines, while analytical tasks scale up to heavyweight synthesis models.
+2. **Agent Mode (Stateful LangGraph):** Moves beyond linear execution to run an autonomous single-agent cognitive loop. The agent evaluates the query and calls on-demand tools in a stateful, iterative logic chain.
 
 ### B. Dynamic Model Orchestration
-LexVed utilizes a sophisticated multi-model orchestration strategy to balance speed, reasoning depth, and operational efficiency:
-* **Universal Mode:** Leverages `llama-3.1-8b-instant`, `mixtral-8x7b-32768`, or `qwen-2.5-32b` for rapid, low-latency responses. This mode provides a hybrid knowledge experience, blending the institutional document repository with the model's internal legal expertise.
-* **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile`, `qwen2.5:70b`, or `llama3:70b` for multi-agent reasoning chains and deep, logical deduction.
-* **Inference Versatility:** Supports local deployment via Ollama (Mistral, Phi-3, Qwen) and high-speed cloud inference via Groq.
-* **Infrastructure Parity:** Supports cross-infrastructure benchmarking across six distinct embedding models (MPNet, MiniLM, DistilBERT, E5-Large, BGE-M3, and Cohere) on both Pinecone and Qdrant.
+LexVed utilizes a sophisticated model routing and orchestration strategy to balance speed, depth, and efficiency:
+* **Standard (Dynamic Routing):** Automatically classifies the user's query complexity using a dedicated router agent, checks for local cluster warm-up status, and synthesizes answers using the target model stream.
+* **Agent (LangGraph Engine):** Employs high-parameter models like `llama-3.3-70b-versatile` inside the state machine to reason cleanly about when to retrieve documents, parse entities, extract provisions, or de-identify context.
+* **Infrastructure Parity:** Supports cross-infrastructure benchmarking across four distinct embedding models (MiniLM, MPNet, DistilBERT, and BGE-M3) on both Pinecone and Qdrant.
 
 ### C. Hybrid Retrieval and Reranking
 Dense vector search excels at understanding semantic intent, while sparse search (BM25) excels at exact keyword matching. LexVed executes both simultaneously, merges the results using Reciprocal Rank Fusion (RRF), and then passes the fused list through a CrossEncoder to re-score the chunks based on deep contextual relevance, guaranteeing that the most accurate legal precedent is fed to the LLM.
@@ -141,4 +139,21 @@ In the latest version, LexVed has been hardened for institutional audit readines
 * **Deep Citation Linking:** Refactored the backend and frontend to support secure, page-level PDF jumping.
 * **GPU Awareness:** Integrated real-time Ollama process monitoring for cold-start UI feedback.
 * **Infinite Model Wheel:** Refactored the Intelligence Engine UI for shortest-path 3D rotation and forced-direction navigation.
+
+### Session: Transition to Stateful Agentic AI (May 22, 2026) [NEW]
+* **LangGraph Integration:** Replaced the legacy fixed reasoning/synthesis pipeline with a state-managed LangGraph single agent framework.
+* **Declarative State & Memory:** Established `AgentState` schema using TypedDict and `add_messages` reducer to accumulate chat and tool outputs across iterative reasoning cycles.
+* **Fidelity Tool Registries:** Created tool wrappers for core functions: `retrieve_documents` (triggers RRF + BM25 + Dense + CrossEncoder), `extract_citations`, `extract_entities` (SpaCy NER), and `deidentify_text` (PII Scrubbing).
+* **Config Manager Refactor:** Decoupled frontend selections by dynamically fetching model configurations and metadata tags from `/api/settings/config`.
+
+### Session: Generation Efficiency Metrics Integration (June 5, 2026) [NEW]
+* **Prefill Latency (M25):** Integrated Groq Beta `"Groq-Beta": "inference-metrics"` headers and `"include_usage": True` streaming options to capture the exact hardware prefill/prompt processing latency (`prompt_time`).
+* **Time To First Token / TTFT (M26):** Implemented streaming response measurement in both the Enhanced and Primitive evaluation engines, computing the exact delta from API request initiation to the receipt of the first text token.
+* **Unified Audit Dashboard:** Expanded the single-model audit, comparative audit, CSV exports, and PDF reports to display and analyze these two new efficiency metrics side-by-side.
+
+### Session: Swarm Intelligence & GPU-Accelerated Auditing (June 9, 2026) [NEW]
+* **Phase 3 (Workflow Automation):** Configured deterministic Case Brief DAG pipelines where search, citation extraction, drafting, and PII sanitization run in a fixed sequence.
+* **Phase 4 (Collaborative Swarm):** Implemented a LangGraph state machine consisting of specialized agents: Researcher, Drafting Counsel, PII Redactor, and a loop-back Compliance Auditor criticizing and revising draft briefs.
+* **M27 (Generation Throughput):** Integrated throughput measurement (tokens/sec) calculations inside the streaming pipelines.
+* **GPU Comparative Benchmark:** Created `backend/gpu_comparative_benchmark.py` utilizing PyTorch/CUDA and local BM25 to run side-by-side RAG pipeline evaluations on an NVIDIA A100 GPU, generating printable landscape PDF audit sheets.
 

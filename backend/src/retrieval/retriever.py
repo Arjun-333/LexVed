@@ -1,9 +1,16 @@
 import time
 import os
+import re
 from src.utils.config_manager import get_active_db_name, get_active_model_params
 from src.ingestion.embedder import get_embeddings
 from src.utils.cache import retrieval_cache, crossencoder_cache
 from rank_bm25 import BM25Okapi
+
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z0-9 ]', ' ', text)
+    return text
+
 
 global_bm25 = None
 global_corpus = []
@@ -19,45 +26,64 @@ def invalidate_bm25():
 
 def build_bm25():
     global global_bm25, global_corpus
-    active_db = get_active_db_name()
     all_payloads = []
     
     try:
-        if active_db == "qdrant":
-            from qdrant_client import QdrantClient
-            from src.utils.qdrant_provider import COLLECTION_NAME
-            client = QdrantClient(host="localhost", port=6333)
-            # Paginated scroll to handle large corpora (>10k chunks)
-            offset = None
-            while True:
-                res, next_offset = client.scroll(
-                    collection_name=COLLECTION_NAME,
-                    limit=1000,
-                    offset=offset,
-                    with_payload=True
-                )
-                all_payloads.extend([hit.payload for hit in res])
-                if next_offset is None:
-                    break
-                offset = next_offset
+        import json
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        cache_path = os.path.join(backend_dir, "data", "primitive_chunk_cache.json")
+        if os.path.exists(cache_path):
+            with open(cache_path, "r") as f:
+                cache_data = json.load(f)
+            for filepath, chunks in cache_data.items():
+                for c in chunks:
+                    all_payloads.append({
+                        "text": c.get("text", ""),
+                        "source": c.get("source", ""),
+                        "page": c.get("page", 1),
+                        "category": c.get("category", "Uncategorized"),
+                        "subcategory": c.get("subcategory", "General")
+                    })
+            print(f"[LexVed] BM25 built from local cache ({len(all_payloads)} chunks).")
         else:
-            from src.utils.pinecone_client import index
-            # Use list+fetch pattern for Pinecone instead of zero-vector hack
-            try:
-                ids = [v.id for v in index.list(limit=10000)]
-                if ids:
-                    fetched = index.fetch(ids=ids)
-                    all_payloads = [fetched.vectors[vid].metadata for vid in fetched.vectors]
-            except Exception:
-                # Fallback to zero-vector query if list() not supported
-                dim = get_active_model_params()["dimension"]
-                res = index.query(vector=[0]*dim, top_k=10000, include_metadata=True)
-                all_payloads = [match['metadata'] for match in res['matches']]
-    except Exception as e:
-        print(f"BM25 Build Error: {e}")
+            raise FileNotFoundError("Local chunk cache not found.")
+    except Exception as local_err:
+        print(f"[LexVed] Local BM25 build failed ({local_err}), falling back to database fetch...")
+        active_db = get_active_db_name()
+        all_payloads = []
+        try:
+            if active_db == "qdrant":
+                from qdrant_client import QdrantClient
+                from src.utils.qdrant_provider import COLLECTION_NAME
+                client = QdrantClient(host="localhost", port=6333)
+                offset = None
+                while True:
+                    res, next_offset = client.scroll(
+                        collection_name=COLLECTION_NAME,
+                        limit=1000,
+                        offset=offset,
+                        with_payload=True
+                    )
+                    all_payloads.extend([hit.payload for hit in res])
+                    if next_offset is None:
+                        break
+                    offset = next_offset
+            else:
+                from src.utils.pinecone_client import index
+                try:
+                    ids = [v.id for v in index.list(limit=10000)]
+                    if ids:
+                        fetched = index.fetch(ids=ids)
+                        all_payloads = [fetched.vectors[vid].metadata for vid in fetched.vectors]
+                except Exception:
+                    dim = get_active_model_params()["dimension"]
+                    res = index.query(vector=[0]*dim, top_k=10000, include_metadata=True)
+                    all_payloads = [match['metadata'] for match in res['matches']]
+        except Exception as e:
+            print(f"BM25 Build Fallback Error: {e}")
 
     global_corpus = all_payloads
-    tokenized = [p.get('text', '').lower().split() for p in all_payloads]
+    tokenized = [preprocess_text(p.get('text', '')).split() for p in all_payloads]
     if tokenized:
         global_bm25 = BM25Okapi(tokenized)
 
@@ -68,7 +94,7 @@ def get_bm25_top_k(query, top_k=20, category=None, subcategory=None):
     if not global_bm25:
         return []
 
-    tokenized_query = query.lower().split()
+    tokenized_query = preprocess_text(query).split()
     scores = global_bm25.get_scores(tokenized_query)
     
     scored_docs = sorted(zip(scores, global_corpus), key=lambda x: x[0], reverse=True)

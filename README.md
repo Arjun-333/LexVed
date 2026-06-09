@@ -1,19 +1,23 @@
 # LexVed: Advanced Legal Intelligence Platform
 
-A production-grade Retrieval-Augmented Generation (RAG) system engineered for institutional legal document analysis. LexVed features a multi-agent cognitive architecture, dynamic model routing, a dual-database hybrid retrieval pipeline, and an integrated 24-KPI automated benchmark suite.
+A production-grade Retrieval-Augmented Generation (RAG) system engineered for institutional legal document analysis. LexVed features a multi-agent cognitive architecture, dynamic model routing, a dual-database hybrid retrieval pipeline, and an integrated 27-KPI automated benchmark suite.
 
 ## Core Features and Capabilities
 
-### 1. Multi-Agent Architecture
-LexVed abandons the traditional single-pass LLM generation in favor of a specialized, multi-agent cognitive workflow:
-* **Routing Agent:** Evaluates query complexity in real-time, routing simple tasks to lightning-fast models and complex analytical tasks to heavy-weight reasoning models.
-* **Reasoning Agent:** Analyzes the retrieved legal context and drafts a step-by-step logical deduction chain. It is strictly constrained by anti-hallucination prompts to prevent the fabrication of case law.
-* **Synthesis Agent:** Acts as the Senior Legal Counsel, transforming the raw logical chain into a highly cohesive, authoritative, and properly cited final legal opinion.
+### 1. Stateful Tool-Based Agent Architecture (LangGraph)
+LexVed has transitioned from a rigid, multi-agent pipeline to a state-managed orchestrator built on **LangGraph**:
+* **Autonomous Tool Use:** Instead of a hardcoded retrieve-then-synthesize flow, the system is guided by a stateful agent loop. The LLM evaluates the query and chooses dynamically from a suite of legal tools.
+* **Dynamic Tool Suite:** Registered tools include:
+  - `retrieve_documents`: Triggers the entire advanced hybrid retrieval engine (Dense + BM25 Sparse + RRF + CrossEncoder).
+  - `extract_citations`: Regex and NER patterns to extract specific legal provisions (e.g. IPC, CrPC, AIR, SCC citations).
+  - `extract_entities`: SpaCy-powered Named Entity Recognition to categorize parties, courts, dates, and locations.
+  - `deidentify_text`: Automatic PII redact engine.
+* **Stateful Message Memory:** Utilizes a graph state with an `add_messages` reducer to accumulate query inputs, agent thoughts, and tool execution outputs across sequential reasoning steps.
 
 ### 2. Intelligent Context Memory
 LexVed maintains conversation continuity across multi-turn interactions:
 * **Query Condensation Engine:** Automatically rephrases follow-up questions into standalone queries to maintain retrieval accuracy.
-* **Contextual Persistence:** Pass-through memory ensures the reasoning and synthesis agents stay locked onto the case subject established in previous messages.
+* **Contextual Persistence:** Pass-through memory ensures the agent stays locked onto the case subject established in previous messages.
 
 ### 3. Data Integrity & Fingerprinting
 LexVed ensures 100% data integrity for large-scale legal corpuses:
@@ -27,8 +31,10 @@ The platform utilizes a multi-tiered retrieval strategy to guarantee maximum rec
 * **Sparse Search (BM25):** Ensures critical exact-keyword matches, such as specific statute sections or docket numbers, are never missed.
 * **Reciprocal Rank Fusion (RRF) & CrossEncoder Reranking:** Merges dense and sparse results and re-scores the combined list based on deep contextual relevance before feeding the context to the LLMs.
 
-* **Universal Mode:** Utilizes `llama-3.1-8b-instant`, `mixtral-8x7b-32768`, or `qwen-2.5-32b` for rapid, low-latency inference. This mode is not restricted to ingested documents and can draw from the model's vast pre-trained legal knowledge when needed.
-* **Agentic Mode:** Escalates to high-parameter models like `llama-3.3-70b-versatile`, `qwen2.5:70b`, or `llama3:70b` for deep, multi-faceted analysis requiring extensive logical deduction. Strictly constrained to provided context.
+### 5. Configurable Intelligence Engine
+The system supports two core operational modes dynamically configured from backend metadata:
+* **Standard Mode (Universal):** A fixed, lightning-fast RAG pipeline (retrieve → generate) leveraging `llama-3.1-8b-instant` or `mixtral-8x7b-32768`.
+* **Agent Mode (Agentic):** Escalates to `llama-3.3-70b-versatile` inside the LangGraph state machine, allowing the AI to autonomously decide when to use tools, analyze data, and synthesize case law.
 * **Evaluation Node:** Employs `llama-3.1-8b-instant` on Groq for high-performance KPI judging.
 
 ### 5. Enterprise Interface
@@ -101,28 +107,27 @@ The interface includes a toggle switch allowing users to dictate the execution p
 * **Agentic Mode (Enabled):** Activates the Multi-Agent architecture, generating visible reasoning chains and deep contextual synthesis.
 
 ### Pipeline Comparisons
-The Metrics Dashboard includes a dedicated "Pipelines" tab, allowing administrators to execute and compare the performance of the Baseline Primitive Pipeline against the Enhanced Multi-Agent Pipeline across a 24-KPI benchmark suite.
+The Metrics Dashboard includes a dedicated "Pipelines" tab, allowing administrators to execute and compare the performance of the Baseline Primitive Pipeline against the Enhanced Multi-Agent Pipeline across a 26-KPI benchmark suite.
 
-## Institutional Audit Metrics (M1-M24)
+## Institutional Audit Metrics (M1-M27)
 
-The platform evaluates system integrity across 24 distinct dimensions, including:
+The platform evaluates system integrity across 27 distinct dimensions, including:
 * **M1 - M3:** Infrastructure Latency (Embedding, Indexing, Retrieval).
 * **M4 - M5:** Retrieval Quality (Cosine Similarity, Recall@K).
 * **M6 - M12:** Lexical and Semantic Precision (ROUGE, BLEU, METEOR, BERTScore).
 * **M20 - M24:** Legal Verification (Citation Accuracy, Precedent Match, Regulatory Alignment).
+* **M25 - M27:** Generation Efficiency (Prefill Latency, Time To First Token / TTFT, Generation Throughput).
 
-## Embedding Models (6)
+## Embedding Models (4)
 
 | Model | Dimensions | Source |
 |-------|-----------|--------|
-| multi-qa-mpnet-base-cos-v1 | 768 | SentenceTransformers |
 | multi-qa-MiniLM-L6-cos-v1 | 384 | SentenceTransformers |
+| multi-qa-mpnet-base-cos-v1 | 768 | SentenceTransformers |
 | multi-qa-distilbert-cos-v1 | 768 | SentenceTransformers |
 | BAAI/bge-m3 | 1024 | HuggingFace |
-| intfloat/multilingual-e5-large-instruct | 1024 | HuggingFace |
-| Cohere embed-english-v3.0 | 1024 | Cohere API |
 
-## Evaluation Metrics (M1-M24)
+## Evaluation Metrics (M1-M27)
 
 | ID | Metric | Method |
 |----|--------|--------|
@@ -136,7 +141,7 @@ The platform evaluates system integrity across 24 distinct dimensions, including
 | M10 | BLEU | HuggingFace evaluate |
 | M11 | Semantic Score | Cosine(GT, Ans) |
 | M12 | BERTScore F1 | bert-score |
-| M13 | Hallucination Rate | DeBERTa NLI |
+| M13 | Factual Deviation (FCD) | BERTScore Context |
 | M14 | Faithfulness | DeBERTa NLI |
 | M15 | Factual Consistency | LLM Judge |
 | M16 | E2E Latency | Timer |
@@ -148,3 +153,23 @@ The platform evaluates system integrity across 24 distinct dimensions, including
 | M22 | Precedent Match | LLM Judge |
 | M23 | Regulatory Alignment | LLM Judge |
 | M24 | Jurisdictional Compliance | LLM Judge |
+| M25 | Prefill Latency | Groq Usage API |
+| M26 | Time to First Token (TTFT) | Groq Stream Timer |
+| M27 | Generation Throughput (Tokens/sec) | Timer / Token Count |
+
+## Swarm Mode & GPU Benchmarking
+
+### 1. Collaborative Swarm Mode (LangGraph Swarm)
+In the chat interface, queries starting with `/swarm ` bypass the single-agent pipeline and route directly to a collaborative multi-agent swarm:
+* **Researcher Agent:** Dense vector & sparse keyword retrieval.
+* **Extractor Agent:** Citation parsing and SpaCy entity tagging.
+* **Drafting Counsel Agent:** Document synthesis.
+* **Compliance Auditor Agent:** Critiques the generated draft against raw documents and requests revision loop-backs if any hallucination is detected.
+* **PII Redactor Agent:** Redacts personal details before output.
+
+### 2. A100 GPU Comparative Benchmark
+A standalone script `backend/gpu_comparative_benchmark.py` is included for execution on A100 GPUs or remote Jupyter instances:
+* Utilizes local **PyTorch/CUDA** matrix multiplication for local vector search.
+* Queries Pinecone index directly with automatic index-creation failovers.
+* Generates a side-by-side Markdown result table and a landscape PDF report `LexVed_GPU_Institutional_Audit.pdf`.
+

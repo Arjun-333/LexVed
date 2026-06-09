@@ -1,5 +1,83 @@
 [
     {
+        "id": 57,
+        "query": "My name is Arjun and I am a legal counsel researching compassionate appointments.",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-22 14:02",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0,
+            "e2e_lat": 10.527594327926636,
+            "ans_length": 0,
+            "tools_used": [],
+            "agent_steps": 1
+        },
+        "username": "admin"
+    },
+    {
+        "id": 56,
+        "query": "My name is Arjun and I am a legal counsel researching compassionate appointments.",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-22 13:59",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0,
+            "e2e_lat": 1.0890886783599854,
+            "ans_length": 0,
+            "tools_used": [],
+            "agent_steps": 1
+        },
+        "username": "admin"
+    },
+    {
+        "id": 55,
+        "query": "Does the introduction of a Family Benefit Scheme by an employer completely extinguish a dependent's right to claim compassionate appointment?",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-05-22 13:14",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0,
+            "e2e_lat": 35.71136426925659,
+            "ans_length": 0,
+            "tools_used": [
+                "retrieve_documents"
+            ],
+            "agent_steps": 2
+        },
+        "username": "user"
+    },
+    {
+        "id": 54,
+        "query": "What are the legal implications of a contract breach?",
+        "category": "Civil",
+        "subcategory": "General",
+        "date": "2026-05-17 00:48",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 18.730931997299194,
+            "e2e_lat": 1.529249668121338,
+            "ans_length": 232
+        },
+        "username": "user"
+    },
+    {
+        "id": 53,
+        "query": "What are the legal implications of a contract breach?",
+        "category": "Civil",
+        "subcategory": "General",
+        "date": "2026-05-17 00:46",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 17.03847360610962,
+            "e2e_lat": 31.92624545097351,
+            "ans_length": 317
+        },
+        "username": "user"
+    },
+    {
         "id": 52,
         "query": "Abhishek Banerjee Case summary",
         "category": "Uncategorized",

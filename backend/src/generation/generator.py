@@ -64,7 +64,7 @@ def generate_with_groq_stream(prompt, model):
         "stream": True,
         "temperature": 0.2
     }
-    max_retries = 3
+    max_retries = 6
     for attempt in range(max_retries):
         try:
             with requests.post(url, headers=headers, json=payload, stream=True, timeout=60) as response:
@@ -87,10 +87,14 @@ def generate_with_groq_stream(prompt, model):
                 yield f"\n\n[Error: Groq API unreachable after {max_retries} attempts.]"
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
-                yield "\n\n[Rate limit reached on Groq. Falling back to local Llama 3 infrastructure...]\n\n"
-                import time
-                time.sleep(1) # Brief pause before fallback
-                yield from generate_with_ollama_stream(prompt, model="llama3:8b")
+                if attempt < max_retries - 1:
+                    import time
+                    print(f"[LexVed] Groq rate limit hit during generation. Waiting 30s... (Attempt {attempt+1}/{max_retries})")
+                    time.sleep(30)
+                    continue
+                else:
+                    yield f"\n\n[Error: Groq rate limit exhausted after {max_retries} attempts.]"
+                    return
             else:
                 yield f"\n\n[Error: Groq returned HTTP {e.response.status_code}.]"
             return

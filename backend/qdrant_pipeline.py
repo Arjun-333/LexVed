@@ -219,11 +219,106 @@ def embed_and_upsert(chunks, embedder, model_name, collection_name, batch_size=9
 
 # ── Groq generation ───────────────────────────────────────────────────
 def generate_with_groq(prompt: str):
-    """Reliable generation with local fallback for institutional auditing."""
+    """Reliable generation with local fallback for institutional auditing.
+    Also returns (answer, prefill_latency, ttft, throughput).
+    """
+    import tiktoken
+    if not GROQ_API_KEY:
+        sys.path.append(str(BACKEND_DIR))
+        from src.generation.generator import generate_utility
+        t0 = time.time()
+        ans = generate_utility(prompt)
+        dt = time.time() - t0
+        return ans, 0.0, dt, 0.0
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+        "Groq-Beta": "inference-metrics"
+    }
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
+        "stream": True,
+        "stream_options": {
+            "include_usage": True
+        }
+    }
+    for attempt in range(5):
+        try:
+            t_start = time.time()
+            r = requests.post(GROQ_URL, headers=headers, json=payload, stream=True, timeout=60)
+            if r.status_code == 200:
+                answer = ""
+                ttft = 0.0
+                prefill_latency = 0.0
+                throughput = 0.0
+                first_token_received = False
+                first_token_time = None
+                for line in r.iter_lines():
+                    if not line:
+                        continue
+                    line_str = line.decode("utf-8").strip()
+                    if line_str.startswith("data: "):
+                        data_content = line_str[6:]
+                        if data_content == "[DONE]":
+                            break
+                        try:
+                            chunk = json.loads(data_content)
+                            choices = chunk.get("choices", [])
+                            if choices:
+                                delta = choices[0].get("delta", {})
+                                content = delta.get("content", "")
+                                if content:
+                                    if not first_token_received:
+                                        first_token_time = time.time()
+                                        ttft = first_token_time - t_start
+                                        first_token_received = True
+                                    answer += content
+                            
+                            usage = chunk.get("usage") or chunk.get("x_groq", {}).get("usage")
+                            if usage:
+                                prefill_latency = usage.get("prompt_time", 0.0)
+                                completion_tokens = usage.get("completion_tokens", 0)
+                                completion_time = usage.get("completion_time", 0.0)
+                                if completion_time > 0:
+                                    throughput = completion_tokens / completion_time
+                        except Exception:
+                            pass
+                t_end = time.time()
+                if answer and ttft == 0.0:
+                    ttft = t_end - t_start
+                if prefill_latency == 0.0:
+                    prefill_latency = ttft
+                if throughput == 0.0:
+                    try:
+                        enc = tiktoken.get_encoding("cl100k_base")
+                    except Exception:
+                        class FakeEnc:
+                            def encode(self, text):
+                                return text.split()
+                        enc = FakeEnc()
+                    ans_tokens = len(enc.encode(answer))
+                    gen_time = t_end - (first_token_time or t_start)
+                    if gen_time > 0:
+                        throughput = ans_tokens / gen_time
+                return answer, prefill_latency, ttft, throughput
+            elif r.status_code == 429:
+                time.sleep(30)
+            else:
+                time.sleep(5)
+        except Exception:
+            time.sleep(5)
+
+    # Ultimate fallback
     sys.path.append(str(BACKEND_DIR))
     from src.generation.generator import generate_utility
-    # generate_utility already handles Groq -> Ollama fallback internally
-    return generate_utility(prompt)
+    t0 = time.time()
+    ans = generate_utility(prompt)
+    dt = time.time() - t0
+    return ans, 0.0, dt, 0.0
+
 
 # ── Groq LLM judge (M14, M15, M20-M24) ───────────────────────────────
 def judge_with_groq(query, ground_truth, model_answer, context) -> dict:
@@ -263,6 +358,8 @@ def run_evaluation(model_name, embedder, index, chunks, queries, gts, emb_time, 
     is_cohere = hasattr(embedder, "encode_query")
     preds, ret_texts_all, q_vecs = [], [], []
     r_times, g_times = [], []
+    prefill_latencies, ttft_latencies = [], []
+    throughput_rates = []
 
     for q in tqdm(queries, desc=f"Evaluating {model_name}"):
         # Encode query
@@ -284,11 +381,14 @@ def run_evaluation(model_name, embedder, index, chunks, queries, gts, emb_time, 
         prompt = (f"Answer the following query using ONLY the context below.\n\n"
                   f"Context:\n{context_str}\n\nQuery: {q}\nAnswer:")
         t1 = time.time()
-        ans = generate_with_groq(prompt)
+        ans, prefill_lat, ttft, throughput = generate_with_groq(prompt)
         gt_time = time.time() - t1
 
         preds.append(ans); ret_texts_all.append(ret)
         q_vecs.append(q_vec); r_times.append(rt); g_times.append(gt_time)
+        prefill_latencies.append(prefill_lat)
+        ttft_latencies.append(ttft)
+        throughput_rates.append(throughput)
 
     # Compute metrics
     rouge = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
@@ -352,6 +452,9 @@ def run_evaluation(model_name, embedder, index, chunks, queries, gts, emb_time, 
             "M22_Precedent_Coverage":         _jval(judge, "precedent_match") * 100,
             "M23_FCD_Score":                  _jval(judge, "regulatory_alignment"),
             "M24_Bias_Score":                 _jval(judge, "bias_score"),
+            "M25_TTFT":                       ttft_latencies[i],
+            "M26_Prefill_Latency":            prefill_latencies[i],
+            "M27_Throughput":                 throughput_rates[i],
             "GT_Reference":                   gts[i],
             "AI_Response":                    preds[i],
         })
@@ -453,6 +556,7 @@ def run_primitive_pipeline(model_choice="1", api_key=None):
         "M17_Throughput_QPS":"M17","M18_CPU_Usage":"M18","M19_RAM_Usage_GB":"M19",
         "M20_Citation_Accuracy":"M20","M21_Terminology_Precision":"M21",
         "M22_Precedent_Coverage":"M22","M23_FCD_Score":"M23","M24_Bias_Score":"M24",
+        "M25_TTFT":"M25","M26_Prefill_Latency":"M26","M27_Throughput":"M27",
     }
     num_df = df.drop(columns=["GT_Reference","AI_Response"], errors="ignore")
     raw_means = num_df.mean().to_dict()

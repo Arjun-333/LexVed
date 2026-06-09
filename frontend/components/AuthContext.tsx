@@ -21,7 +21,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+const API_URL = typeof window !== 'undefined' 
+  ? `http://${window.location.hostname}:5000` 
+  : (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000");
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);

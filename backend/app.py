@@ -15,7 +15,7 @@ from typing import Optional, List
 from src.utils.config_manager import (
     set_active_model, get_active_model_name, get_active_model_params,
     get_active_db_name, set_active_db, get_active_generation_model,
-    set_active_generation_model, load_config
+    set_active_generation_model, load_config, get_generation_model_metadata
 )
 from src.retrieval.retriever import retrieve, invalidate_bm25
 from src.generation.generator import generate_answer_stream, generate_answer
@@ -151,14 +151,197 @@ def condense_query(query: str, history: list) -> str:
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
-    """Main chat endpoint with SSE-style streaming and multi-turn memory."""
+    """Main chat endpoint with SSE-style streaming and multi-turn memory.
+    
+    Two modes:
+        - Universal (agentic=false): Fixed RAG pipeline (retrieve → generate)
+        - Agentic (agentic=true): LangGraph agent decides which tools to use
+    """
     t_start = time_module.time()
     category, subcategory = categorize_text(req.message)
     
-    # Higher recall for Agentic mode to ensure the Reasoning Agent has enough depth
-    top_k = 15 if req.agentic else 10
-    
     print(f"[LexVed] Query: {req.message} | Mode: {'Agentic' if req.agentic else 'Universal'} | DB: {get_active_db_name()}")
+    
+    # ── Workflow Automation (Phase 3) ──────────────────────────────
+    if req.message.strip().lower().startswith("/brief "):
+        from src.agents.workflows import stream_brief_workflow
+        brief_query = req.message.strip()[7:].strip()
+        
+        async def workflow_stream():
+            yield json.dumps({
+                "type": "metadata",
+                "retrieval_time": 0,
+                "category": category,
+                "subcategory": subcategory,
+                "vector_db": get_active_db_name(),
+                "sources": []
+            }) + "\n"
+            
+            try:
+                async for event in stream_brief_workflow(brief_query, username=user.get("username", "unknown")):
+                    if event["type"] == "thought":
+                        yield json.dumps({
+                            "type": "agent_thought",
+                            "text": event["text"]
+                        }) + "\n"
+                    elif event["type"] == "content":
+                        yield json.dumps({
+                            "type": "content",
+                            "text": event["text"]
+                        }) + "\n"
+                    elif event["type"] == "done":
+                        yield json.dumps({
+                            "type": "done",
+                            "generation_time": event["generation_time"]
+                        }) + "\n"
+            except Exception as e:
+                print(f"[LexVed Workflow] Error: {e}")
+                yield json.dumps({
+                    "type": "content",
+                    "text": f"Workflow encountered an error: {str(e)}."
+                }) + "\n"
+                yield json.dumps({
+                    "type": "done",
+                    "generation_time": time_module.time() - t_start
+                }) + "\n"
+
+        return StreamingResponse(workflow_stream(), media_type="application/x-ndjson")
+    
+    # ── Collaborative Multi-Agent Swarm (Phase 4) ──────────────────
+    if req.message.strip().lower().startswith("/swarm "):
+        from src.agents.swarm import stream_swarm_agent
+        swarm_query = req.message.strip()[7:].strip()
+        
+        async def swarm_stream():
+            yield json.dumps({
+                "type": "metadata",
+                "retrieval_time": 0,
+                "category": category,
+                "subcategory": subcategory,
+                "vector_db": get_active_db_name(),
+                "sources": []
+            }) + "\n"
+            
+            try:
+                async for event in stream_swarm_agent(swarm_query, username=user.get("username", "unknown")):
+                    if event["type"] == "thought":
+                        yield json.dumps({
+                            "type": "agent_thought",
+                            "text": event["text"]
+                        }) + "\n"
+                    elif event["type"] == "content":
+                        yield json.dumps({
+                            "type": "content",
+                            "text": event["text"]
+                        }) + "\n"
+                    elif event["type"] == "done":
+                        yield json.dumps({
+                            "type": "done",
+                            "generation_time": event["generation_time"]
+                        }) + "\n"
+            except Exception as e:
+                print(f"[LexVed Swarm] Error: {e}")
+                yield json.dumps({
+                    "type": "content",
+                    "text": f"Swarm encountered an error: {str(e)}."
+                }) + "\n"
+                yield json.dumps({
+                    "type": "done",
+                    "generation_time": time_module.time() - t_start
+                }) + "\n"
+
+        return StreamingResponse(swarm_stream(), media_type="application/x-ndjson")
+    
+    # ── Agentic Mode: LangGraph Tool-Based Agent ──────────────────
+    if req.agentic:
+        from src.agents.graph import stream_agent
+        import hashlib
+
+        # Derive a stable thread ID for context preservation
+        first_q = req.history[0].get("question", "") if req.history else req.message
+        hash_val = hashlib.md5(first_q.encode('utf-8')).hexdigest()
+        thread_id = f"{user.get('username', 'unknown')}_{hash_val}"
+
+        async def agent_stream():
+            """Stream the LangGraph agent's execution to the frontend."""
+            full_answer = ""
+            tool_calls = []
+
+            # Send initial metadata
+            yield json.dumps({
+                "type": "metadata",
+                "retrieval_time": 0,
+                "category": category,
+                "subcategory": subcategory,
+                "vector_db": get_active_db_name(),
+                "sources": []
+            }) + "\n"
+
+            yield json.dumps({
+                "type": "agent_thought",
+                "text": f"LangGraph Agent initialized [Thread: {thread_id[:12]}...]. Analyzing query and selecting tools..."
+            }) + "\n"
+
+            try:
+                async for event in stream_agent(req.message, history=req.history, thread_id=thread_id, username=user.get("username", "unknown")):
+                    if event["type"] == "thought":
+                        yield json.dumps({
+                            "type": "agent_thought",
+                            "text": event["text"]
+                        }) + "\n"
+
+                    elif event["type"] == "tool_call":
+                        tool_calls.append(event["tool"])
+                        yield json.dumps({
+                            "type": "agent_thought",
+                            "text": f"Calling tool: {event['tool']}..."
+                        }) + "\n"
+
+                    elif event["type"] == "tool_result":
+                        yield json.dumps({
+                            "type": "agent_thought",
+                            "text": f"Tool {event['tool']} returned results. Processing..."
+                        }) + "\n"
+
+                    elif event["type"] == "content":
+                        full_answer += event["text"]
+                        yield json.dumps({
+                            "type": "content",
+                            "text": event["text"]
+                        }) + "\n"
+
+                    elif event["type"] == "done":
+                        total_time = time_module.time() - t_start
+                        save_to_history(req.message, category, subcategory, {
+                            "retrieval_lat": 0,
+                            "e2e_lat": total_time,
+                            "ans_length": len(full_answer.split()),
+                            "tools_used": event.get("tool_calls", []),
+                            "agent_steps": event.get("steps", 0)
+                        }, username=user.get("username", "unknown"))
+                        yield json.dumps({
+                            "type": "done",
+                            "generation_time": total_time,
+                            "tools_used": event.get("tool_calls", []),
+                        }) + "\n"
+
+            except Exception as e:
+                print(f"[LexVed] Agent error: {e}")
+                # Fallback: return error as content
+                yield json.dumps({
+                    "type": "content",
+                    "text": f"Agent encountered an error: {str(e)}. Falling back to standard pipeline."
+                }) + "\n"
+                yield json.dumps({
+                    "type": "done",
+                    "generation_time": time_module.time() - t_start
+                }) + "\n"
+
+        return StreamingResponse(agent_stream(), media_type="application/x-ndjson")
+    
+    # ── Universal Mode: Fixed RAG Pipeline with Dynamic Model Selection ────────────
+    # Higher recall for standard mode
+    top_k = 10
     
     # 1. Intelligent Query Condensation
     augmented_query = condense_query(req.message, req.history)
@@ -205,59 +388,41 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
             "vector_db": get_active_db_name(),
             "sources": sources
         }) + "\n"
-        if req.agentic:
-            # 1. Dynamic Routing
-            yield json.dumps({"type": "agent_thought", "text": "Determining query complexity and routing to optimal model..."}) + "\n"
-            target_model = determine_query_complexity(req.message)
-            yield json.dumps({"type": "agent_thought", "text": f"Query routed to {target_model}"}) + "\n"
-            
-            # 2. Warm-up Detection for Local Clusters
-            local_models = ["llama3", "qwen2.5:7b"]
-            if target_model in local_models:
-                try:
-                    import requests
-                    r = requests.get("http://localhost:11434/api/ps", timeout=1)
-                    if r.status_code == 200:
-                        running_models = [m["name"] for m in r.json().get("models", [])]
-                        # Check for exact or partial match (tags)
-                        is_warm = any(target_model in m for m in running_models)
-                        if not is_warm:
-                            yield json.dumps({"type": "agent_thought", "text": f"Initializing {target_model} cluster. Loading neural weights into local GPU memory..."}) + "\n"
-                except:
-                    # Fallback: if we can't check, just proceed silently or with a generic message
-                    pass
 
-            # 3. Reasoning Agent
-            yield json.dumps({"type": "agent_thought", "text": "Reasoning Agent analyzing context and drafting logical chain..."}) + "\n"
-            reasoning_chain = ""
-            for chunk in execute_reasoning_agent(req.message, context, target_model, history=req.history):
-                reasoning_chain += chunk
-                # Stream the reasoning process as it happens
-                yield json.dumps({"type": "agent_thought", "text": chunk}) + "\n"
-            
-            yield json.dumps({"type": "agent_thought", "text": "--- Reasoning Complete ---"}) + "\n"
-            
-            # 3. Synthesis Agent
-            display_name = user.get("display_name", user.get("username", "Counsel"))
-            if target_model == "ensemble":
-                yield json.dumps({"type": "agent_thought", "text": "Reasoning Complete. Handing off to Multi-Model Ensemble Synthesis (6 models)..."}) + "\n"
-                for chunk in execute_multi_model_synthesis(req.message, reasoning_chain, username=display_name):
-                    full_answer += chunk
-                    yield json.dumps({"type": "content", "text": chunk}) + "\n"
-            else:
-                for chunk in execute_synthesis_agent(req.message, reasoning_chain, target_model, username=display_name, history=req.history):
-                    full_answer += chunk
-                    yield json.dumps({"type": "content", "text": chunk}) + "\n"
-        else:
-            for chunk in generate_answer_stream(req.message, context, history=req.history):
-                full_answer += chunk
-                yield json.dumps({"type": "content", "text": chunk}) + "\n"
+        # ── Dynamic Model Selection & Complexity Routing ──
+        yield json.dumps({"type": "agent_thought", "text": "Determining query complexity and routing to optimal model..."}) + "\n"
+        target_model = determine_query_complexity(req.message)
+        yield json.dumps({"type": "agent_thought", "text": f"Query routed to: {target_model}"}) + "\n"
+        
+        # ── Local Cluster Warm-up Detection ──
+        local_models = ["llama3", "qwen2.5:7b"]
+        if target_model in local_models:
+            try:
+                import requests
+                r = requests.get("http://localhost:11434/api/ps", timeout=1)
+                if r.status_code == 200:
+                    running_models = [m["name"] for m in r.json().get("models", [])]
+                    is_warm = any(target_model in m for m in running_models)
+                    if not is_warm:
+                        yield json.dumps({"type": "agent_thought", "text": f"Initializing {target_model} cluster. Loading neural weights into local GPU memory..."}) + "\n"
+            except:
+                pass
+
+        # Handle routing ensemble target model to standard high-fidelity model
+        actual_model = "llama-3.1-8b-instant" if target_model == "ensemble" else target_model
+
+        # ── Generate Context-Grounded Answer Stream ──
+        yield json.dumps({"type": "agent_thought", "text": "Analyzing context and generating legal synthesis..."}) + "\n"
+        for chunk in generate_answer_stream(req.message, context, model=actual_model, history=req.history):
+            full_answer += chunk
+            yield json.dumps({"type": "content", "text": chunk}) + "\n"
         
         total_time = time_module.time() - t_start
         save_to_history(req.message, category, subcategory, {
             "retrieval_lat": retrieval_time,
             "e2e_lat": total_time,
-            "ans_length": len(full_answer.split())
+            "ans_length": len(full_answer.split()),
+            "routed_model": target_model
         }, username=user.get("username", "unknown"))
         yield json.dumps({"type": "done", "generation_time": total_time}) + "\n"
 
@@ -340,7 +505,7 @@ async def health_check():
 async def get_metrics(user: dict = Depends(require_admin)):
     """Returns evaluation metrics — Admin only."""
     import psutil
-    metric_path = "evaluation_results.json"
+    metric_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "evaluation_results.json")
     if os.path.exists(metric_path):
         try:
             with open(metric_path, "r") as f:
@@ -595,11 +760,13 @@ async def set_gen_model_setting(settings: ModelSettings, user: dict = Depends(ge
 
 @app.get("/api/settings/config")
 async def get_full_config(user: dict = Depends(get_current_user)):
-    """Returns the full config for frontend consumption."""
+    """Returns the full config for frontend consumption, including dynamic model metadata."""
     config = load_config()
     return {
         "embedding_models": list(config.get("models", {}).keys()),
         "generation_models": config.get("generation_models", []),
+        "generation_model_metadata": get_generation_model_metadata(),
+        "groq_models": config.get("groq_models", []),
         "providers": config.get("providers", [])
     }
 
@@ -621,12 +788,14 @@ def get_corpus_fingerprint():
 
 def is_cache_valid(results_path):
     """Check if cached evaluation results are still valid (corpus unchanged)."""
+    if not os.path.isabs(results_path):
+        results_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), results_path)
     if not os.path.exists(results_path):
         return False
     try:
         with open(results_path, "r") as f:
             data = json.load(f)
-        if data.get("status") != "done":
+        if data.get("status") not in ["done", "complete"]:
             return False
         return data.get("corpus_fingerprint") == get_corpus_fingerprint()
     except Exception:
@@ -634,6 +803,9 @@ def is_cache_valid(results_path):
 
 def stamp_results(results_path):
     """Stamp completed results with the current corpus fingerprint."""
+    # Ensure absolute path
+    if not os.path.isabs(results_path):
+        results_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), results_path)
     try:
         with open(results_path, "r") as f:
             data = json.load(f)
@@ -662,15 +834,27 @@ async def trigger_evaluation(request: Request, user: dict = Depends(require_admi
     def run_eval():
         print(f"[LexVed] Starting Evaluation Workflow on {get_active_db_name()}...")
         try:
-            proc = subprocess.Popen(["./venv/bin/python3", "run_metrics.py"])
-            with open("evaluation_results.json", "w") as f:
+            import os
+            backend_dir = os.path.dirname(os.path.abspath(__file__))
+            venv_python = os.path.join(backend_dir, "venv", "bin", "python3")
+            
+            # Thread Governor: Prevent CPU saturation
+            env = os.environ.copy()
+            env["OMP_NUM_THREADS"] = "4"
+            env["MKL_NUM_THREADS"] = "4"
+            env["TORCH_NUM_THREADS"] = "4"
+            
+            proc = subprocess.Popen([venv_python, "run_metrics.py"], cwd=backend_dir, env=env)
+            eval_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "evaluation_results.json")
+            with open(eval_path, "w") as f:
                 json.dump({
                     "status": "processing", 
                     "progress": "Initializing Intelligence Node...",
                     "pid": proc.pid
                 }, f)
         except Exception as e:
-            with open("evaluation_results.json", "w") as f:
+            eval_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "evaluation_results.json")
+            with open(eval_path, "w") as f:
                 json.dump({"status": "error", "message": str(e)}, f)
 
     executor.submit(run_eval)
@@ -689,18 +873,28 @@ async def trigger_comparative(request: Request, user: dict = Depends(require_adm
 
     def run_comparative_thread():
         try:
-            cmd = ["./venv/bin/python3", "run_comparative.py"]
+            import os
+            backend_dir = os.path.dirname(os.path.abspath(__file__))
+            venv_python = os.path.join(backend_dir, "venv", "bin", "python3")
+            cmd = [venv_python, "run_comparative.py"]
             if resume:
                 cmd.append("--resume")
                 
-            proc = subprocess.Popen(cmd)
+            # Thread Governor
+            env = os.environ.copy()
+            env["OMP_NUM_THREADS"] = "4"
+            env["MKL_NUM_THREADS"] = "4"
+            env["TORCH_NUM_THREADS"] = "4"
+            
+            proc = subprocess.Popen(cmd, cwd=backend_dir, env=env)
             
             if not resume:
                 if os.path.exists("intermediate_results.json"):
                     try: os.remove("intermediate_results.json")
                     except Exception: pass
 
-                with open("comparative_results.json", "w") as f:
+                comp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "comparative_results.json")
+                with open(comp_path, "w") as f:
                     json.dump({
                         "status": "processing",
                         "progress": "Starting comparative benchmark...",
@@ -709,17 +903,19 @@ async def trigger_comparative(request: Request, user: dict = Depends(require_adm
                         "pid": proc.pid
                     }, f)
             else:
-                if os.path.exists("comparative_results.json"):
+                comp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "comparative_results.json")
+                if os.path.exists(comp_path):
                     try:
-                        with open("comparative_results.json", "r") as f:
+                        with open(comp_path, "r") as f:
                             old_data = json.load(f)
                         old_data["status"] = "processing"
                         old_data["pid"] = proc.pid
-                        with open("comparative_results.json", "w") as f:
+                        with open(comp_path, "w") as f:
                             json.dump(old_data, f, indent=2)
                     except Exception: pass
         except Exception as e:
-            with open("comparative_results.json", "w") as f:
+            comp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "comparative_results.json")
+            with open(comp_path, "w") as f:
                 json.dump({"status": "error", "message": str(e)}, f)
 
     executor.submit(run_comparative_thread)
@@ -728,7 +924,7 @@ async def trigger_comparative(request: Request, user: dict = Depends(require_adm
 @app.get("/api/comparative")
 async def get_comparative(user: dict = Depends(require_admin)):
     """Returns comparative benchmarking results — Admin only."""
-    path = "comparative_results.json"
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "comparative_results.json")
     if os.path.exists(path):
         try:
             import psutil
@@ -755,7 +951,10 @@ async def trigger_pipeline_comparison(user: dict = Depends(require_admin)):
     """Admin only."""
     def run_compare():
         try:
-            proc = subprocess.Popen(["./venv/bin/python3", "run_metrics.py", "--pipeline", "both"])
+            import os
+            backend_dir = os.path.dirname(os.path.abspath(__file__))
+            venv_python = os.path.join(backend_dir, "venv", "bin", "python3")
+            proc = subprocess.Popen([venv_python, "run_metrics.py", "--pipeline", "both"], cwd=backend_dir)
             with open("pipeline_comparison_results.json", "w") as f:
                 json.dump({
                     "status": "processing",
@@ -811,29 +1010,24 @@ async def trigger_primitive_evaluation(request: Request, user: dict = Depends(re
 
     def run_primitive():
         try:
+            import os
+            backend_dir = os.path.dirname(os.path.abspath(__file__))
+            venv_python = os.path.join(backend_dir, "venv", "bin", "python3")
             proc = subprocess.Popen(
-                ["./venv/bin/python3", "-c",
-                 f"from primitive_pipeline import run_primitive_pipeline; run_primitive_pipeline(model_choice='{model_choice}')"]
+                [venv_python, "-c",
+                 f"from primitive_pipeline import run_primitive_pipeline; run_primitive_pipeline(model_choice='{model_choice}')"],
+                cwd=backend_dir
             )
-            prim_path = "primitive_evaluation_results.json"
-            if not os.path.exists(prim_path):
-                with open(prim_path, "w") as f:
-                    json.dump({
-                        "status": "processing",
-                        "progress": "Initializing Primitive Pipeline...",
-                        "pid": proc.pid
-                    }, f)
-            else:
-                try:
-                    with open(prim_path, "r") as f:
-                        d = json.load(f)
-                    d["pid"] = proc.pid
-                    with open(prim_path, "w") as f:
-                        json.dump(d, f)
-                except Exception:
-                    pass
+            prim_path = os.path.join(backend_dir, "primitive_evaluation_results.json")
+            with open(prim_path, "w") as f:
+                json.dump({
+                    "status": "processing",
+                    "progress": "Initializing Primitive Pipeline...",
+                    "pid": proc.pid
+                }, f)
         except Exception as e:
-            with open("primitive_evaluation_results.json", "w") as f:
+            prim_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "primitive_evaluation_results.json")
+            with open(prim_path, "w") as f:
                 json.dump({"status": "error", "message": str(e)}, f)
 
     executor.submit(run_primitive)

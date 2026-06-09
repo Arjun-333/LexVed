@@ -1,28 +1,36 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useAuth } from "./AuthContext";
 
-const modelsList = [
-  { id: "ensemble", name: "Ensemble Logic", icon: "hub", color: "#D4AF37" },
-  { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", icon: "auto_awesome", color: "#D4AF37" },
-  { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", icon: "all_inclusive", color: "#D4AF37" },
-  { id: "mistral", name: "Mistral 7B", icon: "bolt", color: "#D4AF37" },
-  { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", icon: "bolt", color: "#AA8C2C" },
-  { id: "llama3", name: "Local Llama 3 8B", icon: "memory", color: "#AA8C2C" },
-  { id: "qwen2.5:7b", name: "Local Qwen 2.5", icon: "security", color: "#AA8C2C" },
+interface ModelMeta {
+  id: string;
+  name: string;
+  icon: string;
+  tier: string; // "cloud" | "local" | "orchestrator"
+}
+
+// Fallback list if backend is unreachable (populated on first successful fetch)
+const FALLBACK_MODELS: ModelMeta[] = [
+  { id: "ensemble", name: "Ensemble Logic", icon: "hub", tier: "orchestrator" },
+  { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", icon: "auto_awesome", tier: "cloud" },
+  { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", icon: "all_inclusive", tier: "cloud" },
+  { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", icon: "bolt", tier: "cloud" },
+  { id: "llama3", name: "Local Llama 3 8B", icon: "memory", tier: "local" },
+  { id: "mistral", name: "Mistral 7B", icon: "bolt", tier: "local" },
+  { id: "qwen2.5:7b", name: "Local Qwen 2.5", icon: "security", tier: "local" },
 ];
 
-const DEG = 360 / modelsList.length;
-const R = 150;
-
-export default function ModelWheel({ 
-  activeModelId, 
-  onModelChange 
-}: { 
-  activeModelId: string; 
+export default function ModelWheel({
+  activeModelId,
+  onModelChange,
+}: {
+  activeModelId: string;
   onModelChange: (id: string) => void;
 }) {
+  const { authFetch } = useAuth();
+  const [modelsList, setModelsList] = useState<ModelMeta[]>(FALLBACK_MODELS);
   const [rotation, setRotation] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const [healthStatus, setHealthStatus] = useState("OPTIMAL");
@@ -32,11 +40,28 @@ export default function ModelWheel({
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
 
+  const DEG = modelsList.length > 0 ? 360 / modelsList.length : 51.4;
+  const R = 150;
+
+  // Fetch model list from backend config
+  useEffect(() => {
+    authFetch(`${API_URL}/api/settings/config`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.generation_model_metadata && data.generation_model_metadata.length > 0) {
+          setModelsList(data.generation_model_metadata);
+        }
+      })
+      .catch(() => {
+        // Keep fallback list
+      });
+  }, [authFetch, API_URL]);
+
   useEffect(() => {
     // Sync initial rotation based on external activeModelId
     const idx = modelsList.findIndex(m => m.id === activeModelId);
     if (idx !== -1) setRotation(idx * DEG);
-  }, [activeModelId]);
+  }, [activeModelId, modelsList, DEG]);
 
   useEffect(() => {
     // Dynamic Health Monitoring
@@ -58,7 +83,7 @@ export default function ModelWheel({
     checkHealth();
     const interval = setInterval(checkHealth, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [API_URL]);
 
   const snap = (r: number) => Math.round(r / DEG) * DEG;
 
@@ -67,7 +92,7 @@ export default function ModelWheel({
       const token = localStorage.getItem("lexved_token");
       const res = await fetch(`${API_URL}/api/settings/generation_model`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
@@ -81,14 +106,14 @@ export default function ModelWheel({
 
   const handleModelClick = (id: string, idx: number) => {
     onModelChange(id);
-    
+
     // Shortest-path for direct clicks
     setRotation((prevRotation) => {
       const targetAngle = idx * DEG;
       const diff = (targetAngle - (prevRotation % 360) + 540) % 360 - 180;
       return prevRotation + diff;
     });
-    
+
     updateBackendModel(id);
   };
 
@@ -96,15 +121,18 @@ export default function ModelWheel({
     const currentIndex = modelsList.findIndex(m => m.id === activeModelId);
     let nextIndex = (currentIndex + direction) % modelsList.length;
     if (nextIndex < 0) nextIndex = modelsList.length - 1;
-    
+
     const nextModel = modelsList[nextIndex];
-    
+
     // FORCE direction regardless of distance
     onModelChange(nextModel.id);
     setRotation(prev => prev + (direction * DEG));
-    
+
     updateBackendModel(nextModel.id);
   };
+
+  const accentColor = "#D4AF37";
+  const localColor = "#AA8C2C";
 
   return (
     <aside
@@ -114,7 +142,7 @@ export default function ModelWheel({
       style={{
         background: "var(--bg-secondary)",
         borderLeft: "1px solid var(--border)",
-        opacity: 1.0, // Always visible
+        opacity: 1.0,
       }}
     >
       <div className="text-center mb-10 transition-all duration-500" style={{ transform: isFocused ? "scale(1)" : "scale(0.98)" }}>
@@ -125,8 +153,8 @@ export default function ModelWheel({
           Intelligence Engine
         </h3>
         <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em] opacity-60 transition-colors duration-300" style={{ color: "var(--text)" }}>
-          LOCAL CLUSTER STATUS: <span style={{ 
-            color: healthStatus === "OPTIMAL" ? "var(--accent)" : 
+          LOCAL CLUSTER STATUS: <span style={{
+            color: healthStatus === "OPTIMAL" ? "var(--accent)" :
                    healthStatus === "DEGRADED" ? "#FFA500" : "#FF6B6B" ,
             textShadow: healthStatus === "OPTIMAL" ? "0 0 8px rgba(212, 175, 55, 0.4)" : "none"
           }}>{healthStatus}</span>
@@ -162,6 +190,7 @@ export default function ModelWheel({
         >
           {modelsList.map((m, i) => {
             const isActive = activeModelId === m.id;
+            const itemColor = m.tier === "local" ? localColor : accentColor;
             return (
               <div
                 key={m.id}
@@ -175,10 +204,10 @@ export default function ModelWheel({
                   borderWidth: isActive ? "2px" : "1px",
                   borderColor: isActive ? "var(--accent)" : "var(--border)",
                   boxShadow: isActive ? "var(--shadow-gold), 0 0 20px rgba(212, 175, 55, 0.1)" : "var(--shadow-prestige)",
-                  opacity: isActive ? 1 : 0.75, // Significantly increased from 0.4
+                  opacity: isActive ? 1 : 0.75,
                 }}
               >
-                <span className="material-icons-round text-[24px]" style={{ color: m.color, opacity: isActive ? 1 : 0.6 }}>
+                <span className="material-icons-round text-[24px]" style={{ color: itemColor, opacity: isActive ? 1 : 0.6 }}>
                   {m.icon}
                 </span>
                 <span className="font-bold text-[0.75rem] text-center tracking-tight" style={{ color: isActive ? "var(--accent)" : "var(--text)" }}>

@@ -153,7 +153,7 @@ def process_chunks_batch(chunks, batch_size=32):
     processed_texts = []
     
     # Use single process for stability in production (still extremely fast for standard docs)
-    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=1):
+    for doc in nlp.pipe(texts, batch_size=batch_size, n_process=10):
         text = doc.text
         # NER for names is now disabled (Keep names visible as per user request)
         # However, we still redact other sensitive info below

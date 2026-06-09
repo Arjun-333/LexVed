@@ -67,11 +67,11 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, onS
         <button 
           onClick={() => setAgentic(!agentic)}
           disabled={disabled}
-          title="Toggle Multi-Agent Reasoning"
+          title="Toggle LangGraph Agent Mode (AI decides which tools to use)"
           className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest ${agentic ? "bg-[var(--accent-bg)] border-[var(--accent-dim)] text-[var(--accent)]" : "bg-[var(--surface-active)] border-transparent text-[var(--text-muted)] hover:text-[var(--text)]"} border`}
         >
           <span className="material-icons-round text-[14px]">psychology</span>
-          {agentic ? "Agentic" : "Universal"}
+          {agentic ? "Agent" : "Standard"}
         </button>
 
         {disabled ? (

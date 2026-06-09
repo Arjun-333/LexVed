@@ -196,16 +196,23 @@ function Dashboard() {
     }
   }
 
-  // Map IDs to pretty names for the top bar
-  const modelDisplayNames: Record<string, string> = {
-    "ensemble": "Ensemble Logic",
-    "llama-3.3-70b-versatile": "Llama 3.3 70B",
-    "llama-3.1-8b-instant": "Llama 3.1 8B",
-    "mixtral-8x7b-32768": "Mixtral 8x7B",
-    "llama3": "Local Llama 3",
-    "mistral": "Mistral 7B",
-    "qwen2.5:7b": "Local Qwen 2.5"
-  };
+  // Dynamic model display names from backend config
+  const [modelDisplayNames, setModelDisplayNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    authFetch(`${API_URL}/api/settings/config`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.generation_model_metadata) {
+          const names: Record<string, string> = {};
+          data.generation_model_metadata.forEach((m: { id: string; name: string }) => {
+            names[m.id] = m.name;
+          });
+          setModelDisplayNames(names);
+        }
+      })
+      .catch(() => {});
+  }, [authFetch]);
 
   const modelName = modelDisplayNames[activeModel] || activeModel || "Connecting...";
   const ollamaStatus = health?.ollama === "connected" ? "OPTIMAL" : health?.ollama === "offline" ? "OFFLINE" : "CONNECTING";

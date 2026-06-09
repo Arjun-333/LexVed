@@ -1,0 +1,46 @@
+{
+  "civil": [
+    {
+      "query": "Does the introduction of a Family Benefit Scheme by an employer completely extinguish a dependent's right to claim compassionate appointment?",
+      "ground_truth": "No. The Supreme Court held that a Family Benefit Scheme (which provides a monthly deposit) cannot be equated with or replace the constitutional philosophy of social justice underlying compassionate appointments. The employer must still consider the dependent's application for compassionate employment."
+    },
+    {
+      "query": "Can a person who has been convicted of a criminal offence and sentenced to imprisonment for more than two years be appointed as the Chief Minister of a State if their conviction has not been suspended?",
+      "ground_truth": "No. The Supreme Court ruled that a person disqualified from being a member of the legislature under Article 191(1)(e) read with Section 8(3) of the Representation of the People Act, 1951, due to a criminal conviction, cannot be legally appointed as Chief Minister, even if they enjoy the majority support of the legislative assembly."
+    },
+    {
+      "query": "What was the Supreme Court's directive regarding the methods of recruitment for the Higher Judicial Service (District Judges) to ensure merit and efficiency?",
+      "ground_truth": "The Supreme Court directed that recruitment to the Higher Judicial Service should be divided into three avenues: 50% by promotion based on merit-cum-seniority, 25% by promotion strictly on merit through a limited departmental competitive examination, and 25% by direct recruitment from eligible advocates."
+    },
+    {
+      "query": "Do candidates placed on a waiting list have an absolute legal right to be appointed if the initially selected candidates fail to join the service?",
+      "ground_truth": "No. The Supreme Court held that the existence of a waiting list does not create an indefeasible right to appointment. The employer has the discretion to carry forward unfilled vacancies to the next year, provided the decision is not arbitrary or mala fide."
+    },
+    {
+      "query": "Are teachers employed in schools considered \"employees\" eligible for gratuity under Section 2(e) of the Payment of Gratuity Act, 1972?",
+      "ground_truth": "No. The Supreme Court held that teachers do not fall within the definition of \"employee\" under the Act because imparting education is a noble vocation and cannot be classified as skilled, unskilled, manual, supervisory, or clerical work."
+    }
+  ],
+  "criminal": [
+    {
+      "query": "Under Section 319 of the Cr.P.C., can a trial court add new individuals as accused persons based merely on suspicion arising during the examination of witnesses?",
+      "ground_truth": "No. The Supreme Court held that the power under Section 319 is an extraordinary power that must be used sparingly. It requires a reasonable prospect of conviction and compelling reasons; mere suspicion is insufficient to subject a person to the agony of a criminal trial."
+    },
+    {
+      "query": "What procedure did the Supreme Court mandate for trial courts when objections are raised regarding the admissibility of documents during the evidence-recording stage?",
+      "ground_truth": "To prevent unnecessary delays, the Supreme Court directed trial courts to tentatively mark the objected documents as exhibits and defer the final decision on their admissibility until the final judgment stage, rather than halting the trial to pass interlocutory orders."
+    },
+    {
+      "query": "Can a criminal complaint under Section 138 of the Negotiable Instruments Act be maintained against a guarantor who issues a cheque solely to secure the debt of the principal debtor?",
+      "ground_truth": "Yes. The Supreme Court ruled that the words \"any cheque\" and \"other liability\" in Section 138 are broad enough to cover cheques issued by a guarantor. The liability cannot be avoided merely because the cheque was issued as security for someone else's debt."
+    },
+    {
+      "query": "Can criminal proceedings for cheating under Section 420/120B IPC continue against an assessee if their civil tax liability has already been fully settled under the Kar Vivad Samadhan Scheme, 1998?",
+      "ground_truth": "No. The Supreme Court held that once the civil dispute is resolved and the authorities grant immunity under the Scheme, continuing the criminal prosecution lacks the requisite fraudulent intention and constitutes an abuse of the judicial process."
+    },
+    {
+      "query": "What degree of negligence is required to hold a medical professional criminally liable for the death of a patient under Section 304A of the IPC?",
+      "ground_truth": "The Supreme Court held that to secure a criminal conviction under Section 304A, the doctor's negligence must be \"gross\" or \"reckless.\" A mere lack of necessary care or an error of judgment, which might create civil liability in tort, is not sufficient for criminal punishment."
+    }
+  ]
+}

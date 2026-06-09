@@ -35,7 +35,9 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
   const [smoothPct, setSmoothPct] = useState(5);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+  const API_URL = typeof window !== 'undefined' 
+    ? `http://${window.location.hostname}:5000` 
+    : (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000");
 
   const fetchMetrics = () => {
     authFetch(`${API_URL}/api/metrics`)
@@ -106,17 +108,20 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
       fetchComp();
       fetchPipelineComp();
       fetchPrimitiveMetrics();
-      pollRef.current = setInterval(() => {
-         fetchMetrics();
-         fetchComp();
-         fetchPipelineComp();
-         fetchPrimitiveMetrics();
-      }, 3000);
+      
+      const intervalMetrics = setInterval(fetchMetrics, 3000);
+      const intervalComp = setInterval(fetchComp, comparative?.status === "processing" ? 1000 : 3000);
+      const intervalPipeline = setInterval(fetchPipelineComp, 5000);
+      const intervalPrimitive = setInterval(fetchPrimitiveMetrics, 3000);
+      
+      return () => {
+        clearInterval(intervalMetrics);
+        clearInterval(intervalComp);
+        clearInterval(intervalPipeline);
+        clearInterval(intervalPrimitive);
+      };
     }
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, [isOpen]);
+  }, [isOpen, comparative?.status]);
 
   useEffect(() => {
     if (comparative?.status !== "processing") {
@@ -314,6 +319,9 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
     { id: "M22", category: "Legal",       label: "Precedent Match",       value: getVal("M22"),  decimals: 0, unit: "%" },
     { id: "M23", category: "Legal",       label: "Regulatory Align.",     value: getVal("M23"),  decimals: 0, unit: "%" },
     { id: "M24", category: "Legal",       label: "Jurisdictional Comp.",  value: getVal("M24"),  decimals: 0, unit: "%" },
+    { id: "M25", category: "Efficiency",  label: "Time to First Token",   value: getVal("M25"),  decimals: 4, unit: "s" },
+    { id: "M26", category: "Efficiency",  label: "Prefill Latency",       value: getVal("M26"),  decimals: 4, unit: "s" },
+    { id: "M27", category: "Efficiency",  label: "Tokens/sec Throughput", value: getVal("M27"),  decimals: 2, unit: "t/s" },
   ] : [];
 
   const handleExportPDF = () => {
@@ -332,7 +340,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
       doc.text("LexVed Institutional Audit Report", 14, 20);
       doc.setFontSize(9);
       doc.setTextColor(120);
-      doc.text(`Mission-Critical Metrics (M1-M24) | ${timestamp}`, 14, 27);
+      doc.text(`Mission-Critical Metrics (M1-M27) | ${timestamp}`, 14, 27);
       doc.text(`System: ${sys.model} | DB: ${sys.vector_db.toUpperCase()} | Model: ${sys.embedding}`, 14, 32);
 
       const colX = [14, 30, 62, 120, 165];
@@ -521,7 +529,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                 <ShieldCheck className="text-[#d4af37] w-6 h-6" />
                 LexVed Performance Audit
               </h2>
-              <p className="text-white/40 text-[10px] uppercase font-mono tracking-widest mt-2">Institutional RAG Benchmarking — Mission-Critical (M1-M24)</p>
+              <p className="text-white/40 text-[10px] uppercase font-mono tracking-widest mt-2">Institutional RAG Benchmarking — Mission-Critical (M1-M27)</p>
             </div>
             <div className="flex items-center gap-4">
               <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
@@ -659,10 +667,17 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                             onChange={e => setPrimitiveModelChoice(e.target.value)}
                             className="w-full bg-black border border-[#d4af37]/30 text-white rounded-lg p-2.5 text-xs focus:border-[#d4af37] focus:outline-none"
                           >
-                            <option value="1">MPNet (multi-qa-mpnet)</option>
-                            <option value="2">MiniLM (multi-qa-MiniLM-L6)</option>
-                            <option value="4">DistilBERT (multi-qa-distilbert)</option>
-                            <option value="6">BGE-M3 (auto-download)</option>
+                            {/* Options populated dynamically from selectedModel's siblings */}
+                            {[
+                              { value: "1", label: "MPNet (multi-qa-mpnet)" },
+                              { value: "2", label: "MiniLM (multi-qa-MiniLM-L6)" },
+                              { value: "4", label: "DistilBERT (multi-qa-distilbert)" },
+                              { value: "5", label: "E5-Mistral (multilingual)" },
+                              { value: "6", label: "BGE-M3 (BAAI)" },
+                              { value: "3", label: "Cohere Embed v3" },
+                            ].map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
                           </select>
                         </div>
                         {/* Standalone primitive run */}
@@ -698,6 +713,13 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                         <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Audit Metrics Report</span>
                         <span className="text-[10px] text-[#d4af37] font-mono">{metrics?.system_info?.vector_db?.toUpperCase() || "NODE"} ACTIVE</span>
                       </div>
+                      {isProcessing ? (
+                        <div className="flex flex-col items-center justify-center py-24">
+                          <Loader2 className="w-10 h-10 animate-spin text-[#d4af37] mb-6" />
+                          <h3 className="text-[#d4af37] font-bold tracking-widest text-sm mb-2 uppercase">Live Audit In Progress</h3>
+                          <p className="text-white/40 text-xs font-mono mt-2">{metrics?.progress || "Evaluating Queries..."}</p>
+                        </div>
+                      ) : (
                       <table className="w-full text-left">
                         <thead className="text-white/40 text-[10px] font-bold uppercase tracking-wider">
                           <tr>
@@ -724,6 +746,7 @@ export default function MetricsDashboard({ isOpen, onClose }: { isOpen: boolean;
                           ))}
                         </tbody>
                       </table>
+                      )}
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                       {[

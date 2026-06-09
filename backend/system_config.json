@@ -1,6 +1,6 @@
 {
-    "generation_model": "llama-3.3-70b-versatile",
-    "embedding_model": "multi-qa-MiniLM-L6-cos-v1",
+    "generation_model": "ensemble",
+    "embedding_model": "multi-qa-mpnet-base-cos-v1",
     "vector_db": "pinecone",
     "models": {
         "multi-qa-MiniLM-L6-cos-v1": {

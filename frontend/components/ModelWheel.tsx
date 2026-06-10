@@ -18,7 +18,6 @@ const FALLBACK_MODELS: ModelMeta[] = [
   { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", icon: "all_inclusive", tier: "cloud" },
   { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", icon: "bolt", tier: "cloud" },
   { id: "llama3", name: "Local Llama 3 8B", icon: "memory", tier: "local" },
-  { id: "mistral", name: "Mistral 7B", icon: "bolt", tier: "local" },
   { id: "qwen2.5:7b", name: "Local Qwen 2.5", icon: "security", tier: "local" },
 ];
 

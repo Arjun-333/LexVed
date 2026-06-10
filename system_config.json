@@ -14,12 +14,6 @@
         },
         "BAAI/bge-m3": {
             "dimension": 1024
-        },
-        "intfloat/multilingual-e5-large-instruct": {
-            "dimension": 1024
-        },
-        "Cohere/Cohere-embed-english-v3.0": {
-            "dimension": 1024
         }
     },
     "generation_models": [
@@ -27,8 +21,6 @@
         "llama3:70b",
         "qwen2.5:70b",
         "qwen2.5:7b",
-        "mistral",
-        "phi3",
         "llama-3.3-70b-versatile",
         "mixtral-8x7b-32768"
     ],

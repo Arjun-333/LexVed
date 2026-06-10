@@ -63,6 +63,7 @@ def retrieve_documents(query: str) -> str:
         Relevant legal text passages with source metadata
     """
     from src.retrieval.retriever import retrieve
+    from src.retrieval.compressor import compress_text
 
     docs, latency = retrieve(query, top_k=5)
 
@@ -74,12 +75,14 @@ def retrieve_documents(query: str) -> str:
     for i, doc in enumerate(docs, 1):
         payload = doc.payload
         text = payload.get("text", "")
+        # Apply Query-Aware Context Compression
+        compressed_text_content = compress_text(query, text)
         source = payload.get("source", "Unknown")
         page = payload.get("page", "?")
         # Extract just the filename from the full path
         source_name = source.split("/")[-1] if "/" in source else source
         formatted.append(
-            f"[Source {i}: {source_name}, Page {page}]\n{text}"
+            f"[Source {i}: {source_name}, Page {page}]\n{compressed_text_content}"
         )
 
     result = "\n\n---\n\n".join(formatted)

@@ -5,10 +5,11 @@ import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "re
 interface InputBarProps {
   onSend: (text: string, agentic: boolean) => void;
   onStop: () => void;
+  onUpload?: (file: File) => void;
   disabled?: boolean;
 }
 
-const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, onStop, disabled }, ref) => {
+const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, onStop, onUpload, disabled }, ref) => {
   const [text, setText] = useState("");
   const [focused, setFocused] = useState(false);
   const [agentic, setAgentic] = useState(false);
@@ -40,6 +41,26 @@ const InputBar = forwardRef<{ focus: () => void }, InputBarProps>(({ onSend, onS
         <div className="w-6 h-6 flex items-center justify-center opacity-40">
            <span className="material-icons-round text-[18px]">search</span>
         </div>
+
+        <label 
+          title="Upload PDF directly to index"
+          className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[var(--surface-active)] text-[var(--text-muted)] hover:text-[var(--text)] shrink-0"
+        >
+          <span className="material-icons-round text-[18px]">attach_file</span>
+          <input
+            type="file"
+            className="hidden"
+            accept=".pdf"
+            disabled={disabled}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file && onUpload) {
+                onUpload(file);
+                e.target.value = "";
+              }
+            }}
+          />
+        </label>
 
         <input
           ref={inputRef}

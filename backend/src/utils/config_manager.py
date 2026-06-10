@@ -11,11 +11,9 @@ DEFAULT_CONFIG = {
         "multi-qa-MiniLM-L6-cos-v1": {"dimension": 384},
         "multi-qa-mpnet-base-cos-v1": {"dimension": 768},
         "multi-qa-distilbert-cos-v1": {"dimension": 768},
-        "BAAI/bge-m3": {"dimension": 1024},
-        "intfloat/multilingual-e5-large-instruct": {"dimension": 1024},
-        "embed-english-v3.0": {"dimension": 1024}
+        "BAAI/bge-m3": {"dimension": 1024}
     },
-    "generation_models": ["ensemble", "llama3", "llama-3.1-8b-instant", "llama3:70b", "qwen2.5:70b", "qwen2.5:7b", "mistral", "phi3", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
+    "generation_models": ["ensemble", "llama3", "llama-3.1-8b-instant", "llama3:70b", "qwen2.5:70b", "qwen2.5:7b", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
     "groq_models": ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "qwen-2.5-32b"],
     "providers": ["qdrant", "pinecone"]
 }

@@ -196,6 +196,69 @@ function Dashboard() {
     }
   }
 
+  async function handleUpload(file: File) {
+    if (!hasStarted) setHasStarted(true);
+
+    const botMsgId = `b-upload-${Date.now()}`;
+    setLoading(true);
+    setIsTyping(true);
+
+    setMessages((prev) => [
+      ...prev,
+      { 
+        id: botMsgId, 
+        text: `Uploading and preparing "${file.name}" for vector indexing...`, 
+        isUser: false 
+      },
+    ]);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await authFetch(`${API_URL}/api/ingest`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.body) throw new Error("No response body");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      let lastStep = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n").filter(l => l.trim());
+
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line);
+            if (data.step) {
+              lastStep = data.step;
+              setMessages((prev) => prev.map(m => m.id === botMsgId ? {
+                ...m,
+                text: lastStep,
+                agentThoughts: (m.agentThoughts || "") + `[Ingestion Pipeline] ${lastStep}\n`
+              } : m));
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      setMessages((prev) => prev.map(m => m.id === botMsgId ? {
+        ...m,
+        text: `Upload failed: ${msg}. Check backend server logs.`
+      } : m));
+    } finally {
+      setLoading(false);
+      setIsTyping(false);
+    }
+  }
+
   // Dynamic model display names from backend config
   const [modelDisplayNames, setModelDisplayNames] = useState<Record<string, string>>({});
 
@@ -286,7 +349,7 @@ function Dashboard() {
         </div>
 
         <div className="shrink-0 z-20">
-           <InputBar onSend={handleSend} onStop={handleStop} disabled={loading} ref={inputRef} />
+           <InputBar onSend={handleSend} onStop={handleStop} onUpload={handleUpload} disabled={loading} ref={inputRef} />
         </div>
       </main>
       <ModelWheel activeModelId={activeModel} onModelChange={handleModelChange} />

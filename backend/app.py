@@ -357,6 +357,7 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
     print(f"[LexVed] Retrieved {len(res)} chunks. Time: {retrieval_time:.2f}s")
 
     context = ""
+    from src.retrieval.compressor import compress_text
     for m in res:
         source = os.path.basename(m.payload.get("source", "Unknown"))
         page_val = m.payload.get("page")
@@ -365,7 +366,10 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
             display_page = page_val if page_val > 0 else 1
         else:
             display_page = page_val or "?"
-        context += f"\n[Source: {source}, Page: {display_page}]\n{m.payload['text']}\n"
+        
+        # Apply Query-Aware Context Compression
+        compressed_segment = compress_text(req.message, m.payload['text'])
+        context += f"\n[Source: {source}, Page: {display_page}]\n{compressed_segment}\n"
 
     full_answer = ""
     # Collect source references for citation linking

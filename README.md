@@ -48,8 +48,8 @@ The frontend is built on Next.js 14 and Framer Motion, delivering a premium, gla
 
 | Layer | Technology |
 |-------|-----------|
-| **Language Models** | Llama 3.1 8B, Llama 3.3 70B, Mixtral 8x7B, Qwen 2.5 (70B/32B), Llama 3 70B, Mistral, Phi-3 |
-| **Embeddings** | MPNet, MiniLM, DistilBERT, E5-Large-Instruct, BGE-M3, Cohere Embed v3 |
+| **Language Models** | Llama 3.1 8B, Llama 3.3 70B, Mixtral 8x7B, Qwen 2.5 (70B/32B), Llama 3 70B |
+| **Embeddings** | MPNet, MiniLM, DistilBERT, BGE-M3 |
 | **Vector Databases** | Qdrant (Self-Hosted), Pinecone (Serverless) |
 | **Retrieval Engine** | BM25, Reciprocal Rank Fusion, CrossEncoder |
 | **Backend Framework** | FastAPI (Python 3.10) |
@@ -61,7 +61,7 @@ The frontend is built on Next.js 14 and Framer Motion, delivering a premium, gla
 - Python 3.10+
 - Node.js 18+
 - Docker (for Qdrant deployment)
-- API Keys: Pinecone, Groq, Cohere
+- API Keys: Pinecone, Groq
 
 ## Initialization and Setup
 
@@ -84,7 +84,6 @@ python3 -m spacy download en_core_web_sm
 # PINECONE_API_KEY=your_key
 # PINECONE_INDEX_NAME=lexved-index
 # GROQ_API_KEY=your_key
-# COHERE_API_KEY=your_key
 
 python3 app.py
 ```

@@ -107,106 +107,132 @@ RESPONSE STYLE:
 def agent_node(state: AgentState) -> dict:
     """
     The Agent's Brain — processes messages and decides the next action.
-
-    How it works:
-        1. Takes the current conversation (state["messages"])
-        2. Prepends the system prompt (so the LLM knows it's a legal assistant)
-        3. Sends everything to Groq's LLM
-        4. The LLM returns either:
-           - A text response (done, no tools needed)
-           - A tool_call (needs to use a tool before answering)
-        5. We return the response as a new message in the state
-
-    Args:
-        state: Current AgentState with message history
-
-    Returns:
-        Updated state with the agent's response message appended
     """
-    from langchain_core.messages import SystemMessage
+    from langchain_core.messages import SystemMessage, HumanMessage
 
     llm = _create_llm()
 
     # Prepend system prompt to give the LLM its identity and rules
     messages = [SystemMessage(content=SYSTEM_PROMPT)] + state["messages"]
 
+    # If the compliance audit rejected the previous answer, insert the feedback to correct it
+    if state.get("audit_feedback") and not state.get("audit_passed"):
+        feedback_content = (
+            f"COMPLIANCE AUDIT WARNING: Your previous response contained factual errors or unsupported claims.\n"
+            f"Auditor Feedback:\n{state['audit_feedback']}\n\n"
+            f"Please revise your response. Base it strictly on the retrieved case laws. Do not invent any facts."
+        )
+        messages.append(HumanMessage(content=feedback_content))
+
     # The LLM processes all messages and returns its decision
     response = llm.invoke(messages)
 
-    # Return the response — LangGraph appends it to state["messages"]
-    # via the add_messages reducer we defined in state.py
     return {"messages": [response]}
 
 
-# ─── Step 3: The Routing Logic ──────────────────────────────────
-#
-# After the agent node runs, we need to decide:
-#   - Did the LLM request a tool call? → Route to tool_node
-#   - Did the LLM give a final answer? → Route to END
-#
-# We check this by looking at the last message's "tool_calls" field.
-# If it has tool calls, the LLM wants to use tools.
-# If it doesn't, the LLM is done thinking.
+# ─── Step 3: Compliance Auditor & Routing Logic ─────────────────
+
+def auditor_node(state: AgentState) -> dict:
+    """
+    Audits the agent's final text response against the retrieved source context.
+    Detects hallucinations, unsupported claims, or direct factual contradictions.
+    """
+    from langchain_core.messages import SystemMessage, HumanMessage
+    
+    # 1. Extract agent response
+    agent_message = state["messages"][-1]
+    response_text = agent_message.content if hasattr(agent_message, "content") else ""
+    
+    # 2. Extract retrieved context from all tool messages in the history
+    retrieved_context = []
+    for msg in state["messages"]:
+        if msg.type == "tool" and msg.name == "retrieve_documents":
+            retrieved_context.append(msg.content)
+            
+    context_str = "\n\n".join(retrieved_context)
+    
+    # If no document was retrieved, we cannot verify facts (or we skip audit)
+    if not context_str.strip():
+        print("[LexVed Auditor] No retrieval context found. Skipping audit.")
+        return {"audit_passed": True, "audit_feedback": ""}
+        
+    print("[LexVed Auditor] Auditing response for factual compliance...")
+    
+    # 3. Call Groq to verify faithfulness
+    auditor_llm = ChatGroq(
+        model="llama-3.1-8b-instant",
+        temperature=0.0,
+        api_key=os.getenv("GROQ_API_KEY"),
+    )
+    
+    system_prompt = (
+        "You are the LexVed Compliance Auditor.\n"
+        "Compare the proposed Legal Answer against the provided Source Context.\n"
+        "Identify if the answer contains hallucinations, direct contradictions, or facts/conclusions "
+        "not explicitly mentioned or supported by the source context.\n\n"
+        "CRITICAL RULE: Respond ONLY with the single word 'PASSED' if the answer is fully faithful and accurate.\n"
+        "Otherwise, describe the specific contradictions or unsupported claims found."
+    )
+    
+    human_content = (
+        f"Source Context:\n{context_str[:12000]}\n\n"
+        f"Proposed Legal Answer:\n{response_text}"
+    )
+    
+    try:
+        audit_res = auditor_llm.invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=human_content)
+        ])
+        
+        feedback = audit_res.content.strip()
+        is_passed = feedback.upper() == "PASSED"
+        
+        print(f"[LexVed Auditor] Result: {feedback}")
+        
+        return {
+            "audit_passed": is_passed,
+            "audit_feedback": "" if is_passed else feedback,
+            "audit_attempts": state.get("audit_attempts", 0) + 1
+        }
+    except Exception as e:
+        print(f"[LexVed Auditor] Audit failed to execute: {e}. Passing by default.")
+        return {"audit_passed": True, "audit_feedback": ""}
+
 
 def should_continue(state: AgentState) -> str:
     """
-    The Router — decides if the agent needs more tools or is finished.
-
-    This function is called after every agent_node execution.
-    It looks at the last message from the LLM:
-    - If the message contains tool_calls → return "tools" (go to tool_node)
-    - If the message is plain text → return "end" (we're done)
-
-    Returns:
-        "tools" to route to the tool executor, or "end" to finish
+    Decides if the agent needs more tools, needs compliance auditing, or is finished.
     """
     last_message = state["messages"][-1]
 
-    # Check if the LLM's response contains tool calls
-    # tool_calls is a list like: [{"name": "retrieve_documents", "args": {...}}]
+    # If the message contains tool calls, go to the tool node
     if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "tools"
+
+    # Otherwise, if we have not performed/passed the audit yet, run compliance audit
+    if not state.get("audit_passed") and state.get("audit_attempts", 0) < 2:
+        return "audit"
 
     return "end"
 
 
+def check_audit_result(state: AgentState) -> str:
+    """
+    Evaluates the compliance audit result.
+    If the audit passed, or we reached max revision attempts, transition to END.
+    Otherwise, loop back to the agent node to correct the response.
+    """
+    if state.get("audit_passed") or state.get("audit_attempts", 0) >= 2:
+        return "end"
+    return "correct"
+
+
 # ─── Step 4: Build the Graph ────────────────────────────────────
-#
-# This is where we wire everything together into a state machine.
-#
-# The graph looks like:
-#
-#     START
-#       ↓
-#     agent  ←──────┐
-#       ↓            │
-#   (should_continue?)│
-#       ↓ "tools"    │
-#     tools ─────────┘
-#       ↓ "end"
-#      END
-#
-# ToolNode is a prebuilt LangGraph component that:
-# 1. Reads the tool_calls from the agent's last message
-# 2. Finds the matching tool function from ALL_TOOLS
-# 3. Calls it with the arguments the LLM specified
-# 4. Returns the result as a ToolMessage
 
 def build_agent_graph():
     """
     Constructs the LangGraph agent graph with an active MemorySaver checkpointer.
-
-    Architecture:
-        1. StateGraph(AgentState) — Creates a graph that uses our state schema
-        2. add_node("agent", ...) — Registers the agent brain
-        3. add_node("tools", ...) — Registers the tool executor
-        4. set_entry_point("agent") — Start at the agent node
-        5. add_conditional_edges — After agent, check should_continue
-        6. add_edge("tools", "agent") — After tools, always go back to agent
-        7. compile(checkpointer=MemorySaver()) — Locks the graph into an executable stateful machine
-
-    Returns:
-        A compiled LangGraph agent ready to process messages
     """
     from langgraph.checkpoint.memory import MemorySaver
 
@@ -216,22 +242,34 @@ def build_agent_graph():
     # Register nodes
     graph.add_node("agent", agent_node)          # The LLM brain
     graph.add_node("tools", ToolNode(ALL_TOOLS))  # The tool executor
+    graph.add_node("audit", auditor_node)        # The compliance auditor
 
     # Set where to start
     graph.set_entry_point("agent")
 
-    # After agent runs, check if we need tools or are done
+    # After agent runs, check if we need tools or compliance audit
     graph.add_conditional_edges(
-        "agent",                # After this node...
-        should_continue,        # ...run this function to decide where to go
+        "agent",
+        should_continue,
         {
-            "tools": "tools",   # If should_continue returns "tools" → go to tools node
-            "end": END,         # If should_continue returns "end" → finish
+            "tools": "tools",
+            "audit": "audit",
+            "end": END,
         }
     )
 
-    # After tools run, ALWAYS go back to agent (so it can process the results)
+    # After tools run, always return to agent
     graph.add_edge("tools", "agent")
+
+    # Routing from auditor: end or loop back to agent
+    graph.add_conditional_edges(
+        "audit",
+        check_audit_result,
+        {
+            "end": END,
+            "correct": "agent"
+        }
+    )
 
     # Compile with memory checkpointing
     memory = MemorySaver()
@@ -393,7 +431,7 @@ async def stream_agent(user_message: str, history: list = None, thread_id: str =
             yield {
                 "type": "tool_result",
                 "tool": tool_msg.name,
-                "result": str(tool_msg.content)[:500] + ("..." if len(str(tool_msg.content)) > 500 else ""),
+                "result": str(tool_msg.content),
             }
 
     yield {

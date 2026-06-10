@@ -30,9 +30,10 @@ function extractCitations(text: string): string[] {
 
 interface ChatHistoryProps {
   messages: Message[];
+  onCitationClick?: (file: string, page: number, text: string) => void;
 }
 
-export default function ChatHistory({ messages }: ChatHistoryProps) {
+export default function ChatHistory({ messages, onCitationClick }: ChatHistoryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -128,7 +129,7 @@ export default function ChatHistory({ messages }: ChatHistoryProps) {
                     )}
 
                     {(citations.length > 0 || (msg.sources && msg.sources.length > 0)) && 
-                      <CitationCard citations={citations} sources={msg.sources} />
+                      <CitationCard citations={citations} sources={msg.sources} onCitationClick={onCitationClick} />
                     }
                   </div>
                 </div>

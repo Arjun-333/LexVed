@@ -28,6 +28,11 @@ function Dashboard() {
   const [elapsed, setElapsed] = useState(0);
   const [health, setHealth] = useState<HealthData | null>(null);
   const [activeModel, setActiveModel] = useState("ensemble");
+  const [activePdf, setActivePdf] = useState<{ filename: string; page: number; text: string } | null>(null);
+
+  const handleCitationClick = useCallback((file: string, page: number, text: string) => {
+    setActivePdf({ filename: file, page, text });
+  }, []);
   
   // Conversation history for multi-turn chat
   const conversationHistory = useRef<{question: string; answer: string}[]>([]);
@@ -284,74 +289,115 @@ function Dashboard() {
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
       <Sidebar />
-      <main className="flex-1 flex flex-col min-w-0 relative">
-        <div className="absolute top-0 left-0 right-0 h-24 pointer-events-none z-10"
-             style={{ background: "linear-gradient(to bottom, var(--bg) 0%, transparent 100%)" }} />
+      <div className="flex-1 flex overflow-hidden">
+        <main className={`flex flex-col min-w-0 relative h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${activePdf ? 'w-3/5 border-r border-[var(--border)]' : 'w-full'}`}>
+          <div className="absolute top-0 left-0 right-0 h-24 pointer-events-none z-10"
+               style={{ background: "linear-gradient(to bottom, var(--bg) 0%, transparent 100%)" }} />
 
-        <div className="h-[64px] flex items-center justify-between px-8 shrink-0 z-20">
-          <div className="flex flex-col">
-             <h1 className="font-bold text-xl tracking-tight transition-colors duration-300"
-                 style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}>
-               Lex<span style={{ color: "var(--accent)" }}>Ved</span>
-             </h1>
-          </div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
-             <div className="flex flex-col items-end">
-               <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] opacity-40">System Status</span>
-               <div className="flex items-center gap-2">
-                 <span className={`w-1.5 h-1.5 rounded-full ${statusColor} ${health?.ollama === "connected" ? "animate-pulse" : ""}`} />
-                 <span className="text-[0.65rem] font-bold uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
-                   {modelName} · {ollamaStatus}
-                 </span>
+          <div className="h-[64px] flex items-center justify-between px-8 shrink-0 z-20">
+            <div className="flex flex-col">
+               <h1 className="font-bold text-xl tracking-tight transition-colors duration-300"
+                   style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}>
+                 Lex<span style={{ color: "var(--accent)" }}>Ved</span>
+               </h1>
+            </div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
+               <div className="flex flex-col items-end">
+                 <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] opacity-40">System Status</span>
+                 <div className="flex items-center gap-2">
+                   <span className={`w-1.5 h-1.5 rounded-full ${statusColor} ${health?.ollama === "connected" ? "animate-pulse" : ""}`} />
+                   <span className="text-[0.65rem] font-bold uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
+                     {modelName} · {ollamaStatus}
+                   </span>
+                 </div>
                </div>
-             </div>
-          </motion.div>
-        </div>
+            </motion.div>
+          </div>
 
-        <div className="flex-1 flex flex-col overflow-hidden relative z-0">
-          <AnimatePresence mode="wait">
-            {!hasStarted ? (
-              <motion.div key="hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }} className="flex-1 flex flex-col">
-                <WelcomeHero onSuggestionClick={handleSend} />
-              </motion.div>
-            ) : (
-              <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="flex-1 flex flex-col overflow-hidden">
-                <ChatHistory messages={messages} />
+          <div className="flex-1 flex flex-col overflow-hidden relative z-0">
+            <AnimatePresence mode="wait">
+              {!hasStarted ? (
+                <motion.div key="hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }} className="flex-1 flex flex-col">
+                  <WelcomeHero onSuggestionClick={handleSend} />
+                </motion.div>
+              ) : (
+                <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="flex-1 flex flex-col overflow-hidden">
+                  <ChatHistory messages={messages} onCitationClick={handleCitationClick} />
 
-                {isTyping && (
-                  <div className="max-w-[720px] mx-auto w-full px-6 py-4">
-                    <div className="flex gap-4 p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] animate-pulse shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-[var(--accent-bg)] flex items-center justify-center text-[var(--accent)]">
-                        <span className="material-icons-round text-[20px] animate-spin">verified_user</span>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <div className="text-[var(--text-muted)] text-sm flex items-center gap-3">
-                          <span className="font-bold uppercase tracking-widest text-[10px]">Querying Legal Repositories</span>
-                          <span className="text-[var(--accent)] font-mono text-[11px] bg-[var(--accent-bg)] px-2 py-0.5 rounded border border-[var(--accent-glow)]">
-                            {elapsed < 25 ? (
-                              <>ANALYZING CONTEXT | ELAPSED: {elapsed.toFixed(1)}S</>
-                            ) : (
-                              <>GROUNDING FACTUAL ANALYSIS | {elapsed.toFixed(1)}S</>
-                            )}
-                          </span>
+                  {isTyping && (
+                    <div className="max-w-[720px] mx-auto w-full px-6 py-4">
+                      <div className="flex gap-4 p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] animate-pulse shadow-sm">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--accent-bg)] flex items-center justify-center text-[var(--accent)]">
+                          <span className="material-icons-round text-[20px] animate-spin">verified_user</span>
                         </div>
-                        <div className="h-4 w-48 bg-[var(--text-muted)] rounded-full opacity-10" />
+                        <div className="flex flex-col gap-2">
+                          <div className="text-[var(--text-muted)] text-sm flex items-center gap-3">
+                            <span className="font-bold uppercase tracking-widest text-[10px]">Querying Legal Repositories</span>
+                            <span className="text-[var(--accent)] font-mono text-[11px] bg-[var(--accent-bg)] px-2 py-0.5 rounded border border-[var(--accent-glow)]">
+                              {elapsed < 25 ? (
+                                <>ANALYZING CONTEXT | ELAPSED: {elapsed.toFixed(1)}S</>
+                              ) : (
+                                <>GROUNDING FACTUAL ANALYSIS | {elapsed.toFixed(1)}S</>
+                              )}
+                            </span>
+                          </div>
+                          <div className="h-4 w-48 bg-[var(--text-muted)] rounded-full opacity-10" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                <div ref={bottomRef} className="h-10 shrink-0" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                  )}
+                  <div ref={bottomRef} className="h-10 shrink-0" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-        <div className="shrink-0 z-20">
-           <InputBar onSend={handleSend} onStop={handleStop} onUpload={handleUpload} disabled={loading} ref={inputRef} />
-        </div>
-      </main>
+          <div className="shrink-0 z-20">
+             <InputBar onSend={handleSend} onStop={handleStop} onUpload={handleUpload} disabled={loading} ref={inputRef} />
+          </div>
+        </main>
+
+        {activePdf && (
+          <aside className="w-2/5 flex flex-col h-full bg-[var(--surface)] relative overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] border-l border-[var(--border)]">
+            {/* PDF panel header */}
+            <div className="h-[64px] flex items-center justify-between px-6 border-b border-[var(--border)] shrink-0 bg-[var(--surface)]">
+              <span className="font-bold text-xs uppercase tracking-widest text-[var(--text)] truncate max-w-[80%] flex items-center gap-2">
+                <span className="material-icons-round text-[#D4AF37] text-[16px]">menu_book</span>
+                {activePdf.filename.replace(/\.pdf$/i, "").slice(0, 30)} (Page {activePdf.page + 1})
+              </span>
+              <button 
+                onClick={() => setActivePdf(null)}
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[var(--surface-hover)] text-[var(--text-muted)] hover:text-[var(--text)] transition-all cursor-pointer"
+              >
+                <span className="material-icons-round text-[18px]">close</span>
+              </button>
+            </div>
+            
+            {/* Custom PDF Viewer using iframe */}
+            <div className="flex-1 bg-[#1a1a1a] relative overflow-hidden">
+              <iframe
+                src={`${API_URL}/api/pdf/${encodeURIComponent(activePdf.filename)}?token=${localStorage.getItem("lexved_token")}#page=${activePdf.page + 1}`}
+                className="w-full h-full border-none"
+              />
+            </div>
+
+            {/* Fact highlight bottom pane */}
+            {activePdf.text && (
+              <div className="h-[180px] shrink-0 border-t border-[var(--border)] bg-[var(--surface-hover)] p-4 overflow-y-auto animate-fade-in" style={{ borderLeft: "3px solid var(--accent)" }}>
+                <div className="flex items-center gap-1.5 mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-[var(--accent)]">
+                  <span className="material-icons-round text-[14px]">highlight</span>
+                  Highlighted Match Context
+                </div>
+                <p className="text-[0.78rem] leading-[1.6] text-[var(--text-secondary)] italic font-mono whitespace-pre-wrap">
+                  "{activePdf.text}"
+                </p>
+              </div>
+            )}
+          </aside>
+        )}
+      </div>
       <ModelWheel activeModelId={activeModel} onModelChange={handleModelChange} />
     </div>
   );

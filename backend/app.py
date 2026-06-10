@@ -266,6 +266,7 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
             """Stream the LangGraph agent's execution to the frontend."""
             full_answer = ""
             tool_calls = []
+            accumulated_sources = []
 
             # Send initial metadata
             yield json.dumps({
@@ -298,6 +299,27 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
                         }) + "\n"
 
                     elif event["type"] == "tool_result":
+                        if event["tool"] == "retrieve_documents":
+                            content = event.get("result", "")
+                            # Pattern matches: [Source X: filename, Page Y]\nText chunk
+                            pattern = r"\[Source \d+:\s*([^,\]]+),\s*Page\s*([^\]]+)\]\n(.*?)(?=\n\n---\n\n|$)"
+                            matches = re.finditer(pattern, content, re.DOTALL)
+                            for m in matches:
+                                filename = m.group(1).strip()
+                                page_str = m.group(2).strip()
+                                text_snippet = m.group(3).strip()
+                                try:
+                                    page = int(page_str)
+                                except ValueError:
+                                    page = 1
+                                page_index = page - 1 if page > 0 else 0
+                                accumulated_sources.append({
+                                    "file": filename,
+                                    "page": page_index,
+                                    "path": filename,
+                                    "text": text_snippet
+                                })
+                        
                         yield json.dumps({
                             "type": "agent_thought",
                             "text": f"Tool {event['tool']} returned results. Processing..."
@@ -323,6 +345,7 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
                             "type": "done",
                             "generation_time": total_time,
                             "tools_used": event.get("tool_calls", []),
+                            "sources": accumulated_sources
                         }) + "\n"
 
             except Exception as e:
@@ -380,7 +403,8 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
         # For the sidebar: match the exact page or default to 1 if 0/None
         display_pg = pg_val if (isinstance(pg_val, int) and pg_val > 0) else 1
         full_path = m.payload.get("source", "")
-        sources.append({"file": src, "page": display_pg, "path": full_path})
+        compressed_segment = compress_text(req.message, m.payload['text'])
+        sources.append({"file": src, "page": display_pg - 1, "path": full_path, "text": compressed_segment})
 
     def stream_response():
         nonlocal full_answer

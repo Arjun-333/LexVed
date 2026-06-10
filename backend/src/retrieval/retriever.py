@@ -236,10 +236,55 @@ def retrieve_pinecone(q_emb, category, subcategory, top_k):
         }))
     return results
 
+def decompose_query(query_text: str) -> list[str]:
+    """
+    Decomposes a complex legal query into 2-3 simpler search-friendly queries
+    to perform more targeted retrieval.
+    """
+    if len(query_text.strip().split()) < 6:
+        return [query_text]
+
+    import os
+    from groq import Groq
+    import json
+
+    try:
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            return [query_text]
+
+        client = Groq(api_key=api_key)
+        prompt = (
+            "You are a legal search optimization bot.\n"
+            "Analyze the legal query. If the query is complex or asks about multiple different topics, "
+            "laws, or cases, split it into 2-3 distinct, simple, targeted search queries in English.\n"
+            "If the query is already simple, just return it as a single-item array.\n"
+            "Return ONLY a valid JSON object with a single key 'queries' containing an array of strings, "
+            "with no explanation or markdown formatting.\n\n"
+            f"Query: {query_text}"
+        )
+
+        chat_completion = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.1-8b-instant",
+            temperature=0.0,
+            response_format={"type": "json_object"}
+        )
+        
+        content = chat_completion.choices[0].message.content
+        data = json.loads(content)
+        queries = data.get("queries", [query_text])
+        if not isinstance(queries, list):
+            queries = [query_text]
+        return [str(q).strip() for q in queries if str(q).strip()][:3]
+    except Exception as e:
+        print(f"[LexVed] Query decomposition failed: {e}. Using original query.")
+        return [query_text]
+
 def retrieve(query_text, category=None, subcategory=None, top_k=5):
     """
     Performs retrieval using the active Vector Database (Qdrant or Pinecone).
-    Implements Hybrid retrieval via BM25, Reciprocal Rank Fusion, and CrossEncoder Reranking.
+    Implements Dynamic Query Decomposition with CrossEncoder Consolidation.
     Results are cached to avoid recomputation on repeated queries.
     """
     # Check retrieval cache first
@@ -248,30 +293,43 @@ def retrieve(query_text, category=None, subcategory=None, top_k=5):
     if cached is not None:
         return cached
 
-    q_emb = get_embeddings([query_text])[0]
-    active_db = get_active_db_name()
-    
     t1 = time.time()
     
-    # 1. Dense Retrieval
-    from concurrent.futures import ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        if active_db == "qdrant":
-            dense_future = executor.submit(retrieve_qdrant, q_emb, category, subcategory, 20)
-        else:
-            dense_future = executor.submit(retrieve_pinecone, q_emb, category, subcategory, 20)
-            
-        sparse_future = executor.submit(get_bm25_top_k, query_text, 20, category, subcategory)
+    # 1. Decompose the query dynamically
+    sub_queries = decompose_query(query_text)
+    if not sub_queries:
+        sub_queries = [query_text]
         
-        dense_results = dense_future.result()
-        sparse_results = sparse_future.result()
+    print(f"[LexVed] Dynamic Query Decomposition: {sub_queries}")
     
-    # 3. Reciprocal Rank Fusion
-    fused_results = reciprocal_rank_fusion(dense_results, sparse_results)
-    
-    # 4. CrossEncoder Rerank
-    top_candidates = fused_results[:10]
-    final_results = cross_encode_rerank(query_text, top_candidates, top_k=top_k)
+    # Collect candidates across all sub-queries
+    all_candidates = []
+    seen_texts = set()
+    active_db = get_active_db_name()
+
+    for sq in sub_queries:
+        q_emb = get_embeddings([sq])[0]
+        
+        # Dense + Sparse retrieval for sub-query
+        if active_db == "qdrant":
+            dense_results = retrieve_qdrant(q_emb, category, subcategory, 15)
+        else:
+            dense_results = retrieve_pinecone(q_emb, category, subcategory, 15)
+            
+        sparse_results = get_bm25_top_k(sq, 15, category, subcategory)
+        
+        # Merge sub-query results via RRF
+        fused = reciprocal_rank_fusion(dense_results, sparse_results)
+        
+        # Add to consolidated pool with deduplication
+        for item in fused:
+            txt = item.payload.get("text", "")
+            if txt not in seen_texts:
+                seen_texts.add(txt)
+                all_candidates.append(item)
+
+    # 4. CrossEncoder Consolidation against ORIGINAL query
+    final_results = cross_encode_rerank(query_text, all_candidates, top_k=top_k)
         
     retrieval_time = time.time() - t1
     result = (final_results, retrieval_time)

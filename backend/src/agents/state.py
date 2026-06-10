@@ -39,3 +39,6 @@ class AgentState(TypedDict):
         how to merge new messages into the existing list (append, not replace).
     """
     messages: Annotated[list, add_messages]
+    audit_attempts: int
+    audit_feedback: str
+    audit_passed: bool

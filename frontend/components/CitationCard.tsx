@@ -11,6 +11,7 @@ interface Source {
 interface CitationCardProps {
   citations: string[];
   sources?: Source[];
+  onCitationClick?: (file: string, page: number, text: string) => void;
 }
 
 function parseCitation(raw: string): { file: string; page: string | null } {
@@ -37,29 +38,30 @@ function openPdf(filename: string, page: number) {
   if (token) {
     const finalFilename = filename.toLowerCase().endsWith(".pdf") ? filename : `${filename}.pdf`;
     // We use the 1-indexed page directly as PDF viewers expect #page=1 for the first page
-    const finalUrl = `${API_URL}/api/pdf/${encodeURIComponent(finalFilename)}?token=${token}#page=${page}`;
+    const finalUrl = `${API_URL}/api/pdf/${encodeURIComponent(finalFilename)}?token=${token}#page=${page + 1}`;
     
     // Open in a new tab
     window.open(finalUrl, "_blank");
   }
 }
 
-export default function CitationCard({ citations, sources }: CitationCardProps) {
+export default function CitationCard({ citations, sources, onCitationClick }: CitationCardProps) {
   // Merge parsed citations with structured sources
   const uniqueSources = sources ? deduplicateSources(sources) : [];
   
   // If we have structured sources, prefer those
   const hasSources = uniqueSources.length > 0;
   const displayItems = hasSources
-    ? uniqueSources.map(s => ({ file: s.file, page: s.page, hasLink: true }))
+    ? uniqueSources.map(s => ({ file: s.file, page: s.page, hasLink: true, text: (s as any).text || "" }))
     : citations.map(c => {
         const { file, page } = parseCitation(c);
         // Try to find a matching source from the search results to get the path
         const match = uniqueSources.find(s => s.file.toLowerCase().includes(file.toLowerCase()));
         return { 
           file: match ? match.file : file, 
-          page: match ? match.page : (page ? parseInt(page) : 0), 
-          hasLink: !!match || file.toLowerCase().endsWith(".pdf") 
+          page: match ? match.page : (page ? parseInt(page) - 1 : 0), 
+          hasLink: !!match || file.toLowerCase().endsWith(".pdf"),
+          text: match ? (match as any).text : ""
         };
       });
 
@@ -86,9 +88,13 @@ export default function CitationCard({ citations, sources }: CitationCardProps) 
             key={i}
             onClick={() => {
               if (item.hasLink) {
-                openPdf(item.file, item.page);
+                if (onCitationClick) {
+                  onCitationClick(item.file, item.page, item.text);
+                } else {
+                  openPdf(item.file, item.page);
+                }
               } else {
-                navigator.clipboard.writeText(`${item.file}, Page: ${item.page}`);
+                navigator.clipboard.writeText(`${item.file}, Page: ${item.page + 1}`);
               }
             }}
             className="group flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[0.72rem] transition-all duration-300 cursor-pointer hover:scale-105"

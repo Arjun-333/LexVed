@@ -12,7 +12,8 @@ LexVed has transitioned from a rigid, multi-agent pipeline to a state-managed or
   - `extract_citations`: Regex and NER patterns to extract specific legal provisions (e.g. IPC, CrPC, AIR, SCC citations).
   - `extract_entities`: SpaCy-powered Named Entity Recognition to categorize parties, courts, dates, and locations.
   - `deidentify_text`: Automatic PII redact engine.
-* **Stateful Message Memory:** Utilizes a graph state with an `add_messages` reducer to accumulate query inputs, agent thoughts, and tool execution outputs across sequential reasoning steps.
+* **Self-Correcting Compliance Audit Node:** A dedicated compliance auditor node checks the final text against the retrieved source texts for factual consistency, looping back to the agent for revision if hallucinations or unsupported assertions are found.
+* **Stateful Message Memory:** Utilizes a graph state with an `add_messages` reducer to accumulate query inputs, agent thoughts, tool execution outputs, and compliance audit revision history across sequential reasoning steps.
 
 ### 2. Intelligent Context Memory
 LexVed maintains conversation continuity across multi-turn interactions:
@@ -26,6 +27,7 @@ LexVed ensures 100% data integrity for large-scale legal corpuses:
 
 ### 4. Advanced Hybrid Retrieval
 The platform utilizes a multi-tiered retrieval strategy to guarantee maximum recall and precision:
+* **Dynamic Query Decomposition:** Complex or compound legal queries are automatically decomposed into 2-3 targeted search-friendly sub-queries, run in parallel/concurrent retrieval threads, merged via RRF, and consolidated using the CrossEncoder.
 * **Production Hybrid Index:** Active connection to the 19,483-vector production repository (MPNet-based).
 * **Dense Vector Search:** Understands the semantic intent of complex legal queries using high-dimensional embeddings (Pinecone/Qdrant).
 * **Sparse Search (BM25):** Ensures critical exact-keyword matches, such as specific statute sections or docket numbers, are never missed.
@@ -40,7 +42,8 @@ The system supports two core operational modes dynamically configured from backe
 ### 5. Enterprise Interface
 The frontend is built on Next.js 14 and Framer Motion, delivering a premium, glassmorphic UI ("All Black But Gold" aesthetic). It features:
 * Real-time streaming of Agentic Reasoning Chains.
-* **Smart Citations:** Clicking a citation now opens the source PDF directly in a new tab, automatically jumping to the cited page using secure one-time URL tokens.
+* **Interactive Split-Screen PDF Viewer & Highlight Pane:** Selecting a case citation splits the screen (60% Chat, 40% PDF side-panel) to load the source document at the exact page number next to a dedicated bottom highlight panel showing the matching text context.
+* **Smart Citations:** Falls back to opening in a new tab if split-screen is not active, automatically jumping to the cited page using secure one-time URL tokens.
 * **GPU-Aware Loading:** Transparent UI feedback during local model cold-starts ("Loading neural weights into local GPU memory...") eliminates perceived latency frustration.
 * A comprehensive Metrics Dashboard for benchmark visualization.
 

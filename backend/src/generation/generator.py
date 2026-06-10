@@ -15,7 +15,14 @@ def generate_with_ollama_stream(prompt, model=None):
         yield from generate_with_groq_stream(prompt, model)
         return
 
-    url = "http://127.0.0.1:11434/api/generate"
+    ollama_host = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").strip()
+    if not ollama_host:
+        ollama_host = "http://127.0.0.1:11434"
+    if ollama_host.startswith(":"):
+        ollama_host = f"http://127.0.0.1{ollama_host}"
+    elif not ollama_host.startswith("http://") and not ollama_host.startswith("https://"):
+        ollama_host = f"http://{ollama_host}"
+    url = f"{ollama_host.rstrip('/')}/api/generate"
     payload = {
         "model": model,
         "prompt": prompt,

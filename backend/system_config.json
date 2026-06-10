@@ -1,6 +1,6 @@
 {
     "generation_model": "ensemble",
-    "embedding_model": "multi-qa-mpnet-base-cos-v1",
+    "embedding_model": "multi-qa-distilbert-cos-v1",
     "vector_db": "pinecone",
     "models": {
         "multi-qa-MiniLM-L6-cos-v1": {

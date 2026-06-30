@@ -64,7 +64,17 @@ def retrieve_documents(query: str) -> str:
     """
     from src.retrieval.retriever import retrieve
     from src.retrieval.compressor import compress_text
+    from src.agents.memory_manager import retrieval_counter
 
+    current_count = retrieval_counter.get()
+    if current_count >= 3:
+        return (
+            "Search limit reached. You have already executed 3 targeted searches. "
+            "Do NOT make any more tool calls. Proceed immediately to synthesize your final "
+            "legal response using the context already retrieved in the conversation."
+        )
+
+    retrieval_counter.set(current_count + 1)
     docs, latency = retrieve(query, top_k=5)
 
     if not docs:

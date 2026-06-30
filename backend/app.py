@@ -294,9 +294,21 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
 
                     elif event["type"] == "tool_call":
                         tool_calls.append(event["tool"])
+                        if event["tool"] == "retrieve_documents":
+                            cnt = tool_calls.count("retrieve_documents")
+                            if cnt == 1:
+                                txt = "Decomposing query and researching statutory ingredients..."
+                            elif cnt == 2:
+                                txt = "Searching for authoritative Supreme Court case law precedents..."
+                            elif cnt == 3:
+                                txt = "Analyzing potential legal defences, exceptions, and rebuttals..."
+                            else:
+                                txt = "Checking for supplementary case references..."
+                        else:
+                            txt = f"Calling tool: {event['tool']}..."
                         yield json.dumps({
                             "type": "agent_thought",
-                            "text": f"Calling tool: {event['tool']}..."
+                            "text": txt + "\n"
                         }) + "\n"
 
                     elif event["type"] == "tool_result":
@@ -320,10 +332,22 @@ async def chat(req: ChatRequest, user: dict = Depends(get_current_user)):
                                     "path": filename,
                                     "text": text_snippet
                                 })
+                            
+                            cnt = tool_calls.count("retrieve_documents")
+                            if cnt == 1:
+                                txt = "Statutory ingredients retrieved. Proceeding to find supporting precedents..."
+                            elif cnt == 2:
+                                txt = "Judicial precedents retrieved. Checking for defences and exceptions..."
+                            elif cnt == 3:
+                                txt = "Comprehensive case context collected. De-duplicating and auditing evidence..."
+                            else:
+                                txt = "Supplementary evidence processed successfully."
+                        else:
+                            txt = f"Tool {event['tool']} returned results. Processing..."
                         
                         yield json.dumps({
                             "type": "agent_thought",
-                            "text": f"Tool {event['tool']} returned results. Processing..."
+                            "text": txt + "\n"
                         }) + "\n"
 
                     elif event["type"] == "content":

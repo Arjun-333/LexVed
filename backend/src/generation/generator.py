@@ -101,8 +101,13 @@ def generate_with_groq_stream(prompt, model):
                 time.sleep(2 ** attempt)
             else:
                 yield f"\n\n[Error: Hugging Face API unreachable after {max_retries} attempts.]"
+                return
         except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 429:
+            if e.response.status_code == 402:
+                print("[LexVed] Hugging Face credits depleted (HTTP 402). Falling back to Cohere command-r-08-2024...")
+                yield from generate_with_cohere_stream(prompt)
+                return
+            elif e.response.status_code == 429:
                 if attempt < max_retries - 1:
                     import time
                     print(f"[LexVed] Hugging Face rate limit hit during generation. Waiting 30s... (Attempt {attempt+1}/{max_retries})")
@@ -113,7 +118,26 @@ def generate_with_groq_stream(prompt, model):
                     return
             else:
                 yield f"\n\n[Error: Hugging Face returned HTTP {e.response.status_code}.]"
-            return
+                return
+
+def generate_with_cohere_stream(prompt):
+    """Fallback generator using Cohere API."""
+    import cohere
+    api_key = os.getenv("COHERE_API_KEY", "").strip()
+    if not api_key:
+        yield "Error: COHERE_API_KEY not found in environment for fallback."
+        return
+    try:
+        client = cohere.ClientV2(api_key)
+        response = client.chat_stream(
+            model="command-r-08-2024",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        for chunk in response:
+            if chunk.type == "content-delta":
+                yield chunk.delta.message.content.text
+    except Exception as e:
+        yield f"\n\n[Error: Cohere fallback failed: {str(e)}]"
 
 def generate_utility(prompt: str, model: str = "meta-llama/Llama-3.1-8B-Instruct") -> str:
     """Fast, non-streaming generation for internal logic (routing, condensation)."""

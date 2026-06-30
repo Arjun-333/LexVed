@@ -65,19 +65,25 @@ from src.agents.tools import ALL_TOOLS
 #   a) Normal text response (no tools needed)
 #   b) A "tool_call" response: {"name": "retrieve_documents", "args": {"query": "..."}}
 
+_use_cohere_fallback = True
+
+
 def _create_llm():
-    """Create the Hugging Face LLM with tools bound via ChatOpenAI compatibility.
-    
-    Uses the HF_TOKEN from your environment.
-    """
-    llm = ChatOpenAI(
-        base_url="https://router.huggingface.co/v1",
-        api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
-        model="meta-llama/Llama-3.3-70B-Instruct",
-        temperature=0
-    )
-    # bind_tools tells the LLM: "You have these functions available"
-    # The LLM reads each tool's name, description, and parameter types
+    """Create the LLM client with tool binding, fallback to Cohere compat endpoint if needed."""
+    if _use_cohere_fallback:
+        llm = ChatOpenAI(
+            base_url="https://api.cohere.ai/compatibility/v1",
+            api_key=os.getenv("COHERE_API_KEY", ""),
+            model="command-r-plus-08-2024",
+            temperature=0
+        )
+    else:
+        llm = ChatOpenAI(
+            base_url="https://router.huggingface.co/v1",
+            api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+            model="meta-llama/Llama-3.3-70B-Instruct",
+            temperature=0
+        )
     return llm.bind_tools(ALL_TOOLS)
 
 
@@ -93,17 +99,50 @@ def _create_llm():
 SYSTEM_PROMPT = """You are LexVed, an expert Indian legal research assistant powered by a comprehensive knowledge base of Supreme Court and High Court case laws.
 
 CRITICAL RULES:
-1. For ANY legal question, you MUST use the retrieve_documents tool first. Never answer legal questions from memory.
-2. After retrieving documents, you MAY use extract_citations to identify specific legal references.
-3. Only use extract_entities when the user specifically asks about parties, judges, or locations in a case.
-4. Only use deidentify_text when the user explicitly asks to anonymize or redact text.
-5. For simple greetings or non-legal questions, respond directly without tools.
+1. To answer a legal question, you MUST use the retrieve_documents tool to search for case laws. Once you have retrieved the relevant documents, analyze them and formulate your response.
+2. PLANNING & DECOMPOSITION: If the question is complex, plan to make up to 3 distinct searches with retrieve_documents for different aspects of the issue (e.g. search 1: statutory ingredients/elements; search 2: relevant Supreme Court precedents; search 3: exceptions/defences). Do not repeat the same search query. Stop making searches once you have collected sufficient information, or when the tool returns a search limit message, or after a maximum of 3 searches.
+3. After retrieving documents, you MAY use extract_citations to identify specific legal references.
+4. Only use extract_entities when the user specifically asks about parties, judges, or locations in a case.
+5. Only use deidentify_text when the user explicitly asks to anonymize or redact text.
+6. For simple greetings or non-legal questions, respond directly without tools.
 
-RESPONSE STYLE:
-- Be precise and professional
-- Always cite the source documents when answering legal questions
-- If the retrieved documents don't contain relevant information, say so honestly
-- Structure complex answers with clear sections"""
+RESPONSE FORMAT (MUST USE THIS STRUCTURE):
+Your final response must be structured as a professional legal brief:
+
+# LEGAL BRIEF: [Precise Legal Question / Case Topic]
+
+## 1. Core Legal Issue
+[Formulate the exact legal question raised by the user]
+
+## 2. Applicable Law & Statutory Provisions
+[List key Acts, Sections, and Articles with details]
+
+## 3. Essential Ingredients of the Offence / Claim
+[Detailed bulleted checklist of elements required to satisfy the provision]
+
+## 4. Authoritative Judicial Precedents (Supreme Court / High Courts)
+[Citations of the retrieved cases with a summary of the holding and how it applies]
+
+## 5. Exceptions, Defences, and Rebuttals
+[Identify any exceptions, defences available, or rebuttals found in the text]
+
+## 6. Synthesis & Conclusion
+[Provide a final expert recommendation/synthesis]
+
+## 7. Comparative Performance Metrics (Standard vs. Agentic)
+┌──────────────────────┬────────────────┬────────────────────────┐
+│ Evaluation Metric    │ Standard RAG   │ Agentic RAG (LexVed)   │
+├──────────────────────┼────────────────┼────────────────────────┤
+│ Queries Executed     │ 1              │ {queries_executed}     │
+│ Documents Analyzed   │ 5 Chunks       │ {documents_analyzed}   │
+│ Duplicate Removal    │ ❌ (Raw Conc.) │ ✅ (Consolidated)      │
+│ Query Reformulation  │ ❌ (Simple)    │ ✅ (Facetted Search)   │
+│ Multi-Step Reasoning │ ❌ (Single)    │ ✅ (Plan-Search-Audit) │
+│ Audit Verification   │ ❌ (None)      │ ✅ (Factual Check)     │
+└──────────────────────┴────────────────┴────────────────────────┘
+[Brief sentence explaining the advantage of LexVed's multi-step validation loop]
+
+Note: In the metrics table, replace {queries_executed} with the number of retrieve_documents tool calls you made (typically 1 to 3), and {documents_analyzed} with the total number of documents analyzed (typically 5 * queries_executed)."""
 
 
 def agent_node(state: AgentState) -> dict:
@@ -160,13 +199,21 @@ def auditor_node(state: AgentState) -> dict:
         
     print("[LexVed Auditor] Auditing response for factual compliance...")
     
-    # 3. Call Hugging Face to verify faithfulness
-    auditor_llm = ChatOpenAI(
-        base_url="https://router.huggingface.co/v1",
-        api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
-        model="meta-llama/Llama-3.1-8B-Instruct",
-        temperature=0.0
-    )
+    # 3. Call verification model
+    if _use_cohere_fallback:
+        auditor_llm = ChatOpenAI(
+            base_url="https://api.cohere.ai/compatibility/v1",
+            api_key=os.getenv("COHERE_API_KEY", ""),
+            model="command-r-plus-08-2024",
+            temperature=0.0
+        )
+    else:
+        auditor_llm = ChatOpenAI(
+            base_url="https://router.huggingface.co/v1",
+            api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+            model="meta-llama/Llama-3.1-8B-Instruct",
+            temperature=0.0
+        )
     
     system_prompt = (
         "You are the LexVed Compliance Auditor.\n"
@@ -381,10 +428,11 @@ async def stream_agent(user_message: str, history: list = None, thread_id: str =
         username: The active username to track memory context
     """
     from langchain_core.messages import HumanMessage, AIMessage
-    from src.agents.memory_manager import active_user
+    from src.agents.memory_manager import active_user, retrieval_counter
 
     # Securely set user context for thread safety
     active_user.set(username)
+    retrieval_counter.set(0)
 
     agent = get_agent()
     config = {"configurable": {"thread_id": thread_id}}

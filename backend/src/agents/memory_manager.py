@@ -4,6 +4,7 @@ import contextvars
 
 # Thread-safe context variable to track the active logged-in user
 active_user = contextvars.ContextVar("active_user", default="unknown")
+retrieval_counter = contextvars.ContextVar("retrieval_counter", default=0)
 
 MEMORY_FILE_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),

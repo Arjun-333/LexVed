@@ -58,7 +58,7 @@ def generate_with_ollama_stream(prompt, model=None):
             return
 
 def generate_with_groq_stream(prompt, model):
-    url = "https://api-inference.huggingface.co/v1/chat/completions"
+    url = "https://router.huggingface.co/v1/chat/completions"
     api_key = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
     if not api_key:
         yield "Error: HF_TOKEN not found in environment."

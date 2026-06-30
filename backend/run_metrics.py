@@ -25,7 +25,7 @@ RESULTS_PATH = os.path.join(PROJECT_ROOT, "evaluation_results.json")
 # ─── Groq LLM Judge (from notebook) ──────────────────────────────
 
 HF_TOKEN = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
-HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_URL = "https://router.huggingface.co/v1/chat/completions"
 HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 

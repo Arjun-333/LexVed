@@ -97,7 +97,7 @@ else:
 if not PINECONE_API_KEY or not HF_TOKEN:
     raise ValueError("Both PINECONE_API_KEY and HF_TOKEN are required to run the evaluation.")
 
-HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_URL = "https://router.huggingface.co/v1/chat/completions"
 
 # Hugging Face Model Selection
 print("\n--- Hugging Face Model Selection ---")

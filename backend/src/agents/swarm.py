@@ -125,7 +125,7 @@ def drafting_counsel_agent(state: SwarmState) -> dict:
         human_content += "Please draft the initial response."
 
     llm = ChatOpenAI(
-        base_url="https://api-inference.huggingface.co/v1",
+        base_url="https://router.huggingface.co/v1",
         api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
         model="meta-llama/Llama-3.3-70B-Instruct",
         temperature=0.2
@@ -161,7 +161,7 @@ def compliance_auditor_agent(state: SwarmState) -> dict:
     human_content = f"Drafting Counsel's Draft:\n{draft}\n\nPerform the audit:"
 
     llm = ChatOpenAI(
-        base_url="https://api-inference.huggingface.co/v1",
+        base_url="https://router.huggingface.co/v1",
         api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
         model="meta-llama/Llama-3.3-70B-Instruct",
         temperature=0.0

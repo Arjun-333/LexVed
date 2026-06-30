@@ -96,7 +96,7 @@ if is_interactive:
 else:
     print("[*] Non-interactive environment detected or requested. Using environment credentials.")
 
-HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_URL = "https://router.huggingface.co/v1/chat/completions"
 HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 # ─── 2. Chunk Cache Loading ──────────────────────────────────────────

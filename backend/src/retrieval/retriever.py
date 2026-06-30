@@ -254,7 +254,7 @@ def decompose_query(query_text: str) -> list[str]:
         if not api_key:
             return [query_text]
 
-        url = "https://api-inference.huggingface.co/v1/chat/completions"
+        url = "https://router.huggingface.co/v1/chat/completions"
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         prompt = (
             "You are a legal search optimization bot.\n"

@@ -71,7 +71,7 @@ def _create_llm():
     Uses the HF_TOKEN from your environment.
     """
     llm = ChatOpenAI(
-        base_url="https://api-inference.huggingface.co/v1",
+        base_url="https://router.huggingface.co/v1",
         api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
         model="meta-llama/Llama-3.3-70B-Instruct",
         temperature=0
@@ -162,7 +162,7 @@ def auditor_node(state: AgentState) -> dict:
     
     # 3. Call Hugging Face to verify faithfulness
     auditor_llm = ChatOpenAI(
-        base_url="https://api-inference.huggingface.co/v1",
+        base_url="https://router.huggingface.co/v1",
         api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
         model="meta-llama/Llama-3.1-8B-Instruct",
         temperature=0.0

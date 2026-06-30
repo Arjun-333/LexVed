@@ -41,7 +41,7 @@ BACKEND_DIR = Path(__file__).parent
 BASE_PDF_DIR = BACKEND_DIR / "data" / "PDF"
 CACHE_FILE   = BACKEND_DIR / "data" / "primitive_chunk_cache.json"
 HF_TOKEN = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
-HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_URL = "https://router.huggingface.co/v1/chat/completions"
 HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 MODEL_DIMENSIONS = {

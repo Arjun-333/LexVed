@@ -24,3 +24,4 @@ rank_bm25
 python-multipart
 cohere
 groq
+langchain-openai

@@ -4,7 +4,7 @@
 The LexVed legal RAG pipeline has been upgraded for institutional-grade reliability and high-performance throughput.
 
 ### 1. Robust Fallback Mechanism
-- **Groq -> Ollama Failover:** Implemented a seamless streaming fallback in `generator.py`. If Groq's cloud API hits a Rate Limit (429), the system automatically routes the query to a local **Llama 3 (8B)** instance.
+- **Hugging Face -> Ollama Failover:** Implemented a seamless streaming fallback in `generator.py`. If Hugging Face's cloud API hits a Rate Limit (429), the system automatically routes the query to a local **Llama 3 (8B)** instance.
 - **High Availability:** Ensures that legal research never stalls during peak usage or API outages.
 
 ```mermaid
@@ -12,9 +12,9 @@ graph TD
     classDef step fill:#111,stroke:#D4AF37,stroke-width:1.5px,color:#fff;
     classDef fallback fill:#422,stroke:#f55,stroke-width:1.5px,color:#fff;
     
-    Start([User Chat Request]) --> RouteGroq{Request Groq API}:::step
-    RouteGroq -->|Success 200| StreamOut([Stream Response to UI]):::step
-    RouteGroq -->|Rate Limit 429 / Outage| Fallback[Failover Triggered]:::fallback
+    Start([User Chat Request]) --> RouteHF{Request Hugging Face}:::step
+    RouteHF -->|Success 200| StreamOut([Stream Response to UI]):::step
+    RouteHF -->|Rate Limit 429 / Outage| Fallback[Failover Triggered]:::fallback
     
     Fallback --> CheckVRAM{Ollama GPU VRAM Loaded?}:::step
     CheckVRAM -->|No: Cold Start| LoadingState[UI: 'Loading weights into local GPU VRAM...']:::step
@@ -97,10 +97,10 @@ A side-by-side performance evaluation was conducted using the `multi-qa-mpnet-ba
 ---
 
 ## Artifacts
-- **Final Report:** `backend/Comparative_DB_Analysis.pdf` & `backend/LexVed_GPU_Institutional_Audit.pdf`
-- **Metric Data:** `backend/qdrant_evaluation_results.json` & `backend/gpu_comparative_results.json`
+- **Final Report:** `backend/Comparative_DB_Analysis.pdf` & `backend/LexVed_Pinecone_Comparative_Audit.pdf`
+- **Metric Data:** `backend/qdrant_evaluation_results.json` & `backend/pinecone_comparative_results.json`
 - **Swarm Core:** `backend/src/agents/swarm.py`
-- **GPU Audit Script:** `backend/gpu_comparative_benchmark.py`
+- **GPU Audit Script:** `backend/pinecone_comparative_benchmark.py`
 - **Core Utility:** `backend/reingest_pinecone.py`
 
 ---

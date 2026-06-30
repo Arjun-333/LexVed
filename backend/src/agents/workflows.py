@@ -24,7 +24,10 @@ The primary workflow is:
 
 import os
 from typing import TypedDict, Optional
-from langchain_groq import ChatGroq
+try:
+    from langchain_groq import ChatGroq
+except ImportError:
+    ChatGroq = None
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, END
 
@@ -122,11 +125,15 @@ def draft_node(state: BriefWorkflowState) -> dict:
         "Please draft the Case Brief:"
     )
 
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        temperature=0.1,  # Low temperature for factual synthesis
-        api_key=os.getenv("GROQ_API_KEY"),
+    from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
+    base_llm = HuggingFaceEndpoint(
+        repo_id="meta-llama/Llama-3.3-70B-Instruct",
+        task="text-generation",
+        max_new_tokens=2048,
+        temperature=0.1,
+        huggingfacehub_api_token=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", ""))
     )
+    llm = ChatHuggingFace(llm=base_llm)
 
     messages = [
         SystemMessage(content=system_prompt),

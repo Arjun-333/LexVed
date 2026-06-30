@@ -23,7 +23,11 @@ import os
 import json
 import time
 from typing import TypedDict, List, Optional, Annotated
-from langchain_groq import ChatGroq
+try:
+    from langchain_groq import ChatGroq
+except ImportError:
+    ChatGroq = None
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, BaseMessage
 from langgraph.graph import StateGraph, END, add_messages
 
@@ -120,10 +124,11 @@ def drafting_counsel_agent(state: SwarmState) -> dict:
     else:
         human_content += "Please draft the initial response."
 
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        temperature=0.2,
-        api_key=os.getenv("GROQ_API_KEY")
+    llm = ChatOpenAI(
+        base_url="https://api-inference.huggingface.co/v1",
+        api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+        model="meta-llama/Llama-3.3-70B-Instruct",
+        temperature=0.2
     )
 
     response = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=human_content)])
@@ -155,10 +160,11 @@ def compliance_auditor_agent(state: SwarmState) -> dict:
 
     human_content = f"Drafting Counsel's Draft:\n{draft}\n\nPerform the audit:"
 
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        temperature=0.0,  # Highly deterministic evaluation
-        api_key=os.getenv("GROQ_API_KEY")
+    llm = ChatOpenAI(
+        base_url="https://api-inference.huggingface.co/v1",
+        api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+        model="meta-llama/Llama-3.3-70B-Instruct",
+        temperature=0.0
     ).bind(response_format={"type": "json_object"})
 
     response = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=human_content)])

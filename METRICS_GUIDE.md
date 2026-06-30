@@ -151,7 +151,7 @@ This guide documents the 31 metrics evaluated by the LexVed pipeline and compara
 
 ### M25: Prefill Latency (s)
 * **Description:** The time taken by the LLM inference engine to process the initial prompt and retrieval context before generating text.
-* **Example:** Extracted from Groq's usage header `prompt_time` $\approx 0.182\text{s}$.
+* **Example:** Measured using API connection timers $\text{prefill\_time} \approx 0.182\text{s}$.
 
 ### M26: Time to First Token (TTFT) (s)
 * **Description:** The elapsed time between initiation of the LLM API request and the receipt of the very first generated text chunk token.

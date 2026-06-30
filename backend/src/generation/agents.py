@@ -52,7 +52,7 @@ def execute_reasoning_agent(query: str, context: str, model: str, history: list 
         "Reasoning Chain:"
     )
     
-    if model.startswith("llama-3"):
+    if model.startswith("llama-3") or model.startswith("qwen-2.5") or model.startswith("mixtral") or "/" in model:
         return generate_with_groq_stream(prompt, model)
     else:
         return generate_with_ollama_stream(prompt, model)
@@ -85,7 +85,7 @@ def execute_synthesis_agent(query: str, reasoning_chain: str, model: str, userna
         "Final Counsel Response:"
     )
     
-    if model.startswith("llama-3"):
+    if model.startswith("llama-3") or model.startswith("qwen-2.5") or model.startswith("mixtral") or "/" in model:
         return generate_with_groq_stream(prompt, model)
     else:
         return generate_with_ollama_stream(prompt, model)

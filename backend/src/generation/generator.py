@@ -58,15 +58,24 @@ def generate_with_ollama_stream(prompt, model=None):
             return
 
 def generate_with_groq_stream(prompt, model):
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    api_key = os.getenv("GROQ_API_KEY")
+    url = "https://api-inference.huggingface.co/v1/chat/completions"
+    api_key = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
     if not api_key:
-        yield "Error: GROQ_API_KEY not found in environment."
+        yield "Error: HF_TOKEN not found in environment."
         return
+
+    # Map model if it's a legacy Groq name
+    model_mapping = {
+        "llama-3.1-8b-instant": "meta-llama/Llama-3.1-8B-Instruct",
+        "llama-3.3-70b-versatile": "meta-llama/Llama-3.3-70B-Instruct",
+        "mixtral-8x7b-32768": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        "qwen-2.5-32b": "Qwen/Qwen2.5-32B-Instruct",
+    }
+    mapped_model = model_mapping.get(model, model)
 
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     payload = {
-        "model": model,
+        "model": mapped_model,
         "messages": [{"role": "user", "content": prompt}],
         "stream": True,
         "temperature": 0.2
@@ -91,25 +100,25 @@ def generate_with_groq_stream(prompt, model):
                 import time
                 time.sleep(2 ** attempt)
             else:
-                yield f"\n\n[Error: Groq API unreachable after {max_retries} attempts.]"
+                yield f"\n\n[Error: Hugging Face API unreachable after {max_retries} attempts.]"
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
                 if attempt < max_retries - 1:
                     import time
-                    print(f"[LexVed] Groq rate limit hit during generation. Waiting 30s... (Attempt {attempt+1}/{max_retries})")
+                    print(f"[LexVed] Hugging Face rate limit hit during generation. Waiting 30s... (Attempt {attempt+1}/{max_retries})")
                     time.sleep(30)
                     continue
                 else:
-                    yield f"\n\n[Error: Groq rate limit exhausted after {max_retries} attempts.]"
+                    yield f"\n\n[Error: Hugging Face rate limit exhausted after {max_retries} attempts.]"
                     return
             else:
-                yield f"\n\n[Error: Groq returned HTTP {e.response.status_code}.]"
+                yield f"\n\n[Error: Hugging Face returned HTTP {e.response.status_code}.]"
             return
 
-def generate_utility(prompt: str, model: str = "llama-3.1-8b-instant") -> str:
+def generate_utility(prompt: str, model: str = "meta-llama/Llama-3.1-8B-Instruct") -> str:
     """Fast, non-streaming generation for internal logic (routing, condensation)."""
     ans = ""
-    # Try Groq first for speed
+    # Try Hugging Face first for speed
     try:
         for chunk in generate_with_groq_stream(prompt, model):
             if "[Rate limit reached" in chunk: break # Stop if fallback triggered

@@ -44,7 +44,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from langchain_groq import ChatGroq
+try:
+    from langchain_groq import ChatGroq
+except ImportError:
+    ChatGroq = None
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 
@@ -62,17 +66,15 @@ from src.agents.tools import ALL_TOOLS
 #   b) A "tool_call" response: {"name": "retrieve_documents", "args": {"query": "..."}}
 
 def _create_llm():
-    """Create the Groq LLM with tools bound.
+    """Create the Hugging Face LLM with tools bound via ChatOpenAI compatibility.
     
-    Uses the GROQ_API_KEY from your .env file.
-    Model is configurable via system_config.json — but for the agent brain,
-    we use a strong model (llama-3.3-70b) because it needs to REASON
-    about which tools to use. Smaller models make poor tool decisions.
+    Uses the HF_TOKEN from your environment.
     """
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        temperature=0,          # Deterministic tool selection (no randomness)
-        api_key=os.getenv("GROQ_API_KEY"),
+    llm = ChatOpenAI(
+        base_url="https://api-inference.huggingface.co/v1",
+        api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+        model="meta-llama/Llama-3.3-70B-Instruct",
+        temperature=0
     )
     # bind_tools tells the LLM: "You have these functions available"
     # The LLM reads each tool's name, description, and parameter types
@@ -158,11 +160,12 @@ def auditor_node(state: AgentState) -> dict:
         
     print("[LexVed Auditor] Auditing response for factual compliance...")
     
-    # 3. Call Groq to verify faithfulness
-    auditor_llm = ChatGroq(
-        model="llama-3.1-8b-instant",
-        temperature=0.0,
-        api_key=os.getenv("GROQ_API_KEY"),
+    # 3. Call Hugging Face to verify faithfulness
+    auditor_llm = ChatOpenAI(
+        base_url="https://api-inference.huggingface.co/v1",
+        api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        temperature=0.0
     )
     
     system_prompt = (

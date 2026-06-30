@@ -43,7 +43,7 @@ if device == "cuda":
 import sys
 
 env_pinecone = os.getenv("PINECONE_API_KEY", "").strip()
-env_groq = os.getenv("GROQ_API_KEY", "").strip()
+env_hf = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
 
 print("\n--- API Credentials ---")
 is_interactive = sys.stdin.isatty()
@@ -55,7 +55,7 @@ except ImportError:
     pass
 
 PINECONE_API_KEY = env_pinecone
-GROQ_API_KEY = env_groq
+HF_TOKEN = env_hf
 
 if is_interactive:
     # Prompt for Pinecone key
@@ -70,24 +70,25 @@ if is_interactive:
     except (EOFError, OSError):
         print("[*] Could not read from input stream. Using environment credentials.")
 
-    # Prompt for Groq key
-    if env_groq:
-        groq_prompt = "Enter your Groq API Key [Press ENTER to use key from .env]: "
+    # Prompt for Hugging Face token
+    if env_hf:
+        hf_prompt = "Enter your Hugging Face Token [Press ENTER to use token from .env]: "
     else:
-        groq_prompt = "Enter your Groq API Key: "
+        hf_prompt = "Enter your Hugging Face Token: "
     try:
-        user_groq = input(groq_prompt).strip()
-        if user_groq:
-            GROQ_API_KEY = user_groq
+        user_hf = input(hf_prompt).strip()
+        if user_hf:
+            HF_TOKEN = user_hf
     except (EOFError, OSError):
         pass
 else:
     print("[*] Non-interactive environment detected. Using environment credentials.")
 
-if not PINECONE_API_KEY or not GROQ_API_KEY:
-    raise ValueError("Both PINECONE_API_KEY and GROQ_API_KEY are required to run the evaluation.")
+if not PINECONE_API_KEY or not HF_TOKEN:
+    raise ValueError("Both PINECONE_API_KEY and HF_TOKEN are required to run the evaluation.")
 
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 # ─── 2. Chunk Cache Loading ──────────────────────────────────────────
 
@@ -458,24 +459,20 @@ Query: {query}
 Answer:"""
 
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json",
-        "Groq-Beta": "inference-metrics"
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": HF_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
-        "stream": True,
-        "stream_options": {
-            "include_usage": True
-        }
+        "stream": True
     }
     
     for attempt in range(5):
         try:
             t_start = time.time()
-            r = requests.post(GROQ_URL, headers=headers, json=payload, stream=True, timeout=60)
+            r = requests.post(HF_URL, headers=headers, json=payload, stream=True, timeout=60)
             if r.status_code == 200:
                 answer = ""
                 ttft = 0.0
@@ -573,17 +570,16 @@ Return ONLY valid JSON:
   "jurisdictional_comp": 90
 }}"""
 
-    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": HF_MODEL,
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-        "response_format": {"type": "json_object"}
+        "temperature": 0.1
     }
     
     for attempt in range(5):
         try:
-            r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=60)
+            r = requests.post(HF_URL, headers=headers, json=payload, timeout=60)
             if r.status_code == 200:
                 raw = r.json()["choices"][0]["message"]["content"]
                 m = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -619,6 +615,7 @@ def evaluate_pipeline(pipeline_type):
     prefill_latencies = []
     ttft_latencies = []
     throughput_rates = []
+    judges = []
 
     for i, q in enumerate(tqdm(QUERIES, desc=f"Evaluating {pipeline_type.upper()}")):
         t_start = time.time()
@@ -787,6 +784,7 @@ def evaluate_pipeline(pipeline_type):
 
         # LLM Judge evaluation
         judge = unified_judge(QUERIES[i], contexts_joined[i], preds[i], GTS[i])
+        judges.append(judge)
 
         # RAGAS-like Faithfulness (M14)
         statements = judge.get("statements", ["The model answer is factually consistent."])
@@ -842,7 +840,18 @@ def evaluate_pipeline(pipeline_type):
     summary = df.mean().to_dict()
     summary["M1"] = emb_latency
     summary["M2"] = index_size
-    return summary
+
+    details = []
+    for i in range(len(preds)):
+        details.append({
+            "query": QUERIES[i],
+            "ground_truth": GTS[i],
+            "retrieved_context": ret_texts_all[i],
+            "generated_answer": preds[i],
+            "metrics": df_list[i],
+            "judge_evaluation": judges[i] if i < len(judges) else {}
+        })
+    return summary, details
 
 # ─── 11. Run Both Pipelines ──────────────────────────────────────────
 
@@ -850,21 +859,102 @@ print("\n" + "="*80)
 print(" STARTING SIDE-BY-SIDE PIPELINE BENCHMARK")
 print("="*80)
 
-prim_results = evaluate_pipeline("primitive")
-enh_results = evaluate_pipeline("enhanced")
+prim_results, prim_details = evaluate_pipeline("primitive")
+enh_results, enh_details = evaluate_pipeline("enhanced")
 
 # Combine results
 final_results = {
     "model": model_name,
     "primitive": prim_results,
-    "enhanced": enh_results
+    "enhanced": enh_results,
+    "primitive_details": prim_details,
+    "enhanced_details": enh_details
 }
 
 # Save results
-with open("gpu_comparative_results.json", "w") as f:
+with open("pinecone_comparative_results.json", "w") as f:
     json.dump(final_results, f, indent=4)
 
-print("\n[SUCCESS] Saved comparative results to 'gpu_comparative_results.json'")
+print("\n[SUCCESS] Saved comparative results to 'pinecone_comparative_results.json'")
+
+# Generate detailed side-by-side Markdown report
+md_report_name = "pinecone_benchmark_detailed_report.md"
+with open(md_report_name, "w") as f:
+    f.write(f"# LexVed Pinecone Comparative RAG Pipeline Audit: Detailed Query-by-Query Comparison\n\n")
+    f.write(f"This report contains a side-by-side comparison of the **Primitive** and **Enhanced** RAG pipelines across the 10 evaluation queries.\n\n")
+    f.write(f"- **Embedding Model:** {model_name}\n")
+    f.write(f"- **Evaluation Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+    f.write(f"---\n\n")
+    
+    for i in range(len(QUERIES)):
+        f.write(f"## Query {i+1}: {QUERIES[i]}\n\n")
+        f.write(f"### Ground Truth Answer\n")
+        f.write(f"> {GTS[i]}\n\n")
+        
+        f.write(f"### Side-by-Side Generated Answers\n\n")
+        f.write(f"| Pipeline | Generated Answer | Key Metrics |\n")
+        f.write(f"| --- | --- | --- |\n")
+        
+        prim_ans = prim_details[i]["generated_answer"].replace('\n', '<br/>')
+        enh_ans = enh_details[i]["generated_answer"].replace('\n', '<br/>')
+        
+        prim_metrics = prim_details[i]["metrics"]
+        enh_metrics = enh_details[i]["metrics"]
+        
+        p_cit = f"{prim_metrics['M20']:.1f}%" if prim_metrics['M20'] is not None else "N/A"
+        e_cit = f"{enh_metrics['M20']:.1f}%" if enh_metrics['M20'] is not None else "N/A"
+        
+        prim_stats = f"**Faithfulness:** {prim_metrics['M14'] * 100:.1f}%<br/>**Citation Acc:** {p_cit}<br/>**E2E Latency:** {prim_metrics['M16']:.2f}s"
+        enh_stats = f"**Faithfulness:** {enh_metrics['M14'] * 100:.1f}%<br/>**Citation Acc:** {e_cit}<br/>**E2E Latency:** {enh_metrics['M16']:.2f}s"
+        
+        f.write(f"| **Primitive** | {prim_ans} | {prim_stats} |\n")
+        f.write(f"| **Enhanced** | {enh_ans} | {enh_stats} |\n\n")
+        
+        f.write(f"### Retrieved Context Comparison\n\n")
+        f.write(f"#### Primitive Retrieved Chunks (Top 3)\n")
+        for rank, chunk in enumerate(prim_details[i]["retrieved_context"][:3]):
+            f.write(f"{rank+1}. *{chunk.strip()}*\n")
+        f.write(f"\n#### Enhanced Retrieved Chunks (Top 3)\n")
+        for rank, chunk in enumerate(enh_details[i]["retrieved_context"][:3]):
+            f.write(f"{rank+1}. *{chunk.strip()}*\n")
+        
+        f.write(f"\n#### LLM Judge Audit Verification\n\n")
+        f.write(f"**Primitive Pipeline Statements Check:**\n")
+        p_judge = prim_details[i]["judge_evaluation"]
+        p_stmts = p_judge.get("statements", [])
+        p_supp = p_judge.get("supported", [])
+        if not p_stmts:
+            f.write(f"- *No statements evaluated.*\n")
+        for idx, stmt in enumerate(p_stmts):
+            status = "✅ Supported" if (idx < len(p_supp) and p_supp[idx]) else "❌ Not Supported"
+            f.write(f"- \"{stmt}\" ({status})\n")
+            
+        f.write(f"\n**Enhanced Pipeline Statements Check:**\n")
+        e_judge = enh_details[i]["judge_evaluation"]
+        e_stmts = e_judge.get("statements", [])
+        e_supp = e_judge.get("supported", [])
+        if not e_stmts:
+            f.write(f"- *No statements evaluated.*\n")
+        for idx, stmt in enumerate(e_stmts):
+            status = "✅ Supported" if (idx < len(e_supp) and e_supp[idx]) else "❌ Not Supported"
+            f.write(f"- \"{stmt}\" ({status})\n")
+        
+        f.write(f"\n---\n\n")
+
+print(f"[SUCCESS] Detailed side-by-side answers report generated at '{md_report_name}'")
+
+print("\n" + "="*80)
+print(" STREAMLINED QUERY-BY-QUERY ANSWERS COMPARISON (First 3)")
+print("="*80)
+for i in range(min(3, len(QUERIES))):
+    print(f"\nQuery {i+1}: {QUERIES[i]}")
+    print(f"Ground Truth: {GTS[i]}")
+    print(f"Primitive Answer: {prim_details[i]['generated_answer']}")
+    print(f"Enhanced Answer: {enh_details[i]['generated_answer']}")
+    print("-" * 50)
+if len(QUERIES) > 3:
+    print(f"... and {len(QUERIES) - 3} more queries. Open '{md_report_name}' to read the full detailed report.")
+print("="*80)
 
 # ─── 12. Print Side-by-Side Table and Generate PDF ───────────────────
 
@@ -923,7 +1013,7 @@ try:
     from reportlab.platypus.flowables import HRFlowable
     from datetime import datetime
 
-    out_name = "LexVed_GPU_Institutional_Audit.pdf"
+    out_name = "LexVed_Pinecone_Comparative_Audit.pdf"
     doc = SimpleDocTemplate(out_name, pagesize=landscape(A4),
                             leftMargin=1*cm, rightMargin=1*cm,
                             topMargin=1.2*cm, bottomMargin=1.2*cm)
@@ -939,15 +1029,15 @@ try:
     h1 = ParagraphStyle("h1", fontSize=22, fontName="Helvetica-Bold", textColor=PRIMARY_GOLD, spaceAfter=8, alignment=1)
     
     story = []
-    story.append(Paragraph("LexVed GPU Comparative Audit Report", h1))
-    story.append(Paragraph("Direct Comparison: Primitive vs. Enhanced Pipeline (A100 Accelerated)", ParagraphStyle("sub", fontSize=12, fontName="Helvetica", textColor=colors.gray, alignment=1)))
+    story.append(Paragraph("LexVed Pinecone Comparative Audit Report", h1))
+    story.append(Paragraph("Direct Comparison: Primitive vs. Enhanced Pipeline", ParagraphStyle("sub", fontSize=12, fontName="Helvetica", textColor=colors.gray, alignment=1)))
     story.append(Spacer(1, 0.2*cm))
     story.append(HRFlowable(width="100%", thickness=2, color=PRIMARY_GOLD))
     story.append(Spacer(1, 0.4*cm))
 
     meta_text = (
         f"<b>Audit Date:</b> {datetime.now().strftime('%d %B %Y, %H:%M IST')}<br/>"
-        f"<b>Hardware:</b> NVIDIA A100 GPU (PyTorch/CUDA Acceleration)<br/>"
+        f"<b>Infrastructure:</b> Pinecone Cloud Hybrid Index & Hugging Face Inference API<br/>"
         f"<b>Evaluation Corpus:</b> {index_size} vector segments<br/>"
         f"<b>Active Model:</b> {model_name} ({model_dim}d)"
     )

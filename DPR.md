@@ -147,7 +147,7 @@ In the latest version, LexVed has been hardened for institutional audit readines
 * **Config Manager Refactor:** Decoupled frontend selections by dynamically fetching model configurations and metadata tags from `/api/settings/config`.
 
 ### Session: Generation Efficiency Metrics Integration (June 5, 2026) [NEW]
-* **Prefill Latency (M25):** Integrated Groq Beta `"Groq-Beta": "inference-metrics"` headers and `"include_usage": True` streaming options to capture the exact hardware prefill/prompt processing latency (`prompt_time`).
+* **Prefill Latency (M25):** Captured the exact hardware prefill/prompt processing latency (`prompt_time`) using Hugging Face completions/local performance timers.
 * **Time To First Token / TTFT (M26):** Implemented streaming response measurement in both the Enhanced and Primitive evaluation engines, computing the exact delta from API request initiation to the receipt of the first text token.
 * **Unified Audit Dashboard:** Expanded the single-model audit, comparative audit, CSV exports, and PDF reports to display and analyze these two new efficiency metrics side-by-side.
 
@@ -155,7 +155,7 @@ In the latest version, LexVed has been hardened for institutional audit readines
 * **Phase 3 (Workflow Automation):** Configured deterministic Case Brief DAG pipelines where search, citation extraction, drafting, and PII sanitization run in a fixed sequence.
 * **Phase 4 (Collaborative Swarm):** Implemented a LangGraph state machine consisting of specialized agents: Researcher, Drafting Counsel, PII Redactor, and a loop-back Compliance Auditor criticizing and revising draft briefs.
 * **M27 (Generation Throughput):** Integrated throughput measurement (tokens/sec) calculations inside the streaming pipelines.
-* **GPU Comparative Benchmark:** Created `backend/gpu_comparative_benchmark.py` utilizing PyTorch/CUDA and local BM25 to run side-by-side RAG pipeline evaluations on an NVIDIA A100 GPU, generating printable landscape PDF audit sheets.
+* **Pinecone Comparative Benchmark:** Created `backend/pinecone_comparative_benchmark.py` utilizing Pinecone index and local BM25 to run side-by-side RAG pipeline evaluations, generating printable landscape PDF audit sheets.
 
 ### Session: Research-Grade Metrics & Pluggable Frameworks (June 9, 2026 - Part 2) [NEW]
 * **100-Query Synthetic Dataset:** Replaced the manually defined 10 queries with a programmatically generated, 100-query synthetic dataset (`data/synthetic_evaluation_dataset.json`). Each item maps a legal query and ground-truth answer to a known target document chunk, enabling true non-circular evaluation.

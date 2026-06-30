@@ -24,8 +24,9 @@ RESULTS_PATH = os.path.join(PROJECT_ROOT, "evaluation_results.json")
 
 # ─── Groq LLM Judge (from notebook) ──────────────────────────────
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+HF_TOKEN = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
+HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 
 def _update_progress(msg, status="processing"):
@@ -83,17 +84,16 @@ Return ONLY valid JSON:
   "jurisdictional_comp": 90
 }}"""
 
-    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": HF_MODEL,
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-        "response_format": {"type": "json_object"}
+        "temperature": 0.1
     }
 
     for attempt in range(5):
         try:
-            r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=60)
+            r = requests.post(HF_URL, headers=headers, json=payload, timeout=60)
             if r.status_code == 200:
                 raw = r.json()["choices"][0]["message"]["content"]
                 m = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -136,23 +136,19 @@ Query: {query}
 Answer:"""
 
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json",
-        "Groq-Beta": "inference-metrics"
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": HF_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
-        "stream": True,
-        "stream_options": {
-            "include_usage": True
-        }
+        "stream": True
     }
     for attempt in range(5):
         try:
             t_start = time.time()
-            r = requests.post(GROQ_URL, headers=headers, json=payload, stream=True, timeout=60)
+            r = requests.post(HF_URL, headers=headers, json=payload, stream=True, timeout=60)
             if r.status_code == 200:
                 answer = ""
                 ttft = 0.0
@@ -180,14 +176,6 @@ Answer:"""
                                         ttft = first_token_time - t_start
                                         first_token_received = True
                                     answer += content
-                            
-                            usage = chunk.get("usage") or chunk.get("x_groq", {}).get("usage")
-                            if usage:
-                                prefill_latency = usage.get("prompt_time", 0.0)
-                                completion_tokens = usage.get("completion_tokens", 0)
-                                completion_time = usage.get("completion_time", 0.0)
-                                if completion_time > 0:
-                                    throughput = completion_tokens / completion_time
                         except Exception:
                             pass
                 t_end = time.time()
@@ -550,7 +538,7 @@ def run_evaluation():
         "system_info": {
             "vector_db": active_db,
             "embedding": active_model,
-            "model": "llama-3.1-8b-instant",
+            "model": HF_MODEL,
             "total_documents": total_docs,
             "index_size": index_size,
             "pipeline": "enhanced"

@@ -245,15 +245,17 @@ def decompose_query(query_text: str) -> list[str]:
         return [query_text]
 
     import os
-    from groq import Groq
+    import requests
     import json
+    import re
 
     try:
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
         if not api_key:
             return [query_text]
 
-        client = Groq(api_key=api_key)
+        url = "https://api-inference.huggingface.co/v1/chat/completions"
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         prompt = (
             "You are a legal search optimization bot.\n"
             "Analyze the legal query. If the query is complex or asks about multiple different topics, "
@@ -263,16 +265,20 @@ def decompose_query(query_text: str) -> list[str]:
             "with no explanation or markdown formatting.\n\n"
             f"Query: {query_text}"
         )
+        payload = {
+            "model": "meta-llama/Llama-3.1-8B-Instruct",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.0
+        }
 
-        chat_completion = client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}],
-            model="llama-3.1-8b-instant",
-            temperature=0.0,
-            response_format={"type": "json_object"}
-        )
-        
-        content = chat_completion.choices[0].message.content
-        data = json.loads(content)
+        r = requests.post(url, headers=headers, json=payload, timeout=60)
+        r.raise_for_status()
+        content = r.json()["choices"][0]["message"]["content"]
+        m = re.search(r'\{.*\}', content, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+        else:
+            data = json.loads(content)
         queries = data.get("queries", [query_text])
         if not isinstance(queries, list):
             queries = [query_text]

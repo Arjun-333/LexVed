@@ -40,8 +40,9 @@ qc = QdrantClient(url="http://localhost:6333")
 BACKEND_DIR = Path(__file__).parent
 BASE_PDF_DIR = BACKEND_DIR / "data" / "PDF"
 CACHE_FILE   = BACKEND_DIR / "data" / "primitive_chunk_cache.json"
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions"
+HF_TOKEN = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
+HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 MODEL_DIMENSIONS = {
     "multi-qa-mpnet-base-cos-v1":  768,
@@ -223,7 +224,7 @@ def generate_with_groq(prompt: str):
     Also returns (answer, prefill_latency, ttft, throughput).
     """
     import tiktoken
-    if not GROQ_API_KEY:
+    if not HF_TOKEN:
         sys.path.append(str(BACKEND_DIR))
         from src.generation.generator import generate_utility
         t0 = time.time()
@@ -232,23 +233,19 @@ def generate_with_groq(prompt: str):
         return ans, 0.0, dt, 0.0
 
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json",
-        "Groq-Beta": "inference-metrics"
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": HF_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
-        "stream": True,
-        "stream_options": {
-            "include_usage": True
-        }
+        "stream": True
     }
     for attempt in range(5):
         try:
             t_start = time.time()
-            r = requests.post(GROQ_URL, headers=headers, json=payload, stream=True, timeout=60)
+            r = requests.post(HF_URL, headers=headers, json=payload, stream=True, timeout=60)
             if r.status_code == 200:
                 answer = ""
                 ttft = 0.0
@@ -276,14 +273,6 @@ def generate_with_groq(prompt: str):
                                         ttft = first_token_time - t_start
                                         first_token_received = True
                                     answer += content
-                            
-                            usage = chunk.get("usage") or chunk.get("x_groq", {}).get("usage")
-                            if usage:
-                                prefill_latency = usage.get("prompt_time", 0.0)
-                                completion_tokens = usage.get("completion_tokens", 0)
-                                completion_time = usage.get("completion_time", 0.0)
-                                if completion_time > 0:
-                                    throughput = completion_tokens / completion_time
                         except Exception:
                             pass
                 t_end = time.time()
@@ -333,12 +322,12 @@ CONTEXT: {context[:5000]}
 
 Return ONLY valid JSON with integer scores 0-100:
 {{"faithfulness":75,"citation_acc":60,"term_precision":80,"precedent_match":50,"factual_consistency":70,"bias_score":5,"regulatory_alignment":85,"jurisdictional_comp":90}}"""
-    if not GROQ_API_KEY: return defaults
-    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
-    payload = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": prompt}],
-               "temperature": 0.1, "response_format": {"type": "json_object"}}
+    if not HF_TOKEN: return defaults
+    headers = {"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}
+    payload = {"model": HF_MODEL, "messages": [{"role": "user", "content": prompt}],
+               "temperature": 0.1}
     try:
-        r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=60)
+        r = requests.post(HF_URL, headers=headers, json=payload, timeout=60)
         if r.status_code == 200:
             raw = r.json()["choices"][0]["message"]["content"]
             m = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -571,8 +560,8 @@ def run_primitive_pipeline(model_choice="1", api_key=None):
         "system_info": {
             "pipeline": "primitive",
             "vector_db": f"Pinecone ({idx_name})",
-            "generator": "Groq llama-3.1-8b-instant",
-            "judge": "Groq llama-3.1-8b-instant (M14,M15,M20-M24)",
+            "generator": f"Hugging Face {HF_MODEL}",
+            "judge": f"Hugging Face {HF_MODEL} (M14,M15,M20-M24)",
             "embedding": model_name,
             "total_pdfs": len(pdf_files),
             "total_chunks": len(chunks),

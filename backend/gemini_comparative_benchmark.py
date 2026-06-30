@@ -1,9 +1,9 @@
 """
-LexVed Qwen 2.5 7b Comparative Benchmark Script
+LexVed Gemini Comparative Benchmark Script
 
-This script is designed to run a side-by-side comparison of the Primitive and Enhanced 
-RAG pipelines using Qwen 2.5 7b for answer generation, and local/Groq llama-3.1-8b-instant
-for LLM judging. It evaluates all 31 metrics on the exact 10 legal queries and ground truth answers.
+This script performs a side-by-side comparison of the Primitive and Enhanced RAG
+pipelines across all 31 metrics using the Gemini API (via the google-genai SDK)
+for answer generation and LLM judging, with local embedding/reranking on the GPU.
 """
 
 import os
@@ -11,6 +11,7 @@ import re
 import gc
 import json
 import time
+import sys
 try:
     import psutil
 except ImportError:
@@ -30,10 +31,6 @@ try:
 except ImportError:
     pass
 
-# Force CUDA visible devices to GPU 1 to avoid OOM on GPU 0
-if "CUDA_VISIBLE_DEVICES" not in os.environ:
-    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
 # Import PyTorch to utilize GPU if available
 try:
     import torch
@@ -45,17 +42,18 @@ print(f"[*] Benchmark will run on device: {device.upper()}")
 if device == "cuda":
     print(f"[*] GPU Device Name: {torch.cuda.get_device_name(0)}")
 
-import sys
-
-env_pinecone = os.getenv("PINECONE_API_KEY", "").strip()
-env_hf = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
-
 # Check CLI flags
 cli_non_interactive = "--non-interactive" in sys.argv
 cli_model = None
+cli_gemini_model = None
 for arg in sys.argv:
     if arg.startswith("--model="):
         cli_model = arg.split("=")[1].strip()
+    if arg.startswith("--gemini-model="):
+        cli_gemini_model = arg.split("=")[1].strip()
+
+env_pinecone = os.getenv("PINECONE_API_KEY", "").strip()
+env_hf = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")).strip()
 
 print("\n--- API Credentials ---")
 is_interactive = sys.stdin.isatty() and not cli_non_interactive
@@ -86,7 +84,7 @@ if is_interactive:
     if env_hf:
         hf_prompt = "Enter your Hugging Face Token [Press ENTER to use token from .env]: "
     else:
-        hf_prompt = "Enter your Hugging Face Token (or press ENTER to use local Qwen judge): "
+        hf_prompt = "Enter your Hugging Face Token: "
     try:
         user_hf = input(hf_prompt).strip()
         if user_hf:
@@ -96,8 +94,38 @@ if is_interactive:
 else:
     print("[*] Non-interactive environment detected or requested. Using environment credentials.")
 
+if not PINECONE_API_KEY or not HF_TOKEN:
+    raise ValueError("Both PINECONE_API_KEY and HF_TOKEN are required to run the evaluation.")
+
 HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
-HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
+
+# Hugging Face Model Selection
+print("\n--- Hugging Face Model Selection ---")
+print("1) meta-llama/Llama-3.1-8B-Instruct [Default]")
+print("2) meta-llama/Llama-3.3-70B-Instruct")
+print("3) Qwen/Qwen2.5-72B-Instruct")
+print("4) Qwen/Qwen2.5-7B-Instruct")
+
+if cli_gemini_model is not None:
+    gemini_model = cli_gemini_model
+    print(f"[*] Command-line override: Selected Hugging Face model '{gemini_model}'")
+elif not is_interactive:
+    gemini_model = "meta-llama/Llama-3.1-8B-Instruct"
+else:
+    try:
+        hf_choice = input("Select a Hugging Face model [1-4, Default: 1]: ").strip()
+    except (EOFError, OSError):
+        hf_choice = "1"
+    
+    hf_models = {
+        "1": "meta-llama/Llama-3.1-8B-Instruct",
+        "2": "meta-llama/Llama-3.3-70B-Instruct",
+        "3": "Qwen/Qwen2.5-72B-Instruct",
+        "4": "Qwen/Qwen2.5-7B-Instruct"
+    }
+    gemini_model = hf_models.get(hf_choice, "meta-llama/Llama-3.1-8B-Instruct")
+
+print(f"[*] Selected Hugging Face Model: {gemini_model}")
 
 # ─── 2. Chunk Cache Loading ──────────────────────────────────────────
 
@@ -368,7 +396,6 @@ if synthetic_path is not None:
     print(f"[SUCCESS] Found dataset. Loading queries from {synthetic_path}...")
     with open(synthetic_path, "r") as f:
         synthetic_data = json.load(f)
-    # Restrict to first 10 queries for efficient local Qwen evaluation
     QUERIES = [item["query"] for item in synthetic_data][:10]
     GTS = [item["ground_truth"] for item in synthetic_data][:10]
     GOLD_CHUNKS = [item["gold_chunk_text"] for item in synthetic_data][:10]
@@ -391,7 +418,7 @@ else:
         "No. The Supreme Court ruled that a person disqualified from being a member of the legislature under Article 191(1)(e) read with Section 8(3) of the Representation of the People Act, 1951, due to a criminal conviction, cannot be legally appointed as Chief Minister, even if they enjoy the majority support of the legislative assembly.",
         "The Supreme Court directed that recruitment to the Higher Judicial Service should be divided into three avenues: 50% by promotion based on merit-cum-seniority, 25% by promotion strictly on merit through a limited departmental competitive examination, and 25% by direct recruitment from eligible advocates.",
         "No. The Supreme Court held that the existence of a waiting list does not create an indefeasible right to appointment. The employer has the discretion to carry forward unfilled vacancies to the next year, provided the decision is not arbitrary or mala fide.",
-        "No. The Supreme Court held that teachers do not fall within the definition of \"employee\" under the Act because imparting education is a noble vocation and cannot be classified as skilled, unskilled, manual, supervisory, or clerical work.",
+        "No. The Supreme Court held teachers do not fall within the definition of \"employee\" under the Act because imparting education is a noble vocation and cannot be classified as skilled, unskilled, manual, supervisory, or clerical work.",
         "No. The Supreme Court held that the power under Section 319 is an extraordinary power that must be used sparingly. It requires a reasonable prospect of conviction and compelling reasons; mere suspicion is insufficient to subject a person to the agony of a criminal trial.",
         "To prevent unnecessary delays, the Supreme Court directed trial courts to tentatively mark the objected documents as exhibits and defer the final decision on their admissibility until the final judgment stage, rather than halting the trial to pass interlocutory orders.",
         "Yes. The Supreme Court ruled that the words \"any cheque\" and \"other liability\" in Section 138 are broad enough to cover cheques issued by a guarantor. The liability cannot be avoided merely because the cheque was issued as security for someone else's debt.",
@@ -411,7 +438,9 @@ else:
         "With all good intentions and team spirit, they transported the patient under manual ventilation (supporting respirations) and shifted the patient to Ganga Ram Hospital's ICU. Sd/- Dr. Jacob vs Govt. Of N.C.T. Of Delhi & Anr on 4 August, 2004 Indian Kanoon - http://indiankanoon.org/doc/650550/ 4 (Dr. Jacob) 15.11.1995\" It is on these medical papers produced by the prosecution, we have to decide whether the High Court was right in holding that criminal liability prima facie has arisen against the surgeon and he must face the trial. The legal position is almost firmly established that where a patient dies due to the negligent medical treatment of the doctor, the doctor can be made liable in civil law for paying compensation and damages in tort and at the same time, if the degree of negligence is so gross and his act was reckless as to endanger the life of the patient, he would also be made criminally liable for offence under section 304A of IPC. Section 304A of IPC reads thus :- \"304A. Causing death by negligence."
     ]
 
-# ─── 7. Retrieval Logic ──────────────────
+
+
+# ─── 7. Retrieval Logic (Pinecone / Local Fallback) ──────────────────
 
 def dense_retrieve_pinecone(q_vec, top_k=20):
     res = index.query(
@@ -477,7 +506,7 @@ def cross_encode_rerank(query, candidates, top_k=5):
     sorted_candidates = sorted(candidates, key=lambda x: x.get("ce_score", -99), reverse=True)
     return sorted_candidates[:top_k]
 
-# ─── 8. Local Qwen 2.5 7b Answer Generation & Streaming Performance ────
+# ─── 8. Gemini Answer Generation & Streaming Performance ─────────────────
 
 def generate_llm_answer(query, context):
     prompt = f"""Answer the following query using ONLY the context below. Keep it professional.
@@ -487,28 +516,21 @@ Context:
 Query: {query}
 Answer:"""
 
-    ollama_host = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").strip()
-    if not ollama_host:
-        ollama_host = "http://127.0.0.1:11434"
-    if ollama_host.startswith(":"):
-        ollama_host = f"http://127.0.0.1{ollama_host}"
-    elif not ollama_host.startswith("http://") and not ollama_host.startswith("https://"):
-        ollama_host = f"http://{ollama_host}"
-    url = f"{ollama_host.rstrip('/')}/api/generate"
+    headers = {
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
+    }
     payload = {
-        "model": "qwen2.5:7b",
-        "prompt": prompt,
-        "stream": True,
-        "options": {
-            "temperature": 0.1,
-            "num_ctx": 4096
-        }
+        "model": gemini_model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
+        "stream": True
     }
     
-    for attempt in range(3):
+    for attempt in range(5):
         try:
             t_start = time.time()
-            r = requests.post(url, json=payload, stream=True, timeout=120)
+            r = requests.post(HF_URL, headers=headers, json=payload, stream=True, timeout=60)
             if r.status_code == 200:
                 answer = ""
                 ttft = 0.0
@@ -520,57 +542,58 @@ Answer:"""
                 for line in r.iter_lines():
                     if not line:
                         continue
-                    try:
-                        chunk = json.loads(line.decode("utf-8"))
-                        response_text = chunk.get("response", "")
-                        if response_text:
-                            if not first_token_received:
-                                first_token_time = time.time()
-                                ttft = first_token_time - t_start
-                                first_token_received = True
-                            answer += response_text
-                        
-                        if chunk.get("done"):
-                            prompt_eval_duration = chunk.get("prompt_eval_duration", 0)
-                            eval_count = chunk.get("eval_count", 0)
-                            eval_duration = chunk.get("eval_duration", 0)
-                            
-                            if prompt_eval_duration > 0:
-                                prefill_latency = prompt_eval_duration / 1e9
-                            if eval_duration > 0 and eval_count > 0:
-                                throughput = eval_count / (eval_duration / 1e9)
+                    line_str = line.decode("utf-8").strip()
+                    if line_str.startswith("data: "):
+                        data_content = line_str[6:]
+                        if data_content == "[DONE]":
                             break
-                    except Exception:
-                        pass
+                        try:
+                            chunk = json.loads(data_content)
+                            choices = chunk.get("choices", [])
+                            if choices:
+                                delta = choices[0].get("delta", {})
+                                content = delta.get("content", "")
+                                if content:
+                                    if not first_token_received:
+                                        first_token_time = time.time()
+                                        ttft = first_token_time - t_start
+                                        first_token_received = True
+                                    answer += content
+                        except Exception:
+                            pass
                             
                 t_end = time.time()
                 if answer and ttft == 0.0:
                     ttft = t_end - t_start
-                if prefill_latency == 0.0:
-                    prefill_latency = ttft
-                if throughput == 0.0:
-                    try:
-                        if tiktoken is None:
-                            raise ImportError()
-                        enc = tiktoken.get_encoding("cl100k_base")
-                    except Exception:
-                        class FakeEnc:
-                            def encode(self, text):
-                                return text.split()
-                        enc = FakeEnc()
-                    ans_tokens = len(enc.encode(answer))
-                    gen_time = t_end - (first_token_time or t_start)
-                    if gen_time > 0:
-                        throughput = ans_tokens / gen_time
+                prefill_latency = ttft
+                
+                try:
+                    if tiktoken is None:
+                        raise ImportError()
+                    enc = tiktoken.get_encoding("cl100k_base")
+                except Exception:
+                    class FakeEnc:
+                        def encode(self, text):
+                            return text.split()
+                    enc = FakeEnc()
+                completion_tokens = len(enc.encode(answer))
+                
+                gen_time = t_end - (first_token_time or t_start)
+                if gen_time > 0:
+                    throughput = completion_tokens / gen_time
+                
                 return answer, prefill_latency, ttft, throughput
+            elif r.status_code == 429:
+                time.sleep(15)
             else:
-                time.sleep(2)
+                time.sleep(3)
         except Exception as e:
-            print(f"[LexVed] Connection attempt {attempt+1} failed: {e}")
-            time.sleep(2)
+            print(f"[!] Hugging Face generation attempt {attempt+1} failed: {e}")
+            time.sleep(3)
+            
     return "", 0.0, 0.0, 0.0
 
-# ─── 9. Unified LLM Judge (with Qwen Fallback) ──────────────────────────
+# ─── 9. Unified LLM Judge using Gemini ───────────────────────────────────────
 
 def unified_judge(query, context, answer, ground_truth) -> dict:
     defaults = {
@@ -608,62 +631,34 @@ Return ONLY valid JSON:
   "jurisdictional_comp": 90
 }}"""
 
-    if HF_TOKEN:
-        headers = {"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}
-        payload = {
-            "model": HF_MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.1
-        }
-        for attempt in range(5):
-            try:
-                r = requests.post(HF_URL, headers=headers, json=payload, timeout=60)
-                if r.status_code == 200:
-                    raw = r.json()["choices"][0]["message"]["content"]
-                    m = re.search(r'\{.*\}', raw, re.DOTALL)
-                    if m:
-                        parsed = json.loads(m.group(0))
-                        norm_parsed = {k.lower(): v for k, v in parsed.items()}
-                        return {**defaults, **norm_parsed}
-                elif r.status_code == 429:
-                    time.sleep(15)
-                else:
-                    time.sleep(3)
-            except Exception:
-                time.sleep(3)
-
-    # Local Ollama Fallback
-    ollama_host = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").strip()
-    if not ollama_host:
-        ollama_host = "http://127.0.0.1:11434"
-    if ollama_host.startswith(":"):
-        ollama_host = f"http://127.0.0.1{ollama_host}"
-    elif not ollama_host.startswith("http://") and not ollama_host.startswith("https://"):
-        ollama_host = f"http://{ollama_host}"
-    url = f"{ollama_host.rstrip('/')}/api/generate"
+    headers = {"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}
     payload = {
-        "model": "qwen2.5:7b",
-        "prompt": prompt,
-        "format": "json",
-        "stream": False,
-        "options": {
-            "temperature": 0.1
-        }
+        "model": gemini_model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1
     }
-    for attempt in range(3):
+    
+    for attempt in range(5):
         try:
-            r = requests.post(url, json=payload, timeout=90)
+            r = requests.post(HF_URL, headers=headers, json=payload, timeout=60)
             if r.status_code == 200:
-                raw = r.json().get("response", "")
+                raw = r.json()["choices"][0]["message"]["content"]
                 m = re.search(r'\{.*\}', raw, re.DOTALL)
                 if m:
                     parsed = json.loads(m.group(0))
-                    norm_parsed = {k.lower(): v for k, v in parsed.items()}
+                    # Handle key case-insensitivity
+                    norm_parsed = {}
+                    for k, v in parsed.items():
+                        norm_parsed[k.lower()] = v
                     return {**defaults, **norm_parsed}
-            time.sleep(2)
-        except Exception:
-            time.sleep(2)
-
+            elif r.status_code == 429:
+                time.sleep(15)
+            else:
+                time.sleep(3)
+        except Exception as e:
+            print(f"[!] Hugging Face unified judge attempt {attempt+1} failed: {e}")
+            time.sleep(3)
+            
     return defaults
 
 def _jval(judge, key, default=50.0):
@@ -675,7 +670,7 @@ def _jval(judge, key, default=50.0):
 # ─── 10. Pipeline Evaluation Loop ─────────────────────────────────────
 
 def evaluate_pipeline(pipeline_type):
-    print(f"\nRunning evaluation on {pipeline_type.upper()} pipeline with Qwen 2.5 7b...")
+    print(f"\nRunning evaluation on {pipeline_type.upper()} pipeline with Gemini...")
     
     preds, ret_texts_all, q_vecs = [], [], []
     all_ret_texts_all = []
@@ -708,7 +703,7 @@ def evaluate_pipeline(pipeline_type):
         all_ret_texts = [doc.get("text", "") for doc in all_ret_docs]
         context_str = "\n\n".join(ret)
         
-        # Generation with local Qwen 2.5 7b
+        # Generation
         t1 = time.time()
         ans, prefill_lat, ttft, throughput = generate_llm_answer(q, context_str)
         gt_time = time.time() - t1
@@ -724,6 +719,7 @@ def evaluate_pipeline(pipeline_type):
         ttft_latencies.append(ttft)
         throughput_rates.append(throughput)
         
+        # Slight pause to manage API pacing
         time.sleep(1)
 
     print("Computing batched BERTScores...")
@@ -840,6 +836,7 @@ def evaluate_pipeline(pipeline_type):
         ctx_tokens = {ps.stem(w) for w in cleaned_ctx.split()}
         gt_coverage = len(gt_tokens & ctx_tokens) / max(1, len(gt_tokens))
 
+        # Evaluate via Unified Gemini Judge
         judge = unified_judge(QUERIES[i], contexts_joined[i], preds[i], GTS[i])
         judges.append(judge)
 
@@ -908,7 +905,7 @@ def evaluate_pipeline(pipeline_type):
 # ─── 11. Run Both Pipelines ──────────────────────────────────────────
 
 print("\n" + "="*80)
-print(" STARTING SIDE-BY-SIDE QWEN 2.5 7B PIPELINE BENCHMARK")
+print(" STARTING SIDE-BY-SIDE HUGGING FACE PIPELINE BENCHMARK")
 print("="*80)
 
 prim_results, prim_details = evaluate_pipeline("primitive")
@@ -917,7 +914,7 @@ enh_results, enh_details = evaluate_pipeline("enhanced")
 # Combine results
 final_results = {
     "model": model_name,
-    "llm": "qwen2.5:7b",
+    "gemini_model": gemini_model,
     "primitive": prim_results,
     "enhanced": enh_results,
     "primitive_details": prim_details,
@@ -925,16 +922,16 @@ final_results = {
 }
 
 # Save results
-with open("qwen_comparative_results.json", "w") as f:
+with open("gemini_comparative_results.json", "w") as f:
     json.dump(final_results, f, indent=4)
 
-print("\n[SUCCESS] Saved comparative results to 'qwen_comparative_results.json'")
+print("\n[SUCCESS] Saved comparative results to 'gemini_comparative_results.json'")
 
 # Generate detailed side-by-side Markdown report
-md_report_name = "qwen_benchmark_detailed_report.md"
+md_report_name = "gemini_benchmark_detailed_report.md"
 with open(md_report_name, "w") as f:
-    f.write(f"# LexVed Qwen 2.5 7b Comparative RAG Pipeline Audit: Detailed Query-by-Query Comparison\n\n")
-    f.write(f"This report contains a side-by-side comparison of the **Primitive** and **Enhanced** RAG pipelines across the 10 evaluation queries.\n\n")
+    f.write(f"# LexVed Gemini Comparative RAG Pipeline Audit: Detailed Query-by-Query Comparison\n\n")
+    f.write(f"This report contains a side-by-side comparison of the **Primitive** and **Enhanced** RAG pipelines using Gemini ({gemini_model}) across the 10 evaluation queries.\n\n")
     f.write(f"- **Embedding Model:** {model_name}\n")
     f.write(f"- **Evaluation Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
     f.write(f"---\n\n")
@@ -971,7 +968,7 @@ with open(md_report_name, "w") as f:
         for rank, chunk in enumerate(enh_details[i]["retrieved_context"][:3]):
             f.write(f"{rank+1}. *{chunk.strip()}*\n")
         
-        f.write(f"\n#### LLM Judge Audit Verification\n\n")
+        f.write(f"\n#### LLM Judge Audit Verification (via Gemini)\n\n")
         f.write(f"**Primitive Pipeline Statements Check:**\n")
         p_judge = prim_details[i]["judge_evaluation"]
         p_stmts = p_judge.get("statements", [])
@@ -1046,7 +1043,7 @@ metrics_list = [
 ]
 
 print("\n" + "="*80)
-print(f" SIDE-BY-SIDE EVALUATION TABLE ({model_name} + Qwen 2.5 7b)")
+print(f" SIDE-BY-SIDE EVALUATION TABLE ({model_name} with {gemini_model})")
 print("="*80)
 print(f"{'ID':<4} | {'Metric Name':<28} | {'Primitive':<12} | {'Enhanced':<12} | {'Direction'}")
 print("-" * 80)
@@ -1066,7 +1063,7 @@ try:
     from reportlab.platypus.flowables import HRFlowable
     from datetime import datetime
 
-    out_name = "LexVed_Qwen_Comparative_Audit.pdf"
+    out_name = "LexVed_Gemini_Institutional_Audit.pdf"
     doc = SimpleDocTemplate(out_name, pagesize=landscape(A4),
                             leftMargin=1*cm, rightMargin=1*cm,
                             topMargin=1.2*cm, bottomMargin=1.2*cm)
@@ -1082,15 +1079,15 @@ try:
     h1 = ParagraphStyle("h1", fontSize=22, fontName="Helvetica-Bold", textColor=PRIMARY_GOLD, spaceAfter=8, alignment=1)
     
     story = []
-    story.append(Paragraph("LexVed Qwen 2.5 Comparative Audit Report", h1))
-    story.append(Paragraph("Direct Comparison: Primitive vs. Enhanced Pipeline (Qwen 2.5 7b Local LLM)", ParagraphStyle("sub", fontSize=12, fontName="Helvetica", textColor=colors.gray, alignment=1)))
+    story.append(Paragraph("LexVed Hugging Face Comparative Audit Report", h1))
+    story.append(Paragraph("Direct Comparison: Primitive vs. Enhanced Pipeline (Hugging Face Accelerated)", ParagraphStyle("sub", fontSize=12, fontName="Helvetica", textColor=colors.gray, alignment=1)))
     story.append(Spacer(1, 0.2*cm))
     story.append(HRFlowable(width="100%", thickness=2, color=PRIMARY_GOLD))
     story.append(Spacer(1, 0.4*cm))
 
     meta_text = (
         f"<b>Audit Date:</b> {datetime.now().strftime('%d %B %Y, %H:%M IST')}<br/>"
-        f"<b>Generation LLM:</b> Qwen 2.5 7b (Ollama Local API)<br/>"
+        f"<b>Hardware/API:</b> Hugging Face ({gemini_model}) Serverless API & local embeddings on {device.upper()}<br/>"
         f"<b>Evaluation Corpus:</b> {index_size} vector segments<br/>"
         f"<b>Active Model:</b> {model_name} ({model_dim}d)"
     )
@@ -1137,6 +1134,7 @@ try:
     story.append(ct)
     story.append(Spacer(1, 0.5*cm))
 
+    # Fetch metric averages for analysis
     avg_p_m3 = prim_results.get("M3", 0.0)
     avg_e_m3 = enh_results.get("M3", 0.0)
     avg_p_m4 = prim_results.get("M4", 0.0)
@@ -1202,7 +1200,7 @@ try:
     m27_reason = "" if m27_verb in ["improved", "unchanged"] else " (overhead of larger context payloads on LLM generation prompt processing)"
 
     analysis_text = (
-        "<b>Comparative Audit & Interpretation of Qwen 2.5 7b Results:</b><br/>"
+        "<b>Comparative Audit & Interpretation of Evaluated Results (Gemini Powered):</b><br/>"
         f"1. <b>Semantic Retrieval Quality (M4 & M5):</b> Average Cosine Similarity went from {avg_p_m4:.3f} to {avg_e_m4:.3f} ({m4_verb}){m4_reason}, "
         f"while average Recall@5 went from {avg_p_m5:.1f}% to {avg_e_m5:.1f}% ({m5_verb}).<br/>"
         f"2. <b>Factual Grounding & Faithfulness (M13, M14, M15):</b> Faithfulness (M14) changed from {avg_p_m14:.3f} to {avg_e_m14:.3f} ({m14_verb}){m14_reason}, "

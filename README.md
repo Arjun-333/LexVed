@@ -37,7 +37,7 @@ The platform utilizes a multi-tiered retrieval strategy to guarantee maximum rec
 The system supports two core operational modes dynamically configured from backend metadata:
 * **Standard Mode (Universal):** A fixed, lightning-fast RAG pipeline (retrieve → generate) leveraging `llama-3.1-8b-instant` or `mixtral-8x7b-32768`.
 * **Agent Mode (Agentic):** Escalates to `llama-3.3-70b-versatile` inside the LangGraph state machine, allowing the AI to autonomously decide when to use tools, analyze data, and synthesize case law.
-* **Evaluation Node:** Employs `llama-3.1-8b-instant` on Groq for high-performance KPI judging.
+* **Evaluation Node:** Employs `meta-llama/Llama-3.1-8B-Instruct` on Hugging Face for high-performance KPI judging.
 
 ### 5. Enterprise Interface
 The frontend is built on Next.js 14 and Framer Motion, delivering a premium, glassmorphic UI ("All Black But Gold" aesthetic). It features:
@@ -64,7 +64,7 @@ The frontend is built on Next.js 14 and Framer Motion, delivering a premium, gla
 - Python 3.10+
 - Node.js 18+
 - Docker (for Qdrant deployment)
-- API Keys: Pinecone, Groq
+- API Keys: Pinecone, Hugging Face Token (HF_TOKEN)
 
 ## Initialization and Setup
 
@@ -86,7 +86,7 @@ python3 -m spacy download en_core_web_sm
 # Environment Configuration (.env required)
 # PINECONE_API_KEY=your_key
 # PINECONE_INDEX_NAME=lexved-index
-# GROQ_API_KEY=your_key
+# HF_TOKEN=your_token
 
 python3 app.py
 ```
@@ -157,8 +157,8 @@ The platform evaluates system integrity across 31 distinct dimensions, including
 | M22 | Precedent Match | LLM Judge |
 | M23 | Regulatory Alignment | LLM Judge |
 | M24 | Jurisdictional Compliance | LLM Judge |
-| M25 | Prefill Latency | Groq Usage API |
-| M26 | Time to First Token (TTFT) | Groq Stream Timer |
+| M25 | Prefill Latency | Local Timer |
+| M26 | Time to First Token (TTFT) | Stream Timer |
 | M27 | Generation Throughput (Tokens/sec) | Timer / Token Count |
 | M28 | Recall@10 | Known Gold Chunk |
 | M29 | Mean Reciprocal Rank (MRR) | Reciprocal Rank |
@@ -175,9 +175,8 @@ In the chat interface, queries starting with `/swarm ` bypass the single-agent p
 * **Compliance Auditor Agent:** Critiques the generated draft against raw documents and requests revision loop-backs if any hallucination is detected.
 * **PII Redactor Agent:** Redacts personal details before output.
 
-### 2. A100 GPU Comparative Benchmark
-A standalone script `backend/gpu_comparative_benchmark.py` is included for execution on A100 GPUs or remote Jupyter instances:
-* Utilizes local **PyTorch/CUDA** matrix multiplication for local vector search.
-* Queries Pinecone index directly with automatic index-creation failovers.
+### 2. Pinecone Comparative Benchmark
+A standalone script `backend/pinecone_comparative_benchmark.py` is included for execution:
+* Utilizes local vector search or queries Pinecone index directly.
 * Generates a side-by-side Markdown result table and a landscape PDF report `LexVed_GPU_Institutional_Audit.pdf`.
 

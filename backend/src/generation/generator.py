@@ -66,7 +66,7 @@ def generate_with_groq_stream(prompt, model):
 
     # Map model if it's a legacy Groq name
     model_mapping = {
-        "llama-3.1-8b-instant": "meta-llama/Llama-3.1-8B-Instruct",
+        "llama-3.1-8b-instant": "meta-llama/Llama-3.3-70B-Instruct",
         "llama-3.3-70b-versatile": "meta-llama/Llama-3.3-70B-Instruct",
         "mixtral-8x7b-32768": "mistralai/Mixtral-8x7B-Instruct-v0.1",
         "qwen-2.5-32b": "Qwen/Qwen2.5-32B-Instruct",

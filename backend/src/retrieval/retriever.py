@@ -266,7 +266,7 @@ def decompose_query(query_text: str) -> list[str]:
             f"Query: {query_text}"
         )
         payload = {
-            "model": "meta-llama/Llama-3.1-8B-Instruct",
+            "model": "meta-llama/Llama-3.3-70B-Instruct",
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.0
         }

@@ -83,7 +83,7 @@ def generate_with_groq_stream(prompt, model):
     max_retries = 6
     for attempt in range(max_retries):
         try:
-            with requests.post(url, headers=headers, json=payload, stream=True, timeout=60) as response:
+            with requests.post(url, headers=headers, json=payload, stream=True, timeout=12) as response:
                 response.raise_for_status()
                 for line in response.iter_lines():
                     if line:

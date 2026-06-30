@@ -271,7 +271,7 @@ def decompose_query(query_text: str) -> list[str]:
             "temperature": 0.0
         }
 
-        r = requests.post(url, headers=headers, json=payload, timeout=60)
+        r = requests.post(url, headers=headers, json=payload, timeout=8)
         r.raise_for_status()
         content = r.json()["choices"][0]["message"]["content"]
         m = re.search(r'\{.*\}', content, re.DOTALL)

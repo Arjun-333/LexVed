@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 import json
+import re
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import subprocess

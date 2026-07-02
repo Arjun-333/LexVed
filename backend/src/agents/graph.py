@@ -133,29 +133,68 @@ Your final response must be structured as a professional legal brief:
 [Identify any exceptions, defences available, or rebuttals found in the text]
 
 ## 6. Synthesis & Conclusion
-[Provide a final expert recommendation/synthesis]
-
-## 7. Comparative Performance Metrics (Standard vs. Agentic)
-┌──────────────────────┬────────────────┬────────────────────────┐
-│ Evaluation Metric    │ Standard RAG   │ Agentic RAG (LexVed)   │
-├──────────────────────┼────────────────┼────────────────────────┤
-│ Queries Executed     │ 1              │ {queries_executed}     │
-│ Documents Analyzed   │ 5 Chunks       │ {documents_analyzed}   │
-│ Duplicate Removal    │ ❌ (Raw Conc.) │ ✅ (Consolidated)      │
-│ Query Reformulation  │ ❌ (Simple)    │ ✅ (Facetted Search)   │
-│ Multi-Step Reasoning │ ❌ (Single)    │ ✅ (Plan-Search-Audit) │
-│ Audit Verification   │ ❌ (None)      │ ✅ (Factual Check)     │
-└──────────────────────┴────────────────┴────────────────────────┘
-[Brief sentence explaining the advantage of LexVed's multi-step validation loop]
-
-Note: In the metrics table, replace {queries_executed} with the number of retrieve_documents tool calls you made (typically 1 to 3), and {documents_analyzed} with the total number of documents analyzed (typically 5 * queries_executed)."""
+[Provide a final expert recommendation/synthesis]"""
 
 
 async def agent_node(state: AgentState, config=None) -> dict:
     """
     The Agent's Brain — processes messages and decides the next action.
     """
-    from langchain_core.messages import SystemMessage, HumanMessage
+    from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+    # Intercept duplicate queries that return identical context
+    messages_list = state.get("messages", [])
+    if messages_list:
+        def normalize_query(q: str) -> str:
+            import re
+            q = q.lower().strip()
+            q = re.sub(r'[^\w\s]', '', q)
+            return " ".join(q.split())
+
+        def extract_sources(content: str) -> set:
+            import re
+            pattern = r"\[Source \d+:\s*([^,\]]+),\s*Page\s*([^\]]+)\]"
+            matches = re.findall(pattern, content)
+            return {(filename.strip(), page.strip()) for filename, page in matches}
+
+        turns = []
+        current_turn = None
+        for msg in messages_list:
+            if msg.type == "human":
+                if current_turn:
+                    turns.append(current_turn)
+                current_turn = {
+                    "query": msg.content,
+                    "tools": [],
+                    "response": None
+                }
+            elif msg.type == "tool":
+                if current_turn:
+                    current_turn["tools"].append(msg)
+            elif msg.type == "ai":
+                if current_turn:
+                    if hasattr(msg, "tool_calls") and msg.tool_calls:
+                        pass
+                    else:
+                        current_turn["response"] = msg.content
+        if current_turn:
+            turns.append(current_turn)
+
+        if len(turns) > 1:
+            current_turn = turns[-1]
+            current_retrievals = [t for t in current_turn["tools"] if t.name == "retrieve_documents"]
+            if current_retrievals:
+                current_norm = normalize_query(current_turn["query"])
+                for prev_turn in turns[:-1]:
+                    if normalize_query(prev_turn["query"]) == current_norm:
+                        current_content = "".join([t.content for t in current_retrievals])
+                        prev_content = "".join([t.content for t in prev_turn["tools"] if t.name == "retrieve_documents"])
+                        
+                        current_sources = extract_sources(current_content)
+                        prev_sources = extract_sources(prev_content)
+                        
+                        if current_sources and current_sources.issubset(prev_sources):
+                            return {"messages": [AIMessage(content="No new information on that case was found.")]}
 
     llm = _create_llm()
 
@@ -189,6 +228,11 @@ async def auditor_node(state: AgentState, config=None) -> dict:
     # 1. Extract agent response
     agent_message = state["messages"][-1]
     response_text = agent_message.content if hasattr(agent_message, "content") else ""
+
+    # Skip auditor if response is the duplicate query fallback message
+    if response_text.strip() == "No new information on that case was found.":
+        print("[LexVed Auditor] Duplicate fallback message detected. Skipping audit.")
+        return {"audit_passed": True, "audit_feedback": ""}
     
     # 2. Extract retrieved context from all tool messages in the history
     retrieved_context = []
@@ -457,6 +501,7 @@ async def stream_agent(user_message: str, history: list = None, thread_id: str =
 
     # Stream events from the graph in real-time (true token-level streaming)
     tool_calls_made = []
+    yielded_any_content = False
 
     async for event in agent.astream_events({"messages": messages}, config=config, version="v2"):
         kind = event["event"]
@@ -467,7 +512,15 @@ async def stream_agent(user_message: str, history: list = None, thread_id: str =
                 chunk = event["data"]["chunk"]
                 # Only stream chunk content if it's text (not tool call arguments)
                 if chunk.content and not getattr(chunk, "tool_call_chunks", None):
+                    yielded_any_content = True
                     yield {"type": "content", "text": chunk.content}
+
+        elif kind == "on_chain_start":
+            if node == "audit":
+                yield {
+                    "type": "thought",
+                    "text": "Verifying response compliance and factual accuracy...\n"
+                }
 
         elif kind == "on_tool_start":
             if node == "tools":
@@ -486,6 +539,14 @@ async def stream_agent(user_message: str, history: list = None, thread_id: str =
                     "tool": event["name"],
                     "result": str(event["data"].get("output", {}).get("output") if isinstance(event["data"].get("output"), dict) else event["data"].get("output", "")),
                 }
+
+    # If no token stream was generated, pull the final message content from the checkpointer
+    if not yielded_any_content:
+        state = agent.get_state(config)
+        if state.values and state.values.get("messages"):
+            last_msg = state.values["messages"][-1]
+            if last_msg.type == "ai" and last_msg.content:
+                yield {"type": "content", "text": last_msg.content}
 
     yield {
         "type": "done",

@@ -523,14 +523,26 @@ Answer:"""
                     gen_time = t_end - (first_token_time or t_start)
                     if gen_time > 0:
                         throughput = ans_tokens / gen_time
+                if not answer.strip():
+                    print(f"[API WARNING] Attempt {attempt+1}/5 - HTTP 200 returned but answer is EMPTY.")
+                    print("Query:", query)
+                    print("Context Length:", len(context))
                 return answer, prefill_latency, ttft, throughput
-            elif r.status_code == 429:
-                time.sleep(15)
             else:
-                time.sleep(3)
-        except Exception:
+                print(f"[API ERROR] Attempt {attempt+1}/5 - Status Code: {r.status_code}")
+                try:
+                    print("Response body:", r.text[:500])
+                except Exception:
+                    pass
+                if r.status_code == 429:
+                    time.sleep(15)
+                else:
+                    time.sleep(3)
+        except Exception as e:
+            print(f"[API EXCEPTION] Attempt {attempt+1}/5: {e}")
             time.sleep(3)
     return "", 0.0, 0.0, 0.0
+
 
 # ─── 9. Unified LLM Judge ───────────────────────────────────────────
 
@@ -645,6 +657,11 @@ def evaluate_pipeline(pipeline_type):
         ans, prefill_lat, ttft, throughput = generate_llm_answer(q, context_str)
         gt_time = time.time() - t1
         
+        if not ans.strip():
+            print(f"\n[WARNING] Empty answer generated for Query {i+1}")
+            print("Query:", q)
+            print("Retrieved Context Length:", len(context_str))
+            
         preds.append(ans)
         ret_texts_all.append(ret)
         all_ret_texts_all.append(all_ret_texts)

@@ -562,8 +562,13 @@ Answer:"""
                     gen_time = t_end - (first_token_time or t_start)
                     if gen_time > 0:
                         throughput = ans_tokens / gen_time
+                if not answer.strip():
+                    print(f"[Ollama WARNING] Attempt {attempt+1}/3 - HTTP 200 returned but answer is EMPTY.")
+                    print("Query:", query)
+                    print("Context Length:", len(context))
                 return answer, prefill_latency, ttft, throughput
             else:
+                print(f"[Ollama ERROR] Attempt {attempt+1} - Status Code: {r.status_code}")
                 time.sleep(2)
         except Exception as e:
             print(f"[LexVed] Connection attempt {attempt+1} failed: {e}")
@@ -713,6 +718,11 @@ def evaluate_pipeline(pipeline_type):
         ans, prefill_lat, ttft, throughput = generate_llm_answer(q, context_str)
         gt_time = time.time() - t1
         
+        if not ans.strip():
+            print(f"\n[WARNING] Empty answer generated for Query {i+1}")
+            print("Query:", q)
+            print("Retrieved Context Length:", len(context_str))
+            
         preds.append(ans)
         ret_texts_all.append(ret)
         all_ret_texts_all.append(all_ret_texts)

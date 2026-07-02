@@ -160,11 +160,7 @@ def extract_citations(text: str) -> str:
 def extract_entities(text: str) -> str:
     """Extract named entities (people, organizations, courts, locations, dates) from legal text.
 
-    Use this tool when:
-    - The user asks about parties involved in a case
-    - The user wants to know which courts are mentioned
-    - You need to identify judges, petitioners, or respondents
-    - The user asks "who" or "where" questions about legal content
+    CRITICAL RULE: Do NOT use this tool UNLESS the user EXPLICITLY asks to identify, extract, or list entities, parties, judges, or locations. For general legal queries, research, or case summaries, do NOT call this tool.
 
     Args:
         text: The legal text to analyze for entities
@@ -220,11 +216,7 @@ def extract_entities(text: str) -> str:
 def deidentify_text(text: str) -> str:
     """Anonymize and redact personally identifiable information (PII) from legal text.
 
-    Use this tool when:
-    - The user asks to anonymize or redact a document
-    - The user wants to remove personal information
-    - The user needs a privacy-compliant version of text
-    - The text contains names, phone numbers, Aadhaar numbers, PAN, or email addresses
+    CRITICAL RULE: Do NOT use this tool UNLESS the user EXPLICITLY asks to anonymize, redact, de-identify, or sanitize PII/names from text. For general legal queries, research, or case summaries, do NOT call this tool.
 
     Args:
         text: The text containing personal information to redact

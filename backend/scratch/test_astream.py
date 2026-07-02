@@ -20,11 +20,14 @@ async def main():
         print(f"\nCHUNK KEY: {list(chunk.keys())}")
         for node, val in chunk.items():
             print(f"  NODE: {node}")
-            last_msg = val["messages"][-1]
-            print(f"  LAST MSG TYPE: {type(last_msg).__name__}")
-            print(f"  LAST MSG CONTENT PREVIEW: {str(last_msg.content)[:200]}")
-            if hasattr(last_msg, "tool_calls"):
-                print(f"  TOOL CALLS: {last_msg.tool_calls}")
+            if "messages" in val:
+                last_msg = val["messages"][-1]
+                print(f"  LAST MSG TYPE: {type(last_msg).__name__}")
+                print(f"  LAST MSG CONTENT PREVIEW: {str(last_msg.content)[:200]}")
+                if hasattr(last_msg, "tool_calls"):
+                    print(f"  TOOL CALLS: {last_msg.tool_calls}")
+            else:
+                print(f"  VAL keys: {list(val.keys())}")
 
 if __name__ == "__main__":
     asyncio.run(main())

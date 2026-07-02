@@ -1,5 +1,68 @@
 [
     {
+        "id": 61,
+        "query": "What is the criminal liability under Section 138 of the Negotiable Instruments Act for cheque dishonour?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-06-30 20:13",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 0,
+            "e2e_lat": 127.20765256881714,
+            "ans_length": 544,
+            "tools_used": [
+                "retrieve_documents"
+            ],
+            "agent_steps": 2
+        },
+        "username": "user"
+    },
+    {
+        "id": 60,
+        "query": "What is the criminal liability under Section 138 of the Negotiable Instruments Act for cheque dishonour?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-06-30 20:11",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 27.019359827041626,
+            "e2e_lat": 67.193443775177,
+            "ans_length": 305,
+            "routed_model": "llama-3.3-70b-versatile"
+        },
+        "username": "user"
+    },
+    {
+        "id": 59,
+        "query": "What is Section 138?",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-06-30 20:09",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 27.74062705039978,
+            "e2e_lat": 43.886465549468994,
+            "ans_length": 335,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "user"
+    },
+    {
+        "id": 58,
+        "query": "What is the criminal liability under Section 138 of the Negotiable Instruments Act?",
+        "category": "Criminal",
+        "subcategory": "General",
+        "date": "2026-06-30 20:05",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 31.546714067459106,
+            "e2e_lat": 58.47543144226074,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "user"
+    },
+    {
         "id": 57,
         "query": "My name is Arjun and I am a legal counsel researching compassionate appointments.",
         "category": "Uncategorized",

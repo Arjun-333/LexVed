@@ -12,6 +12,9 @@ def preprocess_text(text):
     return text
 
 
+import threading
+bm25_lock = threading.Lock()
+
 global_bm25 = None
 global_corpus = []
 
@@ -26,7 +29,10 @@ def invalidate_bm25():
 
 def build_bm25():
     global global_bm25, global_corpus
-    all_payloads = []
+    with bm25_lock:
+        if global_bm25 is not None:
+            return
+        all_payloads = []
     
     try:
         import json

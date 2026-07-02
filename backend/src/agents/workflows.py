@@ -91,8 +91,8 @@ def extraction_node(state: BriefWorkflowState) -> dict:
     }
 
 
-def draft_node(state: BriefWorkflowState) -> dict:
-    """Step 3: Synthesize a structured case brief using Llama 3.3 70B."""
+async def draft_node(state: BriefWorkflowState, config=None) -> dict:
+    """Step 3: Synthesize a structured case brief using Cohere/Llama fallback chain."""
     query = state["query"]
     docs = state.get("raw_documents", "")
     citations = state.get("citations", "")
@@ -114,7 +114,8 @@ def draft_node(state: BriefWorkflowState) -> dict:
         "MANDATORY GUIDELINES:\n"
         "- Do NOT write like a generic letter (no 'Sincerely', no placeholders).\n"
         "- Every claim must link to its source file: [Source: filename.pdf, Page: X].\n"
-        "- If the retrieved context is insufficient to cover a section, say so honestly."
+        "- If the retrieved context is insufficient to cover a section, say so honestly.\n"
+        "- ANONYMIZE ALL SENSITIVE PII: Replace all specific individual names (except official names of judges/courts), phone numbers, email addresses, PAN, or Aadhaar numbers with generic placeholders (e.g. 'Petitioner', 'Respondent', '[REDACTED_NAME]', '[REDACTED_PHONE]') directly in your draft brief."
     )
 
     human_content = (
@@ -125,22 +126,35 @@ def draft_node(state: BriefWorkflowState) -> dict:
         "Please draft the Case Brief:"
     )
 
-    from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
-    base_llm = HuggingFaceEndpoint(
-        repo_id="meta-llama/Llama-3.3-70B-Instruct",
-        task="text-generation",
-        max_new_tokens=2048,
+    from langchain_openai import ChatOpenAI
+    
+    cohere_llm = ChatOpenAI(
+        base_url="https://api.cohere.ai/compatibility/v1",
+        api_key=os.getenv("COHERE_API_KEY", ""),
+        model="command-r-plus-08-2024",
         temperature=0.1,
-        huggingfacehub_api_token=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", ""))
+        streaming=True
     )
-    llm = ChatHuggingFace(llm=base_llm)
+    
+    hf_token = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", ""))
+    if hf_token:
+        hf_llm = ChatOpenAI(
+            base_url="https://router.huggingface.co/v1",
+            api_key=hf_token,
+            model="meta-llama/Llama-3.3-70B-Instruct",
+            temperature=0.1,
+            streaming=True
+        )
+        llm = cohere_llm.with_fallbacks([hf_llm])
+    else:
+        llm = cohere_llm
 
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=human_content)
     ]
 
-    response = llm.invoke(messages)
+    response = await llm.ainvoke(messages, config=config)
 
     return {
         "draft_brief": response.content
@@ -199,15 +213,15 @@ async def stream_brief_workflow(query: str, username: str = "unknown"):
     """Runs the Case Brief workflow and streams state changes/thoughts in real-time.
     
     Yields events matching the expected format of the frontend SSE client:
-        - {"type": "agent_thought", "text": "..."} — Thought/Progress
+        - {"type": "thought", "text": "..."} — Thought/Progress
         - {"type": "content", "text": "..."} — Word-by-word streaming of final brief
         - {"type": "done", "generation_time": ...} — Finish
     """
     import time
-    import asyncio
     
     t_start = time.time()
     workflow = get_brief_workflow()
+    config = {"configurable": {"thread_id": f"brief_{username}_{int(t_start)}"}}
 
     # Initial state inputs
     inputs = {
@@ -220,46 +234,53 @@ async def stream_brief_workflow(query: str, username: str = "unknown"):
         "text": "Initializing Automated Case Brief Workflow DAG..."
     }
 
-    # Stream graph updates node-by-node
-    async for event in workflow.astream(inputs):
-        node_name = list(event.keys())[0]
-        node_data = event[node_name]
+    async for event in workflow.astream_events(inputs, config=config, version="v2"):
+        kind = event["event"]
+        node = event.get("metadata", {}).get("langgraph_node")
 
-        if node_name == "research":
-            yield {
-                "type": "thought",
-                "text": "Step 1/4: Completed document retrieval from hybrid database indices."
-            }
-        elif node_name == "extraction":
-            citations = node_data.get("citations", "")
-            entities = node_data.get("entities", "")
-            yield {
-                "type": "thought",
-                "text": "Step 2/4: Completed citation and entity extraction.\n"
-                        f"- Citations: {citations[:150]}...\n"
-                        f"- Entities: {entities[:150]}..."
-            }
-        elif node_name == "draft":
-            yield {
-                "type": "thought",
-                "text": "Step 3/4: Completed case brief synthesis with Llama 3.3. Preparing sanitization..."
-            }
-        elif node_name == "sanitization":
-            yield {
-                "type": "thought",
-                "text": "Step 4/4: Completed PII redaction and compliance checks. Preparing streaming output..."
-            }
-            
-            # Stream the final redacted case brief word-by-word to the user interface
-            final_brief = node_data.get("final_brief", "")
-            words = final_brief.split(" ")
-            for i, word in enumerate(words):
-                spacing = "" if i == len(words) - 1 else " "
+        # Capture when nodes start/end to provide progress thought logs
+        if kind == "on_chain_start":
+            if event["name"] == "research":
                 yield {
-                    "type": "content",
-                    "text": word + spacing
+                    "type": "thought",
+                    "text": "Step 1/4: Querying hybrid database indices for relevant documents..."
                 }
-                await asyncio.sleep(0.015)
+            elif event["name"] == "extraction":
+                yield {
+                    "type": "thought",
+                    "text": "Step 2/4: Running citation pattern extraction and NER parser on retrieved text..."
+                }
+            elif event["name"] == "draft":
+                yield {
+                    "type": "thought",
+                    "text": "Step 3/4: Drafting structured Case Brief in real-time..."
+                }
+            elif event["name"] == "sanitization":
+                yield {
+                    "type": "thought",
+                    "text": "Step 4/4: Performing post-generation compliance checks and PII scrub..."
+                }
+
+        elif kind == "on_chain_end":
+            if event["name"] == "research":
+                yield {
+                    "type": "thought",
+                    "text": "Step 1/4 Completed: Hybrid document retrieval finished."
+                }
+            elif event["name"] == "extraction":
+                yield {
+                    "type": "thought",
+                    "text": "Step 2/4 Completed: Entity & citation features extracted."
+                }
+
+        elif kind == "on_chat_model_stream":
+            if node == "draft":
+                chunk = event["data"]["chunk"]
+                if chunk.content:
+                    yield {
+                        "type": "content",
+                        "text": chunk.content
+                    }
 
     total_time = time.time() - t_start
     yield {

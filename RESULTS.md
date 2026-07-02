@@ -201,13 +201,17 @@ Contains the agent's toolbox of `@tool` functions:
 * `deidentify_text()` — Redacts names, phone numbers, and IDs.
 * `remember_legal_fact()` & `recall_legal_facts()` — Persistent memory management.
 
-### 4. `frontend/components/InputBar.tsx`
+### 4. `backend/src/agents/workflows.py`
+Implements the automated Case Brief workflow. It compiles a sequential StateGraph (research → extraction → draft → sanitization) and runs via `astream_events` to stream tokens to the UI in real-time.
+
+### 5. `frontend/components/InputBar.tsx`
 Added the interactive glassmorphic mode toggle pill:
 * **`STANDARD`**: Disables the agentic loop for fast, direct RAG responses.
 * **`AGENT`**: Activates the LangGraph state machine.
 
-### 5. `frontend/app/page.tsx`
-Updated the UI page container to parse `agent_thought` SSE tokens and render them dynamically inside the reasoning accordion element.
+### 6. `frontend/app/page.tsx`
+Updated the UI page container to parse `agent_thought` and `content` SSE tokens and render them dynamically inside the reasoning accordion and response cards.
+
 
 ---
 

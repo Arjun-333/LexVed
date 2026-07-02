@@ -33,12 +33,12 @@ async def test_short_term_memory():
     
     # Turn 1: Introduce ourselves
     print("Sending message 1...")
-    res1 = run_agent("Hello! My name is Arjun and I am researching the Balbir Kaur case.", thread_id=thread_id, username=username)
+    res1 = await run_agent("Hello! My name is Arjun and I am researching the Balbir Kaur case.", thread_id=thread_id, username=username)
     print(f"Agent response: {res1['answer']}")
     
     # Turn 2: Ask what my name is (relies on short-term memory checkpointer!)
     print("\nSending message 2 (relies on memory)...")
-    res2 = run_agent("What is my name and which case am I researching?", thread_id=thread_id, username=username)
+    res2 = await run_agent("What is my name and which case am I researching?", thread_id=thread_id, username=username)
     print(f"Agent response: {res2['answer']}")
     
     # Assert

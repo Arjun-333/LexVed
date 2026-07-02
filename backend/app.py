@@ -48,6 +48,28 @@ executor = ThreadPoolExecutor(max_workers=4)
 # Track server uptime
 _server_start_time = time_module.time()
 
+@app.on_event("startup")
+async def startup_event():
+    """Pre-warm models and indexes on server startup so first query is fast."""
+    print("[LexVed Startup] Pre-warming models and indexes...")
+    loop = asyncio.get_running_loop()
+    
+    # 1. Warm BM25 index
+    try:
+        from src.retrieval.retriever import build_bm25
+        await loop.run_in_executor(executor, build_bm25)
+    except Exception as e:
+        print(f"[LexVed Startup] Failed to pre-build BM25: {e}")
+
+    # 2. Warm embedding model
+    try:
+        from src.ingestion.embedder import get_model
+        await loop.run_in_executor(executor, get_model)
+    except Exception as e:
+        print(f"[LexVed Startup] Failed to pre-load embedding model: {e}")
+
+    print("[LexVed Startup] Pre-warming complete!")
+
 # ─── Request Models ───────────────────────────────────────────────
 
 class ChatRequest(BaseModel):

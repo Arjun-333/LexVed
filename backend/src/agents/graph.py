@@ -67,24 +67,30 @@ from src.agents.tools import ALL_TOOLS
 
 _use_cohere_fallback = True
 
-
 def _create_llm():
-    """Create the LLM client with tool binding, fallback to Cohere compat endpoint if needed."""
-    if _use_cohere_fallback:
-        llm = ChatOpenAI(
-            base_url="https://api.cohere.ai/compatibility/v1",
-            api_key=os.getenv("COHERE_API_KEY", ""),
-            model="command-r-plus-08-2024",
-            temperature=0
-        )
-    else:
-        llm = ChatOpenAI(
+    """Create the LLM client with tool binding and automatic fallback."""
+    cohere_llm = ChatOpenAI(
+        base_url="https://api.cohere.ai/compatibility/v1",
+        api_key=os.getenv("COHERE_API_KEY", ""),
+        model="command-r-plus-08-2024",
+        temperature=0,
+        streaming=True
+    )
+    cohere_bound = cohere_llm.bind_tools(ALL_TOOLS)
+
+    hf_token = os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", ""))
+    if hf_token:
+        hf_llm = ChatOpenAI(
             base_url="https://router.huggingface.co/v1",
-            api_key=os.getenv("HF_TOKEN", os.getenv("HUGGINGFACEHUB_API_TOKEN", "")),
+            api_key=hf_token,
             model="meta-llama/Llama-3.3-70B-Instruct",
-            temperature=0
+            temperature=0,
+            streaming=True
         )
-    return llm.bind_tools(ALL_TOOLS)
+        hf_bound = hf_llm.bind_tools(ALL_TOOLS)
+        return cohere_bound.with_fallbacks([hf_bound])
+    
+    return cohere_bound
 
 
 # ─── Step 2: The Agent Node ─────────────────────────────────────
@@ -145,7 +151,7 @@ Your final response must be structured as a professional legal brief:
 Note: In the metrics table, replace {queries_executed} with the number of retrieve_documents tool calls you made (typically 1 to 3), and {documents_analyzed} with the total number of documents analyzed (typically 5 * queries_executed)."""
 
 
-def agent_node(state: AgentState) -> dict:
+async def agent_node(state: AgentState, config=None) -> dict:
     """
     The Agent's Brain — processes messages and decides the next action.
     """
@@ -166,14 +172,14 @@ def agent_node(state: AgentState) -> dict:
         messages.append(HumanMessage(content=feedback_content))
 
     # The LLM processes all messages and returns its decision
-    response = llm.invoke(messages)
+    response = await llm.ainvoke(messages, config=config)
 
     return {"messages": [response]}
 
 
 # ─── Step 3: Compliance Auditor & Routing Logic ─────────────────
 
-def auditor_node(state: AgentState) -> dict:
+async def auditor_node(state: AgentState, config=None) -> dict:
     """
     Audits the agent's final text response against the retrieved source context.
     Detects hallucinations, unsupported claims, or direct factual contradictions.
@@ -230,10 +236,10 @@ def auditor_node(state: AgentState) -> dict:
     )
     
     try:
-        audit_res = auditor_llm.invoke([
+        audit_res = await auditor_llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=human_content)
-        ])
+        ], config=config)
         
         feedback = audit_res.content.strip()
         is_passed = feedback.upper() == "PASSED"
@@ -346,7 +352,7 @@ def get_agent():
     return _agent_graph
 
 
-def run_agent(user_message: str, history: list = None, thread_id: str = "default_thread", username: str = "unknown") -> dict:
+async def run_agent(user_message: str, history: list = None, thread_id: str = "default_thread", username: str = "unknown") -> dict:
     """
     Run the LexVed agent with a user message.
 
@@ -388,7 +394,7 @@ def run_agent(user_message: str, history: list = None, thread_id: str = "default
     messages.append(HumanMessage(content=user_message))
 
     # Run the graph — state checkpoint handles merging and memory
-    result = agent.invoke({"messages": messages}, config=config)
+    result = await agent.ainvoke({"messages": messages}, config=config)
 
     # Extract the final answer (last AI message without tool calls)
     final_messages = result["messages"]
@@ -449,41 +455,37 @@ async def stream_agent(user_message: str, history: list = None, thread_id: str =
     
     messages.append(HumanMessage(content=user_message))
 
-    # Stream events from the graph
+    # Stream events from the graph in real-time (true token-level streaming)
     tool_calls_made = []
-    final_answer = ""
 
-    async for chunk in agent.astream({"messages": messages}, config=config):
-        if "agent" in chunk:
-            ai_msg = chunk["agent"]["messages"][-1]
-            if hasattr(ai_msg, "tool_calls") and ai_msg.tool_calls:
-                for tc in ai_msg.tool_calls:
-                    tool_calls_made.append(tc["name"])
-                    yield {
-                        "type": "tool_call",
-                        "tool": tc["name"],
-                        "args": tc.get("args", {})
-                    }
-            elif hasattr(ai_msg, "content") and ai_msg.content:
-                # Final answer reached!
-                final_answer = ai_msg.content
-                
-                # Stream final answer word-by-word to the frontend for premium visual pacing
-                import asyncio
-                words = final_answer.split(" ")
-                for i, word in enumerate(words):
-                    # Keep spacing natural
-                    spacing = "" if i == len(words) - 1 else " "
-                    yield {"type": "content", "text": word + spacing}
-                    await asyncio.sleep(0.015)
+    async for event in agent.astream_events({"messages": messages}, config=config, version="v2"):
+        kind = event["event"]
+        node = event.get("metadata", {}).get("langgraph_node")
 
-        elif "tools" in chunk:
-            tool_msg = chunk["tools"]["messages"][-1]
-            yield {
-                "type": "tool_result",
-                "tool": tool_msg.name,
-                "result": str(tool_msg.content),
-            }
+        if kind == "on_chat_model_stream":
+            if node == "agent":
+                chunk = event["data"]["chunk"]
+                # Only stream chunk content if it's text (not tool call arguments)
+                if chunk.content and not getattr(chunk, "tool_call_chunks", None):
+                    yield {"type": "content", "text": chunk.content}
+
+        elif kind == "on_tool_start":
+            if node == "tools":
+                tool_name = event["name"]
+                tool_calls_made.append(tool_name)
+                yield {
+                    "type": "tool_call",
+                    "tool": tool_name,
+                    "args": event["data"].get("input", {})
+                }
+
+        elif kind == "on_tool_end":
+            if node == "tools":
+                yield {
+                    "type": "tool_result",
+                    "tool": event["name"],
+                    "result": str(event["data"].get("output", {}).get("output") if isinstance(event["data"].get("output"), dict) else event["data"].get("output", "")),
+                }
 
     yield {
         "type": "done",

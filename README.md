@@ -180,3 +180,11 @@ A standalone script `backend/pinecone_comparative_benchmark.py` is included for 
 * Utilizes local vector search or queries Pinecone index directly.
 * Generates a side-by-side Markdown result table and a landscape PDF report `LexVed_GPU_Institutional_Audit.pdf`.
 
+### 3. Automated Case Brief Workflow (Phase 3)
+In the chat interface, queries starting with `/brief <case_name>` (e.g., `/brief Balbir Kaur`) trigger a structured, deterministic LangGraph DAG workflow:
+* **Research Node:** Programmatic document retrieval from hybrid database indices.
+* **Extraction Node:** Auto-extraction of legal citations and named entities from retrieved context.
+* **Drafting Node:** Real-time token-level streaming of a structured Case Brief (Title, Facts, Issues, Holdings, Rationale) with built-in PII anonymization.
+* **Sanitization Node:** Post-generation compliance verification and regex/SpaCy PII redaction.
+
+

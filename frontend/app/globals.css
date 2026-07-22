@@ -95,6 +95,12 @@ select, select option {
 html, body {
   background: #000000 !important;
   background-image: none !important;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 [data-theme="light"] html, [data-theme="light"] body {

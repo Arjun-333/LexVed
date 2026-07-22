@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider } from "../components/ThemeProvider";
 import { AuthProvider, useAuth } from "../components/AuthContext";
 import LoginPage from "../components/LoginPage";
+import LandingPage from "../components/LandingPage";
 import Sidebar from "../components/Sidebar";
 import WelcomeHero from "../components/WelcomeHero";
 import ChatHistory, { Message } from "../components/ChatHistory";
@@ -405,6 +406,7 @@ function Dashboard() {
 
 function AuthGate() {
   const { isAuthenticated, isLoading } = useAuth();
+  const [showLanding, setShowLanding] = useState(true);
 
   if (isLoading) {
     return (
@@ -417,7 +419,14 @@ function AuthGate() {
     );
   }
 
-  return isAuthenticated ? <Dashboard /> : <LoginPage />;
+  if (isAuthenticated) return <Dashboard />;
+
+  return (
+    <>
+      {showLanding && <LandingPage onEnter={() => setShowLanding(false)} />}
+      <LoginPage />
+    </>
+  );
 }
 
 export default function Home() {

@@ -1,5 +1,20 @@
 [
     {
+        "id": 58,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-22 15:42",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 49.7917857170105,
+            "e2e_lat": 87.33066153526306,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
         "id": 57,
         "query": "My name is Arjun and I am a legal counsel researching compassionate appointments.",
         "category": "Uncategorized",

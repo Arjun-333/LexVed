@@ -97,6 +97,11 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             ))}
           </div>
 
+          {/* Top-leftmost Logo */}
+          <div className="absolute top-8 left-8 z-20 pointer-events-none">
+            <img src="/lexvedLogo.png" alt="LexVed Logo" className="w-8 h-8 md:w-9 md:h-9 object-contain drop-shadow-sm" />
+          </div>
+
           {/* Center content */}
           <div className="relative z-10 flex flex-col items-center text-center px-8">
 

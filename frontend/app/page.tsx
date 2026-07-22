@@ -297,9 +297,10 @@ function Dashboard() {
 
           <div className="h-[64px] flex items-center justify-between px-8 shrink-0 z-20">
             <div className="flex flex-col">
-               <h1 className="font-bold text-xl tracking-tight transition-colors duration-300"
+               <h1 className="font-bold text-xl tracking-tight transition-colors duration-300 flex items-center gap-2.5"
                    style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}>
-                 Lex<span style={{ color: "var(--accent)" }}>Ved</span>
+                 <img src="/lexvedLogo.png" alt="LexVed Logo" className="w-7 h-7 object-contain" />
+                 <span>Lex<span style={{ color: "var(--accent)" }}>Ved</span></span>
                </h1>
             </div>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">

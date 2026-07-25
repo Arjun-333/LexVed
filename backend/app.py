@@ -482,7 +482,7 @@ async def serve_pdf(filename: str, token: str = Query(None), user: dict = Depend
 # ─── Health Check — Authenticated ─────────────────────────────────
 
 @app.get("/api/health")
-async def health_check():
+def health_check():
     """Returns system health: Ollama, Qdrant, active model, uptime."""
     import requests
     health = {
@@ -496,7 +496,7 @@ async def health_check():
     }
     
     try:
-        r = requests.get("http://localhost:11434/api/tags", timeout=3)
+        r = requests.get("http://localhost:11434/api/tags", timeout=0.8)
         if r.status_code == 200:
             models = [m['name'] for m in r.json().get('models', [])]
             health["ollama"] = "connected"
@@ -510,7 +510,7 @@ async def health_check():
     if active_db == "qdrant":
         try:
             from qdrant_client import QdrantClient
-            c = QdrantClient(host="localhost", port=6333, timeout=3)
+            c = QdrantClient(host="localhost", port=6333, timeout=0.8)
             cols = [col.name for col in c.get_collections().collections]
             health["vector_db"] = "connected"
             health["collections"] = cols

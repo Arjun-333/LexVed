@@ -1,5 +1,5 @@
 {
-    "generation_model": "llama-3.3-70b-versatile",
+    "generation_model": "llama-3.1-8b-instant",
     "embedding_model": "multi-qa-distilbert-cos-v1",
     "vector_db": "pinecone",
     "models": {

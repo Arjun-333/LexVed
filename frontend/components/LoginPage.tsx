@@ -114,7 +114,6 @@ export default function LoginPage() {
       {/* ── Top Header Navigation ─────────────────────────────────────────── */}
       <header className="w-full px-8 pt-6 flex items-center justify-between z-20">
         <div className="flex items-center gap-3">
-          <img src="/lexvedLogo.png" alt="LexVed Logo" className="w-9 h-9 object-contain" />
           <h1 className="text-3xl font-extrabold tracking-tight flex items-center" style={{ fontFamily: "'Montserrat', sans-serif" }}>
             <span style={{ color: "#FFFFFF" }}>Lex</span>
             <span style={{ color: "#FFD700" }}>Ved</span>

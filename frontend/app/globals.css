@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
-/* ===== LEXVED PRESTIGE DESIGN SYSTEM (V5) ===== */
+/* ===== LEXVED PRESTIGE DESIGN SYSTEM (V6) ===== */
 
 @theme {
-  --font-body: "Montserrat", sans-serif;
+  --font-body: "Inter", "Montserrat", sans-serif;
   --font-serif: "Playfair Display", serif;
   --font-display: "Cinzel", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
 /* === UNLAYERED OVERRIDES — highest CSS specificity, overrides all Tailwind layers === */
@@ -136,3 +137,141 @@ h1, h2, .font-serif { font-family: var(--font-serif); }
   line-height: 1.8;
   letter-spacing: 0.02em;
 }
+
+/* ===== DOT GRID CANVAS PATTERN ===== */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.065) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ===== SIDEBAR FILE TREE ===== */
+.sidebar-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #888888;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+  letter-spacing: -0.01em;
+}
+.sidebar-tree-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: #cccccc;
+}
+.sidebar-tree-item.active {
+  background: rgba(212, 175, 55, 0.12);
+  color: #ffffff;
+}
+.sidebar-tree-item.active .tree-icon {
+  color: #D4AF37;
+}
+
+/* ===== MODEL STATUS CARD ===== */
+.model-status-card {
+  border-radius: 14px;
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  user-select: none;
+}
+.model-status-card:hover {
+  background: #1e1e1e;
+  border-color: rgba(212, 175, 55, 0.3);
+}
+.model-status-card.active {
+  background: #1a1800;
+  border-color: #D4AF37;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.15), inset 0 0 20px rgba(212, 175, 55, 0.03);
+}
+
+/* ===== HEADER PILL / BADGE ===== */
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #aaaaaa;
+  letter-spacing: 0.01em;
+}
+.header-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #D4AF37;
+  animation: pulse-dot 2s infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== INPUT BAR AVATAR CLUSTER ===== */
+.avatar-cluster {
+  display: flex;
+  align-items: center;
+}
+.avatar-cluster .av {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #1a1a1a;
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #D4AF37;
+  flex-shrink: 0;
+}
+.avatar-cluster .av + .av {
+  margin-left: -7px;
+}
+
+/* ===== GEMINI STAR / SPARKLE ===== */
+@keyframes sparkle-spin {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.7; }
+  50% { transform: rotate(180deg) scale(1.15); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); opacity: 0.7; }
+}
+.sparkle-icon {
+  animation: sparkle-spin 4s linear infinite;
+}
+
+/* ===== VIEW TOGGLE BUTTONS ===== */
+.view-toggle-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: #666666;
+  transition: background 0.15s, color 0.15s;
+}
+.view-toggle-btn:hover { background: rgba(255,255,255,0.07); color: #cccccc; }
+.view-toggle-btn.active { background: rgba(212,175,55,0.15); color: #D4AF37; }

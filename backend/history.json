@@ -1,5 +1,80 @@
 [
     {
+        "id": 63,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:44",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 29.309390544891357,
+            "e2e_lat": 33.44658660888672,
+            "ans_length": 276,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 62,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:41",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.633622407913208,
+            "e2e_lat": 0.02568197250366211,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 61,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:41",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.633622407913208,
+            "e2e_lat": 0.06529951095581055,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 60,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:37",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.633622407913208,
+            "e2e_lat": 6.66895318031311,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 59,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-25 21:37",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 31.308549165725708,
+            "e2e_lat": 0.023241043090820312,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
         "id": 58,
         "query": "Abhishek Banerjee Case summary",
         "category": "Uncategorized",

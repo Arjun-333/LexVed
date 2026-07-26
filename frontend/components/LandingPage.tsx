@@ -103,7 +103,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             {/* Eyebrow label */}
             <p
               style={{
-                fontFamily: "'Montserrat', sans-serif",
+                fontFamily: "'Poppins', sans-serif",
                 fontWeight: 600,
                 fontSize: "0.7rem",
                 letterSpacing: "0.22em",
@@ -118,7 +118,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             {/* Main headline */}
             <h1
               style={{
-                fontFamily: "'Montserrat', sans-serif",
+                fontFamily: "'Poppins', sans-serif",
                 fontWeight: 800,
                 fontSize: "clamp(3.2rem, 8vw, 7rem)",
                 lineHeight: 1.08,
@@ -133,7 +133,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             {/* Subtitle */}
             <p
               style={{
-                fontFamily: "'Montserrat', sans-serif",
+                fontFamily: "'Poppins', sans-serif",
                 fontWeight: 400,
                 fontSize: "clamp(0.95rem, 2vw, 1.2rem)",
                 color: "#8A8070",
@@ -160,7 +160,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                   borderRadius: "9999px",
                   background: "#FFD700",
                   color: "#111110",
-                  fontFamily: "'Montserrat', sans-serif",
+                  fontFamily: "'Poppins', sans-serif",
                   fontWeight: 700,
                   fontSize: "0.82rem",
                   letterSpacing: "0.08em",

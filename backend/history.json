@@ -1,5 +1,50 @@
 [
     {
+        "id": 66,
+        "query": "Bail Grounds 2024",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-26 11:39",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.337237596511841,
+            "e2e_lat": 10.602530479431152,
+            "ans_length": 350,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 65,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-26 11:20",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 42.64952492713928,
+            "e2e_lat": 48.038524866104126,
+            "ans_length": 476,
+            "routed_model": "llama-3.3-70b-versatile"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 64,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 22:24",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 28.134981393814087,
+            "e2e_lat": 31.824178457260132,
+            "ans_length": 342,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
         "id": 63,
         "query": "Abhishek Banerjee Case summary",
         "category": "Uncategorized",

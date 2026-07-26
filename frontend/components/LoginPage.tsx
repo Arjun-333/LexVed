@@ -42,7 +42,7 @@ export default function LoginPage() {
       className="min-h-screen flex flex-col justify-between relative overflow-hidden select-none"
       style={{
         background: "#111110",
-        fontFamily: "'Montserrat', sans-serif",
+        fontFamily: "'Poppins', sans-serif",
         color: "#FFFFFF",
       }}
     >
@@ -114,7 +114,7 @@ export default function LoginPage() {
       {/* ── Top Header Navigation ─────────────────────────────────────────── */}
       <header className="w-full px-8 pt-6 flex items-center justify-between z-20">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-extrabold tracking-tight flex items-center" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+          <h1 className="text-3xl font-extrabold tracking-tight flex items-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
             <span style={{ color: "#FFFFFF" }}>Lex</span>
             <span style={{ color: "#FFD700" }}>Ved</span>
           </h1>
@@ -139,7 +139,7 @@ export default function LoginPage() {
             style={{
               background: "#181816",
               border: "2px solid rgba(255, 215, 0, 0.55)",
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "'Poppins', sans-serif",
             }}
           >
             {/* Top golden accent line */}
@@ -152,7 +152,7 @@ export default function LoginPage() {
             <div className="text-center mb-5">
               <h2
                 style={{
-                  fontFamily: "'Montserrat', sans-serif",
+                  fontFamily: "'Poppins', sans-serif",
                   fontWeight: 800,
                   fontSize: "1.6rem",
                   letterSpacing: "-0.02em",
@@ -170,7 +170,7 @@ export default function LoginPage() {
                 <label
                   style={{
                     display: "block",
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "'Poppins', sans-serif",
                     fontWeight: 700,
                     fontSize: "0.65rem",
                     letterSpacing: "0.18em",
@@ -193,7 +193,7 @@ export default function LoginPage() {
                     background: "#111110",
                     border: "1px solid #2A2A28",
                     color: "#FFFFFF",
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "'Poppins', sans-serif",
                   }}
                 />
               </div>
@@ -203,7 +203,7 @@ export default function LoginPage() {
                 <label
                   style={{
                     display: "block",
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "'Poppins', sans-serif",
                     fontWeight: 700,
                     fontSize: "0.65rem",
                     letterSpacing: "0.18em",
@@ -226,14 +226,14 @@ export default function LoginPage() {
                       background: "#111110",
                       border: "1px solid #2A2A28",
                       color: "#FFFFFF",
-                      fontFamily: "'Montserrat', sans-serif",
+                      fontFamily: "'Poppins', sans-serif",
                     }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold tracking-wider uppercase transition-colors cursor-pointer"
-                    style={{ color: "#C4A35A", fontFamily: "'Montserrat', sans-serif" }}
+                    style={{ color: "#C4A35A", fontFamily: "'Poppins', sans-serif" }}
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -271,7 +271,7 @@ export default function LoginPage() {
                 style={{
                   background: "#FFD700",
                   color: "#111110",
-                  fontFamily: "'Montserrat', sans-serif",
+                  fontFamily: "'Poppins', sans-serif",
                 }}
               >
                 {isLoading ? (

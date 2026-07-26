@@ -1,24 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "./AuthContext";
 
 interface ModelMeta {
   id: string;
   name: string;
+  shortName: string;
   icon: string;
   tier: string;
 }
 
-const FALLBACK_MODELS: ModelMeta[] = [
-  { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", icon: "all_inclusive", tier: "cloud" },
-  { id: "ensemble", name: "Ensemble Logic", icon: "hub", tier: "orchestrator" },
-  { id: "llama3", name: "Local Llama 3 8B", icon: "memory", tier: "local" },
-  { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", icon: "auto_awesome", tier: "cloud" },
-  { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", icon: "bolt", tier: "cloud" },
-  { id: "qwen2.5:7b", name: "Local Qwen 2.5", icon: "security", tier: "local" },
+const MODEL_LIST: ModelMeta[] = [
+  { id: "ensemble",               name: "Ensemble Logic",  shortName: "Ensemble", icon: "hub",           tier: "orchestrator" },
+  { id: "llama3",                 name: "Llama 3 8B",      shortName: "L3-8B",    icon: "memory",        tier: "local" },
+  { id: "llama-3.1-8b-instant",   name: "Llama 3.1 8B",   shortName: "L3.1",     icon: "bolt",          tier: "cloud" },
+  { id: "llama3:70b",             name: "Llama 3 70B",     shortName: "L3-70B",   icon: "psychology",    tier: "local" },
+  { id: "qwen2.5:70b",            name: "Qwen 2.5 70B",    shortName: "Q2.5-70B", icon: "auto_awesome",  tier: "local" },
+  { id: "qwen2.5:7b",             name: "Qwen 2.5 7B",     shortName: "Q2.5-7B",  icon: "security",      tier: "local" },
+  { id: "llama-3.3-70b-versatile",name: "Llama 3.3 70B",   shortName: "L3.3",     icon: "star",          tier: "cloud" },
+  { id: "mixtral-8x7b-32768",     name: "Mixtral 8x7B",    shortName: "Mixtral",  icon: "all_inclusive", tier: "cloud" },
 ];
+
+const N = MODEL_LIST.length;
+const R = 110; // orbit radius in px
+const R_OUTER = 195; // invisible outer rotation track radius in px
+const TAB_W = 46; // width of the semicircle trigger tab
+const TAB_H = 92; // height of the semicircle trigger tab
+const ROTATE_SPEED = 95; // degrees per second while hovering
 
 export default function ModelWheel({
   activeModelId,
@@ -28,46 +38,77 @@ export default function ModelWheel({
   onModelChange: (id: string) => void;
 }) {
   const { authFetch } = useAuth();
-  const [modelsList, setModelsList] = useState<ModelMeta[]>(FALLBACK_MODELS);
-  const [healthStatus, setHealthStatus] = useState("OFFLINE");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hoveredModelId, setHoveredModelId] = useState<string | null>(null);
+  const [rotationDeg, setRotationDeg] = useState(0);
+
+  // Ref for detecting outside clicks
+  const wrapperRef = useRef<HTMLElement>(null);
+
+  // Refs for smooth rAF rotation with directional control
+  const rotationRef = useRef(0);
+  const rotateDirRef = useRef<1 | -1>(1); // 1 = down, -1 = up
+  const isHoveringRef = useRef(false);
+  const animFrameRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
 
   useEffect(() => {
-    authFetch(`${API_URL}/api/settings/config`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.generation_model_metadata && data.generation_model_metadata.length > 0) {
-          setModelsList(data.generation_model_metadata);
-        }
-      })
-      .catch(() => {});
-  }, [authFetch, API_URL]);
-
-  useEffect(() => {
-    let isMounted = true;
-    const checkHealth = () => {
-      authFetch(`${API_URL}/api/health`)
-        .then(res => res.json())
-        .then(data => {
-          if (!isMounted) return;
-          if (data.ollama === "connected" || data.vector_db === "connected") setHealthStatus("OPTIMAL");
-          else setHealthStatus("OFFLINE");
-        })
-        .catch(() => { if (isMounted) setHealthStatus("OFFLINE"); });
-    };
+    const checkHealth = () => authFetch(`${API_URL}/api/health`).catch(() => {});
     checkHealth();
     const interval = setInterval(checkHealth, 20000);
-    return () => { isMounted = false; clearInterval(interval); };
+    return () => clearInterval(interval);
   }, [authFetch, API_URL]);
+
+  // rAF rotation loop with directional support
+  const tick = useCallback((timestamp: number) => {
+    if (!isHoveringRef.current) return;
+    if (lastTimeRef.current !== null) {
+      const delta = timestamp - lastTimeRef.current;
+      rotationRef.current = (rotationRef.current + rotateDirRef.current * (ROTATE_SPEED * delta) / 1000) % 360;
+      setRotationDeg(rotationRef.current);
+    }
+    lastTimeRef.current = timestamp;
+    animFrameRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  const startRotation = useCallback(() => {
+    isHoveringRef.current = true;
+    lastTimeRef.current = null;
+    animFrameRef.current = requestAnimationFrame(tick);
+  }, [tick]);
+
+  const stopRotation = useCallback(() => {
+    isHoveringRef.current = false;
+    lastTimeRef.current = null;
+    if (animFrameRef.current !== null) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => stopRotation(), [stopRotation]);
+
+  // Close wheel when clicking anywhere outside the component
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+        stopRotation();
+        setHoveredModelId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [stopRotation]);
 
   const updateBackendModel = async (id: string) => {
     try {
       const token = localStorage.getItem("lexved_token");
       await fetch(`${API_URL}/api/settings/generation_model`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ model: id }),
       });
     } catch (err) {
@@ -75,190 +116,197 @@ export default function ModelWheel({
     }
   };
 
-  const handleModelClick = (id: string) => {
+  const handleModelSelect = (id: string) => {
     onModelChange(id);
     updateBackendModel(id);
+    // Close the wheel after selection
+    setIsOpen(false);
+    stopRotation();
+    setHoveredModelId(null);
   };
 
-  // Show top 3 models in the primary stack (ensemble in middle = index 1)
-  const primaryModels = modelsList.slice(0, 3);
-  const extraModels = modelsList.slice(3);
-
-  const statusColor =
-    healthStatus === "OPTIMAL" ? "#D4AF37" :
-    healthStatus === "DEGRADED" ? "#FFA500" : "#FF6B6B";
-
-  const statusLabel =
-    healthStatus === "OPTIMAL" ? "OPTIMAL" :
-    healthStatus === "DEGRADED" ? "DEGRADED" : "OFFLINE";
-
-  const getModelIcon = (model: ModelMeta) => {
-    // Return a more fitting icon per tier
-    if (model.tier === "orchestrator") return "hub";
-    if (model.tier === "local") return "memory";
-    return model.icon || "auto_awesome";
+  const handleOrbitMouseMove = (e: React.MouseEvent) => {
+    const centerY = window.innerHeight / 2;
+    // Upper half (e.clientY < centerY) rotates DOWN (dir = 1)
+    // Lower half (e.clientY >= centerY) rotates UP (dir = -1)
+    rotateDirRef.current = e.clientY < centerY ? 1 : -1;
   };
 
   return (
-    <aside
-      className="w-[280px] hidden xl:flex flex-col items-center justify-center py-8 px-6 z-40 select-none shrink-0 relative"
-      style={{
-        background: "transparent",
-        borderLeft: "1px solid #1f1f1f",
-      }}
-    >
-      {/* Intelligence Engine Header */}
-      <div className="text-center mb-8 w-full">
-        <p
-          className="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-1"
-          style={{ color: "#D4AF37" }}
-        >
-          Intelligence Engine
-        </p>
-        <p className="text-[0.58rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "#444444" }}>
-          LOCAL CLUSTER STATUS:{" "}
-          <span style={{ color: statusColor }}>{statusLabel}</span>
-        </p>
-      </div>
-
-      {/* Model Stack Cards */}
-      <div className="flex flex-col gap-3 w-[210px]">
-        {primaryModels.map((model, i) => {
-          const isActive = activeModelId === model.id;
-          const iconName = getModelIcon(model);
-
-          return (
+    <aside ref={wrapperRef} className="fixed right-0 top-1/2 -translate-y-1/2 z-40 select-none">
+      <div
+        className="relative"
+        style={{ width: TAB_W, height: TAB_H }}
+      >
+        {/* ── Orbit ring + model nodes ─────────────────────────── */}
+        <AnimatePresence>
+          {isOpen && (
             <motion.div
-              key={model.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
-              onClick={() => handleModelClick(model.id)}
-              className={`model-status-card w-full ${isActive ? "active" : ""}`}
+              key="orbit"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.25 } }}
+              className="absolute"
+              style={{ left: TAB_W, top: TAB_H / 2, width: 0, height: 0 }}
+              onMouseEnter={() => startRotation()}
+              onMouseLeave={() => stopRotation()}
+              onMouseMove={handleOrbitMouseMove}
             >
-              {/* Icon */}
-              <span
-                className="material-icons-round text-[24px] mb-1"
+              {/* Invisible outer rotation track surrounding the LLM nodes */}
+              <div
+                className="absolute rounded-full pointer-events-auto cursor-pointer"
                 style={{
-                  color: isActive ? "#D4AF37" : "#3a3a3a",
-                  filter: isActive ? "drop-shadow(0 0 8px rgba(212,175,55,0.5))" : "none",
-                  transition: "color 0.3s, filter 0.3s",
+                  width: R_OUTER * 2,
+                  height: R_OUTER * 2,
+                  left: -R_OUTER,
+                  top: -R_OUTER,
+                  background: "transparent",
                 }}
-              >
-                {iconName}
-              </span>
+                onMouseEnter={() => startRotation()}
+                onMouseLeave={() => stopRotation()}
+                onMouseMove={handleOrbitMouseMove}
+              />
 
-              {/* Model Name */}
-              <span
-                className="font-bold text-[0.82rem] text-center leading-tight"
+              {/* Filled dotted orbit guide circle with hover-rotation */}
+              <div
+                className="absolute rounded-full pointer-events-auto cursor-pointer"
                 style={{
-                  color: isActive ? "#D4AF37" : "#cccccc",
-                  letterSpacing: "-0.01em",
-                  transition: "color 0.3s",
+                  width: R * 2,
+                  height: R * 2,
+                  left: -R,
+                  top: -R,
+                  border: "1.5px dashed rgba(212, 175, 55, 0.35)",
+                  background: "rgba(220, 220, 225, 0.08)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)",
                 }}
-              >
-                {model.name}
-              </span>
+                onMouseEnter={() => startRotation()}
+                onMouseLeave={() => stopRotation()}
+                onMouseMove={handleOrbitMouseMove}
+              />
 
-              {/* Status Badge */}
-              <span
-                className="text-[0.52rem] font-bold uppercase tracking-[0.2em] mt-0.5"
-                style={{
-                  color: isActive ? "rgba(212,175,55,0.7)" : "#3a3a3a",
-                  transition: "color 0.3s",
-                }}
-              >
-                {isActive ? "ACTIVE LINK" : "STANDBY"}
-              </span>
-            </motion.div>
-          );
-        })}
+              {/* Nodes — evenly spaced at 360/N = 45° apart */}
+              {MODEL_LIST.map((model, i) => {
+                const isActive = activeModelId === model.id;
+                const isHovered = hoveredModelId === model.id;
+                // Full circle: 360/N degrees apart, rotating continuously
+                const angleDeg = (i * (360 / N)) + rotationDeg;
+                const angleRad = (angleDeg * Math.PI) / 180;
+                const x = R * Math.cos(angleRad);
+                const y = R * Math.sin(angleRad);
+                const nodeSize = 80;
 
-        {/* Extra models (collapsed by default) */}
-        {extraModels.length > 0 && (
-          <>
-            <button
-              onClick={() => setIsExpanded(prev => !prev)}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg transition-all duration-200"
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid #222",
-                color: "#444",
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-              }}
-            >
-              <span className="material-icons-round text-[14px]">
-                {isExpanded ? "expand_less" : "expand_more"}
-              </span>
-              {isExpanded ? "HIDE" : `+${extraModels.length} MORE`}
-            </button>
-
-            {isExpanded && extraModels.map((model, i) => {
-              const isActive = activeModelId === model.id;
-              return (
-                <motion.div
-                  key={model.id}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                  onClick={() => handleModelClick(model.id)}
-                  className={`model-status-card w-full ${isActive ? "active" : ""}`}
-                >
-                  <span
-                    className="material-icons-round text-[20px]"
-                    style={{ color: isActive ? "#D4AF37" : "#333" }}
+                return (
+                  <div
+                    key={model.id}
+                    className="absolute pointer-events-auto"
+                    style={{
+                      left: x - nodeSize / 2,
+                      top: y - nodeSize / 2,
+                      width: nodeSize,
+                      height: nodeSize,
+                    }}
+                    onClick={() => handleModelSelect(model.id)}
+                    onMouseEnter={() => {
+                      stopRotation(); // Pause wheel rotation so node stays stationary under cursor for easy selection!
+                      setHoveredModelId(model.id);
+                    }}
+                    onMouseLeave={() => setHoveredModelId(null)}
                   >
-                    {getModelIcon(model)}
-                  </span>
-                  <span className="font-bold text-[0.78rem] text-center" style={{ color: isActive ? "#D4AF37" : "#aaa" }}>
-                    {model.name}
-                  </span>
-                  <span className="text-[0.5rem] font-bold uppercase tracking-[0.18em]" style={{ color: isActive ? "rgba(212,175,55,0.6)" : "#333" }}>
-                    {isActive ? "ACTIVE LINK" : "STANDBY"}
-                  </span>
-                </motion.div>
-              );
-            })}
-          </>
-        )}
-      </div>
+                    {/* Node circle */}
+                    <motion.div
+                      animate={{ scale: isHovered ? 1.18 : 1 }}
+                      transition={{ duration: 0.2 }}
+                      className="w-full h-full rounded-full flex flex-col items-center justify-center cursor-pointer relative"
+                      style={{
+                        background: isActive
+                          ? "linear-gradient(135deg, #D4AF37, #b89320)"
+                          : isHovered ? "#252525" : "#161616",
+                        border: isActive
+                          ? "2px solid #FFD700"
+                          : isHovered ? "1.5px solid #D4AF37" : "1px solid #2e2e2e",
+                        color: isActive ? "#000" : isHovered ? "#fff" : "#888",
+                        boxShadow: isActive
+                          ? "0 0 24px rgba(212,175,55,0.55)"
+                          : isHovered ? "0 0 14px rgba(212,175,55,0.28)" : "none",
+                      }}
+                    >
+                      <span className="material-icons-round text-[26px]">{model.icon}</span>
+                      <span
+                        className="text-[0.54rem] font-bold tracking-tight uppercase mt-0.5"
+                        style={{ color: isActive ? "#000" : "#888" }}
+                      >
+                        {model.shortName}
+                      </span>
 
-      {/* Up/Down Navigation Arrows */}
-      <div className="flex gap-3 mt-8">
-        <button
-          onClick={() => {
-            const idx = modelsList.findIndex(m => m.id === activeModelId);
-            const prev = modelsList[(idx - 1 + modelsList.length) % modelsList.length];
-            handleModelClick(prev.id);
-          }}
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 border"
+                      {/* Active ping ring */}
+                      {isActive && (
+                        <span className="absolute -inset-1.5 rounded-full border border-[#D4AF37]/40 animate-ping pointer-events-none opacity-50" />
+                      )}
+                    </motion.div>
+
+                    {/* Hover tooltip */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -8, scale: 0.9 }}
+                          animate={{ opacity: 1, x: -14, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ duration: 0.18 }}
+                          className="absolute right-full mr-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg pointer-events-none whitespace-nowrap z-50"
+                          style={{
+                            background: "#0a0a0a",
+                            border: "1px solid rgba(212,175,55,0.5)",
+                            boxShadow: "0 4px 20px rgba(0,0,0,0.8), 0 0 10px rgba(212,175,55,0.2)",
+                          }}
+                        >
+                          <p className="text-[0.75rem] font-bold text-white">{model.name}</p>
+                          <p className="text-[0.58rem] font-semibold text-[#D4AF37] uppercase tracking-wider">
+                            {model.tier}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Semicircle trigger tab ─────────────────────────────── */}
+        <motion.button
+          whileHover={{ scale: 1.06, boxShadow: "-8px 0 30px rgba(212,175,55,0.5)" }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="absolute right-0 top-0 rounded-l-full flex items-center justify-end pr-0.5 cursor-pointer z-30"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "#222",
-            color: "#555",
+            width: TAB_W,
+            height: TAB_H,
+            background: "linear-gradient(135deg, #1e1e1e, #0a0a0a)",
+            borderLeft: "2px solid #D4AF37",
+            borderTop: "2px solid #D4AF37",
+            borderBottom: "2px solid #D4AF37",
+            borderRight: "none",
+            boxShadow: isOpen
+              ? "-8px 0 30px rgba(212,175,55,0.4), inset 2px 0 12px rgba(212,175,55,0.18)"
+              : "-4px 0 18px rgba(212,175,55,0.2)",
+            transition: "box-shadow 0.3s",
           }}
-          title="Previous model"
+          title="LLM Model Selector"
         >
-          <span className="material-icons-round text-[18px]">keyboard_arrow_up</span>
-        </button>
-        <button
-          onClick={() => {
-            const idx = modelsList.findIndex(m => m.id === activeModelId);
-            const next = modelsList[(idx + 1) % modelsList.length];
-            handleModelClick(next.id);
-          }}
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 border"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "#222",
-            color: "#555",
-          }}
-          title="Next model"
-        >
-          <span className="material-icons-round text-[18px]">keyboard_arrow_down</span>
-        </button>
+          <motion.div
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="flex items-center justify-center"
+          >
+            <img
+              src="/sparkle.png"
+              alt="Sparkle Icon"
+              className="w-8 h-8 object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.4)]"
+            />
+          </motion.div>
+        </motion.button>
       </div>
     </aside>
   );

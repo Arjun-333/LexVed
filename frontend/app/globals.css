@@ -3,10 +3,14 @@
 /* ===== LEXVED PRESTIGE DESIGN SYSTEM (V6) ===== */
 
 @theme {
-  --font-body: "Inter", "Montserrat", sans-serif;
-  --font-serif: "Playfair Display", serif;
-  --font-display: "Cinzel", serif;
+  --font-body: "Poppins", "Inter", sans-serif;
+  --font-serif: "Poppins", sans-serif;
+  --font-display: "Poppins", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+body, html {
+  font-family: "Poppins", sans-serif !important;
 }
 
 /* === UNLAYERED OVERRIDES — highest CSS specificity, overrides all Tailwind layers === */
@@ -140,7 +144,7 @@ h1, h2, .font-serif { font-family: var(--font-serif); }
 
 /* ===== DOT GRID CANVAS PATTERN ===== */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.065) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 

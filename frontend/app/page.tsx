@@ -310,22 +310,12 @@ function Dashboard() {
       />
 
       {/* Main area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Canvas + Chat Panel */}
-        <main
-          className={`flex flex-col min-w-0 relative h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${activePdf ? "w-3/5" : "w-full"}`}
+      <div className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden">
+        {/* ===== HEADER BAR (Spans 100% width to far right edge) ===== */}
+        <div
+          className="h-[54px] flex items-center justify-between px-6 shrink-0 z-20 relative w-full"
+          style={{ borderBottom: "1px solid #181818" }}
         >
-          {/* Top gradient fade */}
-          <div
-            className="absolute top-0 left-0 right-0 h-20 pointer-events-none z-10"
-            style={{ background: "linear-gradient(to bottom, #0c0c0c 0%, transparent 100%)" }}
-          />
-
-          {/* ===== HEADER BAR ===== */}
-          <div
-            className="h-[54px] flex items-center justify-between px-6 shrink-0 z-20 relative"
-            style={{ borderBottom: "1px solid #181818" }}
-          >
             {/* Left: Section title */}
             <div className="flex items-center gap-2">
               <h1
@@ -455,15 +445,20 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* ===== MAIN CONTENT AREA with DOT GRID ===== */}
-          <div className="flex-1 flex flex-col overflow-hidden relative dot-grid z-0">
-            {/* Radial vignette overlay on the grid */}
-            <div
-              className="absolute inset-0 pointer-events-none z-0"
-              style={{
-                background: "radial-gradient(ellipse at center, transparent 30%, #0c0c0c 100%)",
-              }}
-            />
+          {/* ===== INNER CONTENT AREA BELOW NAVBAR (UNIFORM DOT GRID) ===== */}
+          <div className="flex-1 flex overflow-hidden relative dot-grid z-10">
+            {/* Canvas + Chat Panel */}
+            <main
+              className={`flex flex-col min-w-0 relative h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${activePdf ? "w-3/5" : "flex-1"}`}
+            >
+              {/* Top gradient fade */}
+              <div
+                className="absolute top-0 left-0 right-0 h-20 pointer-events-none z-10"
+                style={{ background: "linear-gradient(to bottom, #0c0c0c 0%, transparent 100%)" }}
+              />
+
+              {/* ===== MAIN CONTENT AREA ===== */}
+              <div className="flex-1 flex flex-col overflow-hidden relative z-0">
 
             <AnimatePresence mode="wait">
               {!hasStarted ? (
@@ -535,7 +530,7 @@ function Dashboard() {
           </div>
 
           {/* ===== INPUT BAR ===== */}
-          <div className="shrink-0 z-20 pb-2" style={{ background: "#0c0c0c" }}>
+          <div className="shrink-0 z-20 pb-2 bg-transparent">
             <InputBar
               onSend={handleSend}
               onStop={handleStop}
@@ -604,7 +599,8 @@ function Dashboard() {
         <ModelWheel activeModelId={activeModel} onModelChange={handleModelChange} />
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 function AuthGate() {

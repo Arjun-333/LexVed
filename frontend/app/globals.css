@@ -144,7 +144,7 @@ h1, h2, .font-serif { font-family: var(--font-serif); }
 
 /* ===== DOT GRID CANVAS PATTERN ===== */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.075) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 

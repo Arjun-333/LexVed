@@ -107,7 +107,7 @@ export default function ChatHistory({ messages, onCitationClick }: ChatHistoryPr
                 /* ── User bubble ──────────────────────────────────── */
                 <div className="flex justify-end">
                   <div
-                    className="max-w-[75%] px-5 py-3.5 rounded-2xl rounded-br-md text-[0.9rem] leading-[1.6] transition-all duration-300"
+                    className="max-w-[75%] px-5 py-3.5 rounded-2xl rounded-br-md text-[0.9rem] leading-[1.6] transition-all duration-300 break-words [overflow-wrap:anywhere]"
                     style={{
                       background: "var(--user-bubble)",
                       border: "1px solid var(--user-bubble-border)",
@@ -138,14 +138,14 @@ export default function ChatHistory({ messages, onCitationClick }: ChatHistoryPr
                       </div>
                     )}
 
-                    {/* ── Grey answer container ────────────────────── */}
+                    {/* ── Dark charcoal answer container ────────────────────── */}
                     <div
-                      className="relative rounded-2xl p-5"
+                      className="relative rounded-2xl p-5 overflow-hidden break-words [overflow-wrap:anywhere]"
                       style={{
-                        background: "rgba(38, 38, 42, 0.72)",
-                        border: "1px solid rgba(255,255,255,0.07)",
+                        background: "#161618",
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
                         backdropFilter: "blur(12px)",
-                        boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
+                        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.45)",
                       }}
                     >
                       {/* Copy button — top-right corner */}
@@ -154,7 +154,7 @@ export default function ChatHistory({ messages, onCitationClick }: ChatHistoryPr
                       </div>
 
                       <p
-                        className="text-[0.9rem] leading-[1.8] whitespace-pre-wrap pr-16 transition-colors duration-300"
+                        className="text-[0.9rem] leading-[1.8] whitespace-pre-wrap break-words [overflow-wrap:anywhere] pr-16 transition-colors duration-300"
                         style={{ color: "var(--text)" }}
                       >
                         {msg.text}

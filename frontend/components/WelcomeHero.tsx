@@ -10,7 +10,7 @@ const features = [
   {
     icon: "history_edu",
     title: "Criminal Jurisprudence",
-    desc: "Search across section 302/307 IPC, bail precedents, and criminal appeals with precision.",
+    desc: "Search across Section 302/307 IPC, bail precedents, and criminal appeals with precision.",
     query: "Explain Section 302 IPC with landmark cases",
     color: "var(--accent)",
   },
@@ -18,7 +18,7 @@ const features = [
     icon: "gavel",
     title: "Civil Litigation",
     desc: "Analyze property disputes, contract breaches, and civil procedure from indexed documents.",
-    query: "Abhishek Banerjee Case summary",
+    query: "Abhishek Banerjee Case Summary",
     color: "var(--accent)",
   },
   {
@@ -58,7 +58,7 @@ export default function WelcomeHero({ onSuggestionClick }: WelcomeHeroProps) {
           Lex<span style={{ color: "var(--accent)" }}>Ved</span>
         </h1>
         <p className="text-[1.1rem] transition-colors duration-300 max-w-[550px] mx-auto leading-relaxed italic"
-           style={{ fontFamily: "var(--font-serif)", color: "var(--text-secondary)" }}>
+          style={{ fontFamily: "var(--font-serif)", color: "var(--text-secondary)" }}>
           "The most sophisticated local intelligence layer for the modern litigator."
         </p>
       </motion.div>
@@ -80,7 +80,7 @@ export default function WelcomeHero({ onSuggestionClick }: WelcomeHeroProps) {
           >
             {/* Soft Ambient Glow */}
             <div className="absolute top-0 right-0 w-24 h-24 blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-700"
-                 style={{ background: f.color }} />
+              style={{ background: f.color }} />
 
             <div
               className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-all duration-400
@@ -104,12 +104,12 @@ export default function WelcomeHero({ onSuggestionClick }: WelcomeHeroProps) {
             </p>
 
             <div className="mt-5 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-[-10px] group-hover:translate-x-0">
-               <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--accent)" }}>
-                 Initiate Brief
-               </span>
-               <span className="material-icons-round text-[14px]" style={{ color: "var(--accent)" }}>
-                 north_east
-               </span>
+              <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--accent)" }}>
+                Initiate Brief
+              </span>
+              <span className="material-icons-round text-[14px]" style={{ color: "var(--accent)" }}>
+                north_east
+              </span>
             </div>
           </motion.button>
         ))}

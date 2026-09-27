@@ -1,5 +1,230 @@
 [
     {
+        "id": 76,
+        "query": "kjfvndfvvvvvvvvvvvvvvvvvvvvvvvvxjnssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-26 13:05",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 18.32019066810608,
+            "e2e_lat": 22.515284538269043,
+            "ans_length": 278,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 75,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-26 12:51",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 7.366352796554565,
+            "e2e_lat": 11.570864200592041,
+            "ans_length": 448,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 74,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-26 12:42",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 16.62511134147644,
+            "e2e_lat": 5.043583393096924,
+            "ans_length": 466,
+            "routed_model": "llama-3.3-70b-versatile"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 73,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-26 12:39",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 16.62511134147644,
+            "e2e_lat": 21.365906953811646,
+            "ans_length": 419,
+            "routed_model": "llama-3.3-70b-versatile"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 72,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-26 12:26",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 16.9570574760437,
+            "e2e_lat": 21.513962268829346,
+            "ans_length": 381,
+            "routed_model": "llama-3.3-70b-versatile"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 71,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-26 12:25",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 7.7865824699401855,
+            "e2e_lat": 12.256049394607544,
+            "ans_length": 323,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 70,
+        "query": "Bail Grounds 2024",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-26 11:39",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.337237596511841,
+            "e2e_lat": 10.602530479431152,
+            "ans_length": 350,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 69,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-26 11:20",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 42.64952492713928,
+            "e2e_lat": 48.038524866104126,
+            "ans_length": 476,
+            "routed_model": "llama-3.3-70b-versatile"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 68,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 22:24",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 28.134981393814087,
+            "e2e_lat": 31.824178457260132,
+            "ans_length": 342,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 67,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:44",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 29.309390544891357,
+            "e2e_lat": 33.44658660888672,
+            "ans_length": 276,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 66,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:41",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.633622407913208,
+            "e2e_lat": 0.02568197250366211,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 65,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:41",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.633622407913208,
+            "e2e_lat": 0.06529951095581055,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 64,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-25 21:37",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 6.633622407913208,
+            "e2e_lat": 6.66895318031311,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 63,
+        "query": "Explain Section 302 IPC with landmark cases",
+        "category": "Criminal",
+        "subcategory": "Property",
+        "date": "2026-07-25 21:37",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 31.308549165725708,
+            "e2e_lat": 0.023241043090820312,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
+        "id": 62,
+        "query": "Abhishek Banerjee Case summary",
+        "category": "Uncategorized",
+        "subcategory": "General",
+        "date": "2026-07-22 15:42",
+        "status": "verified",
+        "metrics": {
+            "retrieval_lat": 49.7917857170105,
+            "e2e_lat": 87.33066153526306,
+            "ans_length": 6,
+            "routed_model": "llama-3.1-8b-instant"
+        },
+        "username": "admin"
+    },
+    {
         "id": 61,
         "query": "What is the criminal liability under Section 138 of the Negotiable Instruments Act for cheque dishonour?",
         "category": "Criminal",

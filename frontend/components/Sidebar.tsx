@@ -1,8 +1,7 @@
 "use client";
 
-import { useTheme } from "./ThemeProvider";
 import { useAuth } from "./AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import MetricsDashboard from "./MetricsDashboard";
 import CaseFilesModal from "./CaseFilesModal";
@@ -10,31 +9,34 @@ import ResearchHistoryModal from "./ResearchHistoryModal";
 import AdminPanel from "./AdminPanel";
 import SettingsModal from "./SettingsModal";
 
-export default function Sidebar() {
-  const { theme, toggle } = useTheme();
+interface SidebarProps {
+  onNewBrief?: () => void;
+  activeSection?: string;
+  onSectionChange?: (section: string) => void;
+}
+
+export default function Sidebar({ onNewBrief, activeSection = "Criminal Cases", onSectionChange }: SidebarProps) {
   const { user, isAdmin, logout } = useAuth();
   const [showMetrics, setShowMetrics] = useState(false);
   const [showFiles, setShowFiles] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  // Global keyboard shortcuts for modals
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape — close any open modal
       if (e.key === "Escape") {
         setShowMetrics(false);
         setShowFiles(false);
         setShowHistory(false);
         setShowAdmin(false);
+        setShowSettings(false);
       }
-      // Ctrl+M — Open Metrics Dashboard (admin only)
       if ((e.ctrlKey || e.metaKey) && e.key === "m" && isAdmin) {
         e.preventDefault();
         setShowMetrics(prev => !prev);
       }
-      // Ctrl+H — Open Research History
       if ((e.ctrlKey || e.metaKey) && e.key === "h") {
         e.preventDefault();
         setShowHistory(prev => !prev);
@@ -44,158 +46,291 @@ export default function Sidebar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isAdmin]);
 
+  const displayName = user?.displayName || user?.username || "Counsel";
+  const userInitial = displayName.charAt(0).toUpperCase();
+
+  const portfolioItems = [
+    { id: "Onboarding", label: "LexVed Onboarding getting started", icon: "folder", indent: true, onClick: onNewBrief },
+    { id: "Briefs", label: "Briefs", icon: "folder", indent: true, onClick: onNewBrief },
+    { id: "Criminal Cases", label: "Criminal Cases", icon: "folder", indent: true, active: true, onClick: () => onSectionChange?.("Criminal Cases") },
+    { id: "Civil Litigation", label: "Civil Litigation", icon: "folder", indent: true, onClick: () => onSectionChange?.("Civil Litigation") },
+  ];
+
   return (
     <nav
-      className="w-[64px] flex flex-col items-center py-6 pb-14 z-50 transition-all duration-500"
+      className="w-[240px] shrink-0 flex flex-col h-full overflow-hidden z-50"
       style={{
-        background: "var(--bg-secondary)",
-        borderRight: "1px solid var(--border)",
+        background: "#111111",
+        borderRight: "1px solid #1f1f1f",
       }}
     >
-      {/* Brand mark */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        className="w-10 h-10 rounded-xl flex items-center justify-center mb-10 cursor-pointer shadow-lg"
-        style={{
-          background: "linear-gradient(135deg, var(--accent), var(--accent-dim))",
-          color: "white",
-        }}
-        title="LexVed Home"
-      >
-        <span className="material-icons-round text-[22px]">account_balance</span>
-      </motion.div>
-
-      {/* Navigation Items */}
-      <div className="flex flex-col gap-6">
-        <IconButton active icon="chat_bubble" title="New Brief" />
-        <IconButton 
-          icon="history" 
-          title="Research History (Ctrl+H)" 
-          onClick={() => setShowHistory(true)}
-        />
-        <IconButton 
-          icon="folder" 
-          title="Case Files" 
-          onClick={() => setShowFiles(true)}
-        />
-      </div>
-
-      <div className="flex-1" />
-
-      {/* Actions */}
-      <div className="flex flex-col gap-6 mb-2">
-        {/* Performance Audit — Admin Only */}
-        {isAdmin && (
-          <IconButton 
-            icon="analytics" 
-            title="Performance Audit (Ctrl+M)" 
-            onClick={() => setShowMetrics(true)} 
-          />
-        )}
-
-        {/* Admin Console — Admin Only */}
-        {isAdmin && (
-          <IconButton 
-            icon="admin_panel_settings" 
-            title="Admin Console" 
-            onClick={() => setShowAdmin(true)}
-            accent
-          />
-        )}
-
-        <IconButton
-          icon={theme === "dark" ? "light_mode" : "dark_mode"}
-          title={theme === "dark" ? "Light Mode" : "Dark Mode"}
-          onClick={toggle}
-        />
-        <IconButton icon="tune" title="System Settings" onClick={() => setShowSettings(true)} />
-      </div>
-
-      {/* User Info + Logout */}
-      <div className="mt-4 pt-4 flex flex-col items-center gap-3" style={{ borderTop: "1px solid var(--border)" }}>
-        {/* User Avatar */}
+      {/* Brand Header */}
+      <div className="px-4 pt-5 pb-3 flex items-center gap-3 shrink-0">
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="group relative w-10 h-10 rounded-xl flex items-center justify-center cursor-default"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onNewBrief}
+          className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer shrink-0"
           style={{
-            background: isAdmin ? "rgba(212, 175, 55, 0.1)" : "var(--surface)",
-            border: isAdmin ? "1px solid rgba(212, 175, 55, 0.2)" : "1px solid var(--border)",
-            color: isAdmin ? "var(--accent)" : "var(--text-muted)",
+            background: "linear-gradient(135deg, #f5c518, #d4a017)",
+            color: "#000",
+            boxShadow: "0 2px 12px rgba(245, 197, 24, 0.25)",
           }}
+          title="LexVed Home"
         >
-          <span className="material-icons-round text-[18px]">
-            {isAdmin ? "shield" : "person"}
-          </span>
-          {/* Tooltip with role */}
-          <div className="absolute left-14 px-3 py-2 rounded-lg bg-black text-white text-[9px] font-bold opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 uppercase tracking-widest shadow-xl border border-white/10">
-            <div className="text-[#D4AF37] mb-0.5">{user?.displayName}</div>
-            <div className="text-white/40">@{user?.username} · {user?.role}</div>
-          </div>
+          <span className="material-icons-round text-[17px]">account_balance</span>
         </motion.div>
+        <span
+          className="font-bold text-[1.05rem] tracking-tight"
+          style={{ color: "#ffffff", fontFamily: "var(--font-serif)", letterSpacing: "-0.02em" }}
+        >
+          Lex<span style={{ color: "#f5c518" }}>Ved</span>
+        </span>
+      </div>
 
-        {/* Logout */}
-        <IconButton 
-          icon="logout" 
-          title="Sign Out" 
-          onClick={logout}
+      {/* Inbox */}
+      <div className="px-3 mt-1 mb-3 shrink-0">
+        <TreeItem
+          icon="inbox"
+          label="Inbox"
+          hovered={hoveredItem === "inbox"}
+          onHover={() => setHoveredItem("inbox")}
+          onLeave={() => setHoveredItem(null)}
+          onClick={onNewBrief}
         />
+      </div>
+
+      {/* Legal Portfolios Section */}
+      <div className="px-3 flex-1 overflow-y-auto overflow-x-hidden">
+        <p
+          className="text-[0.63rem] font-semibold uppercase tracking-[0.1em] px-3 mb-2 mt-1"
+          style={{ color: "#555555", letterSpacing: "0.08em" }}
+        >
+          Legal Portfolios
+        </p>
+
+        <div className="flex flex-col gap-0.5">
+          {portfolioItems.map((item) => (
+            <TreeItem
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              active={activeSection === item.id}
+              hovered={hoveredItem === item.id}
+              onHover={() => setHoveredItem(item.id)}
+              onLeave={() => setHoveredItem(null)}
+              onClick={item.onClick}
+              indent={item.indent}
+            />
+          ))}
+
+          {/* Divider */}
+          <div className="my-2" style={{ borderTop: "1px solid #1f1f1f" }} />
+
+          <TreeItem
+            icon="list_alt"
+            label="Case Files"
+            hovered={hoveredItem === "casefiles"}
+            onHover={() => setHoveredItem("casefiles")}
+            onLeave={() => setHoveredItem(null)}
+            onClick={() => setShowFiles(true)}
+            iconStyle="format_list_bulleted"
+          />
+
+          <TreeItem
+            icon="tag"
+            label="Browse all Portfolios"
+            hovered={hoveredItem === "browse"}
+            onHover={() => setHoveredItem("browse")}
+            onLeave={() => setHoveredItem(null)}
+            onClick={() => setShowHistory(true)}
+            iconStyle="apps"
+          />
+
+          <TreeItem
+            icon="add"
+            label="Create new portfolio"
+            hovered={hoveredItem === "create"}
+            onHover={() => setHoveredItem("create")}
+            onLeave={() => setHoveredItem(null)}
+            onClick={onNewBrief}
+            iconStyle="add"
+            muted
+          />
+        </div>
+
+        <div className="flex-1" />
+      </div>
+
+      {/* Bottom Section */}
+      <div className="px-3 mt-2 mb-2 shrink-0">
+        <div className="flex flex-col gap-0.5">
+          {isAdmin && (
+            <TreeItem
+              icon="analytics"
+              label="Analytics"
+              hovered={hoveredItem === "analytics"}
+              onHover={() => setHoveredItem("analytics")}
+              onLeave={() => setHoveredItem(null)}
+              onClick={() => setShowMetrics(true)}
+            />
+          )}
+          {isAdmin && (
+            <TreeItem
+              icon="admin_panel_settings"
+              label="Admin Panel"
+              hovered={hoveredItem === "admin"}
+              onHover={() => setHoveredItem("admin")}
+              onLeave={() => setHoveredItem(null)}
+              onClick={() => setShowAdmin(true)}
+              accent
+            />
+          )}
+          <TreeItem
+            icon="manage_accounts"
+            label="Brand Profile"
+            hovered={hoveredItem === "brand"}
+            onHover={() => setHoveredItem("brand")}
+            onLeave={() => setHoveredItem(null)}
+            onClick={() => setShowSettings(true)}
+            iconStyle="person_outline"
+          />
+          <TreeItem
+            icon="help_outline"
+            label="Support"
+            hovered={hoveredItem === "support"}
+            onHover={() => setHoveredItem("support")}
+            onLeave={() => setHoveredItem(null)}
+            onClick={() => {}}
+            iconStyle="help_outline"
+          />
+        </div>
+      </div>
+
+      {/* User Row */}
+      <div
+        className="px-4 py-3 flex items-center justify-between shrink-0"
+        style={{ borderTop: "1px solid #1f1f1f" }}
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          {/* Avatar circle with gradient */}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[12px] font-bold"
+            style={{
+              background: "linear-gradient(135deg, #2a2a2a, #3a3a3a)",
+              border: "1.5px solid #333",
+              color: "#D4AF37",
+              boxShadow: "0 0 0 2px rgba(212,175,55,0.15)",
+            }}
+          >
+            {userInitial}
+          </div>
+          <div className="min-w-0">
+            <p className="text-[0.78rem] font-semibold truncate" style={{ color: "#e0e0e0", letterSpacing: "-0.01em" }}>
+              {displayName}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={logout}
+          className="w-7 h-7 rounded-md flex items-center justify-center transition-all duration-200 hover:bg-[rgba(255,255,255,0.06)]"
+          style={{ color: "#555555" }}
+          title="Sign Out"
+        >
+          <span className="material-icons-round text-[15px]">logout</span>
+        </button>
       </div>
 
       {/* Modals */}
-      {isAdmin && (
-        <MetricsDashboard 
-          isOpen={showMetrics} 
-          onClose={() => setShowMetrics(false)} 
-        />
-      )}
-      
-      <CaseFilesModal 
-        isOpen={showFiles} 
-        onClose={() => setShowFiles(false)} 
-      />
-
-      <ResearchHistoryModal 
-        isOpen={showHistory} 
-        onClose={() => setShowHistory(false)} 
-      />
-
-      {isAdmin && (
-        <AdminPanel 
-          isOpen={showAdmin} 
-          onClose={() => setShowAdmin(false)} 
-        />
-      )}
-
-      <SettingsModal
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
+      {isAdmin && <MetricsDashboard isOpen={showMetrics} onClose={() => setShowMetrics(false)} />}
+      <CaseFilesModal isOpen={showFiles} onClose={() => setShowFiles(false)} />
+      <ResearchHistoryModal isOpen={showHistory} onClose={() => setShowHistory(false)} />
+      {isAdmin && <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />}
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </nav>
   );
 }
 
-function IconButton({ icon, title, active, onClick, accent }: { icon: string; title: string; active?: boolean; onClick?: () => void; accent?: boolean }) {
+function TreeItem({
+  icon,
+  label,
+  active,
+  hovered,
+  onHover,
+  onLeave,
+  onClick,
+  indent,
+  accent,
+  muted,
+  iconStyle,
+}: {
+  icon: string;
+  label: string;
+  active?: boolean;
+  hovered?: boolean;
+  onHover: () => void;
+  onLeave: () => void;
+  onClick?: () => void;
+  indent?: boolean;
+  accent?: boolean;
+  muted?: boolean;
+  iconStyle?: string;
+}) {
+  const resolvedIcon = iconStyle || icon;
+
   return (
-    <motion.button
+    <button
       onClick={onClick}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
-      className="group relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      className="w-full text-left flex items-center gap-2 px-3 py-[5px] rounded-[6px] transition-all duration-150 relative overflow-hidden group"
       style={{
-        background: active ? "var(--accent-bg)" : accent ? "rgba(212, 175, 55, 0.05)" : "transparent",
-        color: active ? "var(--accent)" : accent ? "var(--accent)" : "var(--text-muted)",
-        border: active ? "1px solid var(--accent-glow)" : accent ? "1px solid rgba(212, 175, 55, 0.15)" : "1px solid transparent",
+        background: active
+          ? "rgba(212,175,55,0.10)"
+          : hovered
+          ? "rgba(255,255,255,0.04)"
+          : "transparent",
+        color: active
+          ? "#ffffff"
+          : accent
+          ? "#D4AF37"
+          : muted
+          ? "#555555"
+          : "#7a7a7a",
+        paddingLeft: indent ? "20px" : "12px",
       }}
-      title={title}
+      title={label}
     >
-      <span className="material-icons-round text-[20px] group-hover:text-[var(--text)] transition-colors">
-        {icon}
+      {/* Active indicator bar */}
+      {active && (
+        <motion.div
+          layoutId="activeBar"
+          className="absolute left-0 top-1 bottom-1 w-[2.5px] rounded-r-full"
+          style={{ background: "#D4AF37" }}
+        />
+      )}
+
+      {/* Icon */}
+      <span
+        className="material-icons-round text-[15px] shrink-0 transition-colors"
+        style={{
+          color: active ? "#D4AF37" : accent ? "#D4AF37" : muted ? "#555555" : hovered ? "#aaaaaa" : "#555555",
+          fontSize: resolvedIcon === "add" ? "16px" : "15px",
+        }}
+      >
+        {resolvedIcon}
       </span>
 
-      {/* Tooltip Label (Simple) */}
-      <div className="absolute left-14 px-2 py-1 rounded-md bg-black text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 uppercase tracking-widest shadow-xl">
-        {title}
-      </div>
-    </motion.button>
+      {/* Label */}
+      <span
+        className="text-[0.8rem] font-medium truncate transition-colors"
+        style={{
+          color: active ? "#f0f0f0" : accent ? "#D4AF37" : muted ? "#555555" : hovered ? "#cccccc" : "#777777",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {label}
+      </span>
+    </button>
   );
 }

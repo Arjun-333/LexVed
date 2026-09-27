@@ -97,7 +97,7 @@ export default function CitationCard({ citations, sources, onCitationClick }: Ci
                 navigator.clipboard.writeText(`${item.file}, Page: ${item.page + 1}`);
               }
             }}
-            className="group flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[0.72rem] transition-all duration-300 cursor-pointer hover:scale-105"
+            className="group flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[0.72rem] transition-all duration-300 cursor-pointer hover:scale-105 max-w-full min-w-0"
             style={{
               background: "var(--surface-hover)",
               border: "1px solid var(--border)",
@@ -105,11 +105,11 @@ export default function CitationCard({ citations, sources, onCitationClick }: Ci
             }}
             title={item.hasLink ? `Open: ${item.file} (Page ${item.page + 1})` : `Click to copy: ${item.file}`}
           >
-            <span className="material-icons-round text-[11px] opacity-40 group-hover:opacity-100 group-hover:text-[var(--accent)] transition-all">
+            <span className="material-icons-round text-[11px] opacity-40 group-hover:opacity-100 group-hover:text-[var(--accent)] transition-all shrink-0">
               {item.hasLink ? "open_in_new" : "description"}
             </span>
-            <span>{item.file.replace(/_/g, " ").replace(/\.pdf$/i, "").slice(0, 40)}{item.file.length > 43 ? "..." : ""}</span>
-            <span className="text-[0.6rem] px-1 py-0 rounded bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-glow)] ml-0.5">
+            <span className="truncate max-w-[280px]">{item.file.replace(/_/g, " ").replace(/\.pdf$/i, "").slice(0, 40)}{item.file.length > 43 ? "..." : ""}</span>
+            <span className="text-[0.6rem] px-1 py-0 rounded bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-glow)] ml-0.5 shrink-0">
               p.{item.page + 1}
             </span>
           </button>

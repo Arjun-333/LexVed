@@ -33,29 +33,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Restore session from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem("lexved_token");
+    const storedUser = localStorage.getItem("lexved_user");
+
+    let initialLoaded = false;
+    if (storedToken && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setToken(storedToken);
+        setIsLoading(false); // Instant load! No waiting for network request!
+        initialLoaded = true;
+      } catch (e) {
+        // Invalid JSON, fallback to network
+      }
+    }
+
     if (storedToken) {
-      // Validate token with backend
+      // Revalidate session in background with safety abort timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+
       fetch(`${API_URL}/api/auth/me`, {
         headers: { Authorization: `Bearer ${storedToken}` },
+        signal: controller.signal,
       })
         .then((res) => {
           if (!res.ok) throw new Error("Token invalid");
           return res.json();
         })
         .then((data) => {
-          setUser({
+          const freshUser: AuthUser = {
             username: data.username,
             role: data.role,
             displayName: data.display_name,
-          });
+          };
+          setUser(freshUser);
           setToken(storedToken);
+          localStorage.setItem("lexved_user", JSON.stringify(freshUser));
         })
-        .catch(() => {
-          localStorage.removeItem("lexved_token");
-          setToken(null);
-          setUser(null);
+        .catch((err) => {
+          // Only clear if token was explicitly invalid (401), not on network timeout
+          if (err.name !== "AbortError" && !initialLoaded) {
+            localStorage.removeItem("lexved_token");
+            localStorage.removeItem("lexved_user");
+            setToken(null);
+            setUser(null);
+          }
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          clearTimeout(timeoutId);
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }
@@ -75,13 +103,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const data = await res.json();
-      setToken(data.token);
-      setUser({
+      const authUser: AuthUser = {
         username: data.username,
         role: data.role,
         displayName: data.display_name,
-      });
+      };
+      setToken(data.token);
+      setUser(authUser);
       localStorage.setItem("lexved_token", data.token);
+      localStorage.setItem("lexved_user", JSON.stringify(authUser));
       return { success: true };
     } catch (err) {
       return { success: false, error: "Cannot reach LexVed server. Is the backend running?" };
@@ -92,6 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
     setUser(null);
     localStorage.removeItem("lexved_token");
+    localStorage.removeItem("lexved_user");
   }, []);
 
   const authFetch = useCallback(
